@@ -1,0 +1,968 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>PharmaChain — محلل المخاطر الذكي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── Sidebar (نفس تصميم باقي الصفحات) ── */
+        .sidebar {
+            width: 220px;
+            background: #1a365d;
+            color: white;
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-logo {
+            padding: 0 20px 24px;
+            border-bottom: 1px solid #2d4a7a;
+            margin-bottom: 16px;
+        }
+
+            .sidebar-logo h2 {
+                font-size: 18px;
+                color: white;
+            }
+
+            .sidebar-logo p {
+                font-size: 11px;
+                color: #90cdf4;
+                margin-top: 2px;
+            }
+
+        .nav-item {
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #bee3f8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+            .nav-item:hover, .nav-item.active {
+                background: #2b4c7e;
+                color: white;
+            }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #63b3ed;
+            flex-shrink: 0;
+        }
+
+        .nav-ai-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #f6ad55;
+            flex-shrink: 0;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .nav-section {
+            padding: 8px 20px 4px;
+            font-size: 10px;
+            color: #4a6fa5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        .user-info {
+            margin-top: auto;
+            padding: 16px 20px;
+            border-top: 1px solid #2d4a7a;
+            font-size: 13px;
+        }
+
+            .user-info .name {
+                color: white;
+                font-weight: 500;
+            }
+
+            .user-info .role {
+                color: #90cdf4;
+                font-size: 11px;
+            }
+
+        .logout-btn {
+            margin-top: 8px;
+            background: none;
+            border: 1px solid #4a6fa5;
+            color: #bee3f8;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            width: 100%;
+        }
+
+        /* ── Main Content ── */
+        .main {
+            margin-right: 220px;
+            flex: 1;
+            padding: 28px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a365d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-badge {
+            background: #ebf4ff;
+            border: 1px solid #bee3f8;
+            color: #2b6cb0;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* ── Cards ── */
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* ── Controls Row ── */
+        .controls-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .btn-primary {
+            background: #2b6cb0;
+            color: white;
+        }
+
+            .btn-primary:hover:not(:disabled) {
+                background: #2c5282;
+            }
+
+        .btn-secondary {
+            background: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+            .btn-secondary:hover:not(:disabled) {
+                background: #f7fafc;
+            }
+
+        .btn-danger {
+            background: #c53030;
+            color: white;
+        }
+
+            .btn-danger:hover:not(:disabled) {
+                background: #9b2c2c;
+            }
+
+        textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            color: #2d3748;
+            outline: none;
+            resize: vertical;
+            background: #f7fafc;
+        }
+
+            textarea:focus {
+                border-color: #3182ce;
+                background: white;
+            }
+
+        /* ── Status Strip ── */
+        .status-strip {
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #2b6cb0;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .status-strip.warning {
+                background: #fffbeb;
+                border-color: #f6cc5b;
+                color: #744210;
+            }
+
+            .status-strip.error-strip {
+                background: #fff5f5;
+                border-color: #feb2b2;
+                color: #c53030;
+            }
+
+        /* ── Loading ── */
+        .loading-area {
+            text-align: center;
+            padding: 32px;
+            display: none;
+        }
+
+            .loading-area.show {
+                display: block;
+            }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #2b6cb0;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .loading-sub {
+            font-size: 12px;
+            color: #a0aec0;
+            margin-top: 4px;
+        }
+
+        /* ── Results ── */
+        .results-area {
+            display: none;
+        }
+
+            .results-area.show {
+                display: block;
+            }
+
+        /* Risk summary bar */
+        .risk-summary {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .risk-stat {
+            flex: 1;
+            min-width: 100px;
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+            .risk-stat .num {
+                font-size: 28px;
+                font-weight: 700;
+                margin-bottom: 4px;
+            }
+
+            .risk-stat .lbl {
+                font-size: 12px;
+                color: #718096;
+            }
+
+            .risk-stat.high .num {
+                color: #c53030;
+            }
+
+            .risk-stat.med .num {
+                color: #d69e2e;
+            }
+
+            .risk-stat.low .num {
+                color: #276749;
+            }
+
+            .risk-stat.ok .num {
+                color: #2b6cb0;
+            }
+
+        /* Risk items */
+        .risk-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .risk-item {
+            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+            .risk-item.high {
+                background: #fff5f5;
+                border-color: #feb2b2;
+            }
+
+            .risk-item.medium {
+                background: #fffff0;
+                border-color: #f6e05e;
+            }
+
+            .risk-item.low {
+                background: #f0fff4;
+                border-color: #9ae6b4;
+            }
+
+            .risk-item.ok {
+                background: #ebf8ff;
+                border-color: #bee3f8;
+            }
+
+        .risk-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .risk-content {
+            flex: 1;
+        }
+
+        .risk-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .risk-desc {
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        .risk-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+
+            .risk-badge.high {
+                background: #fed7d7;
+                color: #822727;
+            }
+
+            .risk-badge.medium {
+                background: #fefcbf;
+                color: #744210;
+            }
+
+            .risk-badge.low {
+                background: #c6f6d5;
+                color: #276749;
+            }
+
+            .risk-badge.ok {
+                background: #bee3f8;
+                color: #2b6cb0;
+            }
+
+        /* Overall verdict */
+        .verdict {
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+            .verdict.safe {
+                background: #c6f6d5;
+                border: 1px solid #9ae6b4;
+            }
+
+            .verdict.warning {
+                background: #fefcbf;
+                border: 1px solid #f6e05e;
+            }
+
+            .verdict.danger {
+                background: #fed7d7;
+                border: 1px solid #feb2b2;
+            }
+
+        .verdict-icon {
+            font-size: 28px;
+        }
+
+        .verdict-text h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .verdict-text p {
+            font-size: 13px;
+            color: #4a5568;
+            margin-top: 3px;
+        }
+
+        /* Chain data table */
+        .chain-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+
+            .chain-table th {
+                text-align: right;
+                padding: 8px 10px;
+                background: #f7fafc;
+                color: #718096;
+                font-weight: 600;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .chain-table td {
+                padding: 8px 10px;
+                color: #2d3748;
+                border-bottom: 1px solid #f0f4f8;
+            }
+
+            .chain-table tr:last-child td {
+                border-bottom: none;
+            }
+
+        .hash-cell {
+            font-family: monospace;
+            font-size: 11px;
+            color: #718096;
+        }
+
+        /* No access */
+        .no-access {
+            text-align: center;
+            padding: 60px;
+            color: #822727;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <h2>PharmaChain</h2>
+                <p>نظام تتبع الأدوية</p>
+            </div>
+            <a class="nav-item" onclick="goTo('dashboard.html')"><div class="nav-dot"></div> لوحة التحكم</a>
+            <a class="nav-item" onclick="goTo('add-drug.html')"><div class="nav-dot"></div> إضافة دواء</a>
+            <a class="nav-item" onclick="goTo('transfer.html')"><div class="nav-dot"></div> نقل دواء</a>
+            <a class="nav-item" onclick="goTo('blockchain.html')"><div class="nav-dot"></div> Blockchain</a>
+            <a class="nav-item" onclick="goTo('audit.html')"><div class="nav-dot"></div> سجل العمليات</a>
+            <div class="nav-section">الذكاء الاصطناعي</div>
+            <a class="nav-item active"><div class="nav-ai-dot"></div> محلل المخاطر</a>
+            <a class="nav-item" onclick="goTo('supply-advisor.html')"><div class="nav-ai-dot"></div> مستشار التوريد</a>
+            <div class="user-info">
+                <div class="name" id="sidebarUsername">...</div>
+                <div class="role" id="sidebarRole">...</div>
+                <button class="logout-btn" onclick="logout()">تسجيل خروج</button>
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div class="main">
+
+            <div class="page-header">
+                <div class="page-title">
+                    🚨 محلل المخاطر الذكي
+                    <span class="ai-badge">مدعوم بـ Claude AI</span>
+                </div>
+            </div>
+
+            <div id="noAccessMsg" style="display:none">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="no-access">هذه الصفحة للمدير فقط<br><small>ليس لديك صلاحية الوصول</small></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mainContent">
+                <!-- Step 1: جلب البيانات -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📡 الخطوة 1 — جلب بيانات السلسلة</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="controls-row">
+                            <button class="btn btn-primary" onclick="fetchChain()" id="fetchBtn">
+                                ⬇️ جلب البيانات تلقائياً
+                            </button>
+                            <button class="btn btn-secondary" onclick="toggleManual()">
+                                ✏️ إدخال يدوي
+                            </button>
+                        </div>
+
+                        <div id="manualArea" style="display:none; margin-top:12px;">
+                            <textarea id="manualData" rows="6" placeholder="الصق هنا بيانات السلسلة من /api/transaction/chain ..."></textarea>
+                        </div>
+
+                        <div id="fetchStatus" style="margin-top:12px; display:none;"></div>
+
+                        <!-- Chain preview table -->
+                        <div id="chainPreview" style="display:none; margin-top:16px;">
+                            <div style="font-size:13px; font-weight:600; color:#4a5568; margin-bottom:8px;">معاينة السلسلة المجلوبة:</div>
+                            <div style="overflow-x:auto;">
+                                <table class="chain-table" id="chainTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Block #</th>
+                                            <th>الدواء</th>
+                                            <th>من</th>
+                                            <th>إلى</th>
+                                            <th>التاريخ</th>
+                                            <th>Hash</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="chainTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: التحليل -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">🤖 الخطوة 2 — التحليل الذكي</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="status-strip" id="aiInfo">
+                            💡 اضغط "جلب البيانات" أولاً، ثم اضغط "تحليل المخاطر"
+                        </div>
+
+                        <button class="btn btn-danger" onclick="analyzeRisk()" id="analyzeBtn" disabled>
+                            🔍 تحليل المخاطر بالذكاء الاصطناعي
+                        </button>
+
+                        <!-- Loading -->
+                        <div class="loading-area" id="loadingArea">
+                            <div class="spinner"></div>
+                            <div class="loading-text">الذكاء الاصطناعي يحلل السلسلة...</div>
+                            <div class="loading-sub">يفحص الأنماط الزمنية والمسارات غير الطبيعية</div>
+                        </div>
+
+                        <!-- Results -->
+                        <div class="results-area" id="resultsArea">
+
+                            <!-- Summary stats -->
+                            <div class="risk-summary" id="riskSummary"></div>
+
+                            <!-- Risk items -->
+                            <div class="risk-list" id="riskList"></div>
+
+                            <!-- Verdict -->
+                            <div id="verdictBox"></div>
+
+                            <!-- Re-analyze -->
+                            <div style="margin-top:16px; display:flex; gap:10px;">
+                                <button class="btn btn-secondary" onclick="reAnalyze()">🔄 إعادة التحليل</button>
+                                <button class="btn btn-secondary" onclick="copyReport()">📋 نسخ التقرير</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        var API = 'http://localhost:7036';
+        var token = localStorage.getItem('token');
+        var role = localStorage.getItem('role');
+        var chainData = null;
+        var lastReport = '';
+
+        // Auth check
+        if (!token) { window.location.replace(API + '/login.html'); }
+        document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
+        document.getElementById('sidebarRole').textContent = role || '';
+
+        // Admin only
+        if (role !== 'Admin') {
+            document.getElementById('noAccessMsg').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+
+        function goTo(page) { window.location.replace(API + '/' + page); }
+        function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+
+        function toggleManual() {
+            var area = document.getElementById('manualArea');
+            area.style.display = area.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // ── جلب بيانات السلسلة تلقائياً ──
+        function fetchChain() {
+            var btn = document.getElementById('fetchBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ جاري الجلب...';
+
+            var status = document.getElementById('fetchStatus');
+            status.style.display = 'block';
+            status.innerHTML = '<div class="status-strip">⏳ جاري الاتصال بالسيرفر...</div>';
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API + '/api/transaction/chain', true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                btn.disabled = false;
+                btn.textContent = '⬇️ جلب البيانات تلقائياً';
+
+                if (xhr.status === 401) { window.location.replace(API + '/login.html'); return; }
+                if (xhr.status !== 200) {
+                    status.innerHTML = '<div class="status-strip error-strip">❌ تعذر الجلب — تحقق من تشغيل السيرفر</div>';
+                    return;
+                }
+
+                var data = JSON.parse(xhr.responseText);
+                chainData = data;
+
+                if (!data.chain || data.chain.length === 0) {
+                    status.innerHTML = '<div class="status-strip warning">⚠️ السلسلة فارغة — لا توجد blocks بعد</div>';
+                    return;
+                }
+
+                status.innerHTML = '<div class="status-strip">✅ تم جلب ' + data.totalBlocks + ' block بنجاح</div>';
+                renderChainTable(data.chain);
+                document.getElementById('analyzeBtn').disabled = false;
+                document.getElementById('aiInfo').textContent = '✅ البيانات جاهزة — اضغط "تحليل المخاطر"';
+            };
+            xhr.onerror = function () {
+                btn.disabled = false;
+                btn.textContent = '⬇️ جلب البيانات تلقائياً';
+                document.getElementById('fetchStatus').innerHTML = '<div class="status-strip error-strip">❌ تعذر الاتصال بالسيرفر</div>';
+            };
+            xhr.send();
+        }
+
+        function renderChainTable(chain) {
+            var tbody = document.getElementById('chainTableBody');
+            var roleAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون' };
+            tbody.innerHTML = chain.map(function (b) {
+                return '<tr>' +
+                    '<td><strong>#' + b.blockNumber + '</strong></td>' +
+                    '<td>' + b.drugName + '</td>' +
+                    '<td>' + (roleAr[b.fromRole] || b.fromRole) + '</td>' +
+                    '<td>' + (roleAr[b.toRole] || b.toRole) + '</td>' +
+                    '<td>' + new Date(b.timestamp).toLocaleString('ar-JO') + '</td>' +
+                    '<td class="hash-cell">' + b.blockHash + '</td>' +
+                    '</tr>';
+            }).join('');
+            document.getElementById('chainPreview').style.display = 'block';
+        }
+
+        // ── التحليل الذكي المحلي ──
+        function analyzeChainLocally(chain) {
+            var high = [], medium = [], low = [], ok = [];
+            if (!chain || chain.length === 0) {
+                return { summary: 'السلسلة فارغة — لا توجد بيانات للتحليل', high: [], medium: [], low: [], ok: [{ title: 'السلسلة فارغة', desc: 'لم يتم تسجيل أي نقلات بعد' }], verdict: 'safe', verdictText: '✅ السلسلة سليمة', recommendation: 'ابدأ بإضافة أدوية ونقلها لتظهر البيانات هنا.' };
+            }
+
+            // فحص Hash Chaining
+            for (var i = 1; i < chain.length; i++) {
+                if (chain[i].previousHash !== chain[i - 1].blockHash) {
+                    high.push({ title: 'انكسار في سلسلة Hash', desc: 'Block #' + chain[i].blockNumber + ' لا يرتبط بالـ Block السابق — تم التلاعب بالسلسلة! PreviousHash لا يتطابق مع BlockHash السابق.' });
+                }
+            }
+
+            // فحص Proof of Work
+            chain.forEach(function (b) {
+                if (b.blockHash && !b.blockHash.startsWith('00')) {
+                    high.push({ title: 'خرق Proof of Work', desc: 'Block #' + b.blockNumber + ' لديه Hash لا يبدأ بـ 00 — هذا يعني إن الـ Block لم يُعدَّن بشكل صحيح أو تم التلاعب به.' });
+                }
+            });
+
+            // فحص التأخيرات الزمنية
+            for (var j = 1; j < chain.length; j++) {
+                var t1 = new Date(chain[j - 1].timestamp);
+                var t2 = new Date(chain[j].timestamp);
+                var diffHours = (t2 - t1) / (1000 * 60 * 60);
+                if (diffHours > 48) {
+                    high.push({ title: 'تأخير خطير في النقل', desc: 'تأخر ' + Math.round(diffHours) + ' ساعة بين Block #' + chain[j - 1].blockNumber + ' وBlock #' + chain[j].blockNumber + ' — هذا يتجاوز الحد الأقصى المقبول.' });
+                } else if (diffHours > 24) {
+                    medium.push({ title: 'تأخير مشبوه', desc: 'مرت ' + Math.round(diffHours) + ' ساعة بين نقلتين متتاليتين — يُنصح بالتحقيق.' });
+                } else if (diffHours < 0.05) {
+                    medium.push({ title: 'سرعة نقل غير طبيعية', desc: 'نقلتان بفارق أقل من 3 دقائق في Block #' + chain[j].blockNumber + ' — قد يكون نشاطاً مشبوهاً.' });
+                }
+            }
+
+            // فحص تعدد الموزعين لنفس الدواء
+            var drugDistributors = {};
+            chain.forEach(function (b) {
+                if (b.fromRole === 'Distributor') {
+                    if (!drugDistributors[b.drugId]) drugDistributors[b.drugId] = [];
+                    if (drugDistributors[b.drugId].indexOf(b.fromUsername) === -1) drugDistributors[b.drugId].push(b.fromUsername);
+                }
+            });
+            for (var drugId in drugDistributors) {
+                if (drugDistributors[drugId].length > 1) {
+                    medium.push({ title: 'دواء مرّ على عدة موزعين', desc: 'الدواء رقم ' + drugId + ' نُقل عبر ' + drugDistributors[drugId].length + ' موزعين (' + drugDistributors[drugId].join(', ') + ') — المسار الطبيعي موزع واحد فقط.' });
+                }
+            }
+
+            // إذا كل شي سليم
+            if (high.length === 0 && medium.length === 0) {
+                ok.push({ title: 'Hash Chaining سليم', desc: 'كل Block مرتبط بالسابق بشكل صحيح' });
+                ok.push({ title: 'Proof of Work محقق', desc: 'كل الـ Hashes تبدأ بـ 00' });
+                ok.push({ title: 'التوقيت طبيعي', desc: 'لا توجد تأخيرات غير مبررة' });
+                low.push({ title: 'المسارات منطقية', desc: 'جميع نقلات الأدوية تتبع المسار الصحيح: مصنع ← موزع ← صيدلية' });
+            }
+
+            var verdict = high.length > 0 ? 'danger' : medium.length > 0 ? 'warning' : 'safe';
+            var verdictText = high.length > 0 ? '🚨 تم اكتشاف تلاعب — يجب التحقيق الفوري' : medium.length > 0 ? '⚠️ توجد نقاط تحتاج مراجعة' : '✅ السلسلة سليمة — ' + chain.length + ' blocks تم التحقق منها';
+            var recommendation = high.length > 0 ? 'أوقف عمليات النقل فوراً وراجع الـ Blocks المتأثرة مع فريق الأمن.' : medium.length > 0 ? 'راجع النقاط المذكورة مع المسؤولين المعنيين وتأكد من صحة البيانات.' : 'استمر في مراقبة السلسلة بانتظام. النظام يعمل بشكل مثالي.';
+
+            return { summary: 'تم تحليل ' + chain.length + ' block — ' + (high.length > 0 ? 'وُجدت مشاكل خطيرة تستوجب التحقيق' : medium.length > 0 ? 'وُجدت تحذيرات تستوجب المراجعة' : 'السلسلة سليمة بالكامل'), high: high, medium: medium, low: low, ok: ok, verdict: verdict, verdictText: verdictText, recommendation: recommendation };
+        }
+
+        async function analyzeRisk() {
+            var manualText = document.getElementById('manualData').value.trim();
+            var chainToAnalyze = null;
+
+            if (manualText) {
+                try { var parsed = JSON.parse(manualText); chainToAnalyze = Array.isArray(parsed) ? parsed : parsed.chain; } catch (e) { chainToAnalyze = []; }
+            } else if (chainData && chainData.chain) {
+                chainToAnalyze = chainData.chain;
+            } else {
+                document.getElementById('aiInfo').className = 'status-strip error-strip';
+                document.getElementById('aiInfo').textContent = '❌ اجلب البيانات أولاً أو أدخلها يدوياً';
+                return;
+            }
+
+            document.getElementById('analyzeBtn').disabled = true;
+            document.getElementById('loadingArea').classList.add('show');
+            document.getElementById('resultsArea').classList.remove('show');
+
+            await new Promise(function (r) { setTimeout(r, 1500); });
+
+            try {
+                var result = analyzeChainLocally(chainToAnalyze);
+                lastReport = JSON.stringify(result);
+                renderResults(result);
+            } catch (e) {
+                document.getElementById('aiInfo').className = 'status-strip error-strip';
+                document.getElementById('aiInfo').style.display = 'block';
+                document.getElementById('aiInfo').textContent = '❌ خطأ في التحليل: ' + e.message;
+            } finally {
+                document.getElementById('analyzeBtn').disabled = false;
+                document.getElementById('loadingArea').classList.remove('show');
+            }
+        }
+
+        function renderResults(result) {
+            // Summary stats
+            var high = (result.high || []).length;
+            var med = (result.medium || []).length;
+            var low = (result.low || []).length;
+            var ok = (result.ok || []).length;
+
+            document.getElementById('riskSummary').innerHTML =
+                '<div class="risk-stat high"><div class="num">' + high + '</div><div class="lbl">🔴 خطر عالي</div></div>' +
+                '<div class="risk-stat med"><div class="num">' + med + '</div><div class="lbl">🟡 تحذير</div></div>' +
+                '<div class="risk-stat low"><div class="num">' + low + '</div><div class="lbl">🟢 منخفض</div></div>' +
+                '<div class="risk-stat ok"><div class="num">' + ok + '</div><div class="lbl">✅ طبيعي</div></div>';
+
+            // Risk items
+            var html = '';
+            if (result.summary) {
+                html += '<div style="background:#f7fafc;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#4a5568;border:1px solid #e2e8f0;">' +
+                    '<strong>ملخص التحليل:</strong> ' + result.summary + '</div>';
+            }
+
+            function renderItems(items, level, icon) {
+                if (!items || items.length === 0) return '';
+                var levelAr = { high: 'عالي', medium: 'متوسط', low: 'منخفض', ok: 'طبيعي' };
+                return items.map(function (item) {
+                    return '<div class="risk-item ' + level + '">' +
+                        '<div class="risk-icon">' + icon + '</div>' +
+                        '<div class="risk-content">' +
+                        '<div class="risk-title">' + item.title + '</div>' +
+                        '<div class="risk-desc">' + item.desc + '</div>' +
+                        '</div>' +
+                        '<span class="risk-badge ' + level + '">' + levelAr[level] + '</span>' +
+                        '</div>';
+                }).join('');
+            }
+
+            html += renderItems(result.high, 'high', '🔴');
+            html += renderItems(result.medium, 'medium', '🟡');
+            html += renderItems(result.low, 'low', '🟢');
+            html += renderItems(result.ok, 'ok', '✅');
+
+            document.getElementById('riskList').innerHTML = html;
+
+            // Verdict
+            var verdictClass = { safe: 'safe', warning: 'warning', danger: 'danger' }[result.verdict] || 'safe';
+            var verdictIcon = { safe: '✅', warning: '⚠️', danger: '🚨' }[result.verdict] || '✅';
+            document.getElementById('verdictBox').innerHTML =
+                '<div class="verdict ' + verdictClass + '">' +
+                '<div class="verdict-icon">' + verdictIcon + '</div>' +
+                '<div class="verdict-text">' +
+                '<h3>' + (result.verdictText || '') + '</h3>' +
+                '<p>' + (result.recommendation || '') + '</p>' +
+                '</div></div>';
+
+            document.getElementById('resultsArea').classList.add('show');
+            document.getElementById('aiInfo').style.display = 'none';
+        }
+
+        function reAnalyze() {
+            document.getElementById('resultsArea').classList.remove('show');
+            analyzeRisk();
+        }
+
+        function copyReport() {
+            if (!lastReport) return;
+            var parsed = JSON.parse(lastReport);
+            var text = 'تقرير تحليل المخاطر — PharmaChain\n';
+            text += '=====================================\n';
+            text += 'الملخص: ' + parsed.summary + '\n\n';
+            if (parsed.high && parsed.high.length) {
+                text += '🔴 مخاطر عالية:\n';
+                parsed.high.forEach(function (i) { text += '  - ' + i.title + ': ' + i.desc + '\n'; });
+            }
+            if (parsed.medium && parsed.medium.length) {
+                text += '\n🟡 تحذيرات:\n';
+                parsed.medium.forEach(function (i) { text += '  - ' + i.title + ': ' + i.desc + '\n'; });
+            }
+            text += '\nالحكم: ' + parsed.verdictText + '\n';
+            text += 'التوصية: ' + parsed.recommendation;
+            navigator.clipboard.writeText(text).then(function () {
+                alert('تم نسخ التقرير!');
+            });
+        }
+    </script>
+</body>
+</html>

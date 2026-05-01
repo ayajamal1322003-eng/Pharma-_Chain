@@ -1,0 +1,917 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>PharmaChain — تحليلات الأداء</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: #1a365d;
+            color: white;
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-logo {
+            padding: 0 20px 24px;
+            border-bottom: 1px solid #2d4a7a;
+            margin-bottom: 16px;
+        }
+
+            .sidebar-logo h2 {
+                font-size: 18px;
+                color: white;
+            }
+
+            .sidebar-logo p {
+                font-size: 11px;
+                color: #90cdf4;
+                margin-top: 2px;
+            }
+
+        .nav-item {
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #bee3f8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+            .nav-item:hover, .nav-item.active {
+                background: #2b4c7e;
+                color: white;
+            }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #63b3ed;
+            flex-shrink: 0;
+        }
+
+        .nav-ai-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #f6ad55;
+            flex-shrink: 0;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .nav-section {
+            padding: 8px 20px 4px;
+            font-size: 10px;
+            color: #4a6fa5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        .user-info {
+            margin-top: auto;
+            padding: 16px 20px;
+            border-top: 1px solid #2d4a7a;
+            font-size: 13px;
+        }
+
+            .user-info .name {
+                color: white;
+                font-weight: 500;
+            }
+
+            .user-info .role {
+                color: #90cdf4;
+                font-size: 11px;
+            }
+
+        .logout-btn {
+            margin-top: 8px;
+            background: none;
+            border: 1px solid #4a6fa5;
+            color: #bee3f8;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            width: 100%;
+        }
+
+        .main {
+            margin-right: 220px;
+            flex: 1;
+            padding: 28px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a365d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-badge {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #276749;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .btn-primary {
+            background: #2b6cb0;
+            color: white;
+        }
+
+            .btn-primary:hover:not(:disabled) {
+                background: #2c5282;
+            }
+
+        .btn-green {
+            background: #276749;
+            color: white;
+        }
+
+            .btn-green:hover:not(:disabled) {
+                background: #1c4532;
+            }
+
+        .btn-secondary {
+            background: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+            .btn-secondary:hover:not(:disabled) {
+                background: #f7fafc;
+            }
+
+        .controls-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Segoe UI', sans-serif;
+            color: #2d3748;
+            outline: none;
+            resize: vertical;
+            background: #f7fafc;
+        }
+
+            textarea:focus {
+                border-color: #3182ce;
+                background: white;
+            }
+
+        .status-strip {
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #2b6cb0;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .status-strip.success {
+                background: #f0fff4;
+                border-color: #9ae6b4;
+                color: #276749;
+            }
+
+            .status-strip.error-strip {
+                background: #fff5f5;
+                border-color: #feb2b2;
+                color: #c53030;
+            }
+
+        .loading-area {
+            text-align: center;
+            padding: 32px;
+            display: none;
+        }
+
+            .loading-area.show {
+                display: block;
+            }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #276749;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .loading-sub {
+            font-size: 12px;
+            color: #a0aec0;
+            margin-top: 4px;
+        }
+
+        .results-area {
+            display: none;
+        }
+
+            .results-area.show {
+                display: block;
+            }
+
+        /* Stats overview */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+            .stat-card .num {
+                font-size: 24px;
+                font-weight: 700;
+                color: #1a365d;
+            }
+
+            .stat-card .lbl {
+                font-size: 11px;
+                color: #718096;
+                margin-top: 4px;
+            }
+
+        /* Insight cards */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 700px) {
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .insight-card {
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid;
+        }
+
+            .insight-card.immediate {
+                background: #fff5f5;
+                border-color: #feb2b2;
+            }
+
+            .insight-card.strategic {
+                background: #f0fff4;
+                border-color: #9ae6b4;
+            }
+
+            .insight-card.opportunity {
+                background: #ebf8ff;
+                border-color: #bee3f8;
+            }
+
+            .insight-card.alert {
+                background: #fffff0;
+                border-color: #f6e05e;
+            }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .insight-icon {
+            font-size: 18px;
+        }
+
+        .insight-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .insight-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .insight-item {
+            background: rgba(255,255,255,0.7);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 12px;
+            color: #4a5568;
+            line-height: 1.5;
+            border-right: 3px solid;
+        }
+
+        .insight-card.immediate .insight-item {
+            border-color: #c53030;
+        }
+
+        .insight-card.strategic .insight-item {
+            border-color: #276749;
+        }
+
+        .insight-card.opportunity .insight-item {
+            border-color: #2b6cb0;
+        }
+
+        .insight-card.alert .insight-item {
+            border-color: #d69e2e;
+        }
+
+        .insight-item strong {
+            display: block;
+            color: #2d3748;
+            margin-bottom: 2px;
+        }
+
+        /* Performance summary */
+        .perf-summary {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.7;
+        }
+
+            .perf-summary strong {
+                color: #2d3748;
+                font-size: 14px;
+            }
+
+        /* Distributor comparison */
+        .distributor-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+            .distributor-table th {
+                text-align: right;
+                padding: 8px 12px;
+                background: #f7fafc;
+                color: #718096;
+                font-size: 11px;
+                font-weight: 600;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .distributor-table td {
+                padding: 10px 12px;
+                border-bottom: 1px solid #f0f4f8;
+                color: #2d3748;
+            }
+
+            .distributor-table tr:last-child td {
+                border-bottom: none;
+            }
+
+        .perf-bar-wrap {
+            background: #e2e8f0;
+            border-radius: 4px;
+            height: 8px;
+            width: 100px;
+            overflow: hidden;
+        }
+
+        .perf-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+
+            .perf-bar.good {
+                background: #48bb78;
+            }
+
+            .perf-bar.avg {
+                background: #ed8936;
+            }
+
+            .perf-bar.bad {
+                background: #fc8181;
+            }
+
+        .no-access {
+            text-align: center;
+            padding: 60px;
+            color: #822727;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <h2>PharmaChain</h2>
+                <p>نظام تتبع الأدوية</p>
+            </div>
+            <a class="nav-item" onclick="goTo('dashboard.html')"><div class="nav-dot"></div> لوحة التحكم</a>
+            <a class="nav-item" onclick="goTo('add-drug.html')"><div class="nav-dot"></div> إضافة دواء</a>
+            <a class="nav-item" onclick="goTo('transfer.html')"><div class="nav-dot"></div> نقل دواء</a>
+            <a class="nav-item" onclick="goTo('blockchain.html')"><div class="nav-dot"></div> Blockchain</a>
+            <a class="nav-item" onclick="goTo('audit.html')"><div class="nav-dot"></div> سجل العمليات</a>
+            <div class="nav-section">الذكاء الاصطناعي</div>
+            <a class="nav-item" onclick="goTo('risk-analyst.html')"><div class="nav-ai-dot"></div> محلل المخاطر</a>
+            <a class="nav-item active"><div class="nav-ai-dot"></div> تحليلات الأداء</a>
+            <div class="user-info">
+                <div class="name" id="sidebarUsername">...</div>
+                <div class="role" id="sidebarRole">...</div>
+                <button class="logout-btn" onclick="logout()">تسجيل خروج</button>
+            </div>
+        </div>
+
+        <div class="main">
+
+            <div class="page-header">
+                <div class="page-title">
+                    📊 تحليلات الأداء الذكية
+                    <span class="ai-badge">مدعوم بـ Claude AI</span>
+                </div>
+            </div>
+
+            <div id="noAccessMsg" style="display:none">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="no-access">هذه الصفحة للمدير فقط<br><small>ليس لديك صلاحية الوصول</small></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mainContent">
+
+                <!-- Step 1 -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📡 الخطوة 1 — جلب بيانات العمليات</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="controls-row">
+                            <button class="btn btn-primary" onclick="fetchAllData()" id="fetchBtn">
+                                ⬇️ جلب البيانات تلقائياً
+                            </button>
+                            <button class="btn btn-secondary" onclick="toggleManual()">
+                                ✏️ إدخال يدوي
+                            </button>
+                        </div>
+
+                        <div id="manualArea" style="display:none; margin-top:12px;">
+                            <textarea id="manualData" rows="6" placeholder="الصق هنا بيانات العمليات (نقلات، موزعين، صيدليات)..."></textarea>
+                        </div>
+
+                        <div id="fetchStatus" style="margin-top:12px; display:none;"></div>
+
+                        <!-- Stats preview -->
+                        <div id="statsPreview" style="display:none; margin-top:16px;">
+                            <div class="stats-grid" id="statsGrid"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">🤖 الخطوة 2 — التوصيات الذكية</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="status-strip" id="aiInfo">
+                            💡 اضغط "جلب البيانات" أولاً، ثم اضغط "احصل على التوصيات"
+                        </div>
+
+                        <button class="btn btn-green" onclick="getAdvice()" id="adviceBtn" disabled>
+                            💡 احصل على توصيات الذكاء الاصطناعي
+                        </button>
+
+                        <div class="loading-area" id="loadingArea">
+                            <div class="spinner"></div>
+                            <div class="loading-text">الذكاء الاصطناعي يحلل بيانات التوريد...</div>
+                            <div class="loading-sub">يقيّم أداء الموزعين والصيدليات ويحدد فرص التحسين</div>
+                        </div>
+
+                        <div class="results-area" id="resultsArea">
+
+                            <!-- Performance summary -->
+                            <div class="perf-summary" id="perfSummary"></div>
+
+                            <!-- Insights grid -->
+                            <div class="insights-grid" id="insightsGrid"></div>
+
+                            <!-- Distributor table if available -->
+                            <div id="distTableWrap" style="display:none;">
+                                <div style="font-size:13px;font-weight:600;color:#4a5568;margin-bottom:8px;">مقارنة أداء الموزعين:</div>
+                                <div style="overflow-x:auto;">
+                                    <table class="distributor-table" id="distTable"></table>
+                                </div>
+                            </div>
+
+                            <div style="margin-top:16px; display:flex; gap:10px;">
+                                <button class="btn btn-secondary" onclick="getAdvice()">🔄 تحديث التوصيات</button>
+                                <button class="btn btn-secondary" onclick="copyAdvice()">📋 نسخ التقرير</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var API = 'http://localhost:7036';
+        var token = localStorage.getItem('token');
+        var role = localStorage.getItem('role');
+        var allData = null;
+        var lastResult = null;
+
+        if (!token) { window.location.replace(API + '/login.html'); }
+        document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
+        document.getElementById('sidebarRole').textContent = role || '';
+
+        if (role !== 'Admin') {
+            document.getElementById('noAccessMsg').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+
+        function goTo(page) { window.location.replace(API + '/' + page); }
+        function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+        function toggleManual() {
+            var a = document.getElementById('manualArea');
+            a.style.display = a.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // ── جلب البيانات من الـ API ──
+        function fetchAllData() {
+            var btn = document.getElementById('fetchBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ جاري الجلب...';
+
+            var status = document.getElementById('fetchStatus');
+            status.style.display = 'block';
+            status.innerHTML = '<div class="status-strip">⏳ جاري الاتصال بالسيرفر...</div>';
+
+            // نجلب السلسلة كاملة + سجل العمليات
+            var chainDone = false, auditDone = false;
+            var chainResult = null, auditResult = null;
+
+            function checkBothDone() {
+                if (!chainDone || !auditDone) return;
+
+                btn.disabled = false;
+                btn.textContent = '⬇️ جلب البيانات تلقائياً';
+
+                if (!chainResult || !auditResult) {
+                    status.innerHTML = '<div class="status-strip error-strip">❌ تعذر الجلب — تحقق من تشغيل السيرفر</div>';
+                    return;
+                }
+
+                allData = { chain: chainResult, audit: auditResult };
+                renderStatsPreview(chainResult, auditResult);
+                status.innerHTML = '<div class="status-strip success">✅ تم جلب ' + (chainResult.totalBlocks || 0) + ' عملية و ' + auditResult.length + ' سجل</div>';
+                document.getElementById('adviceBtn').disabled = false;
+                document.getElementById('aiInfo').textContent = '✅ البيانات جاهزة — اضغط "احصل على التوصيات"';
+            }
+
+            // Chain
+            var xhr1 = new XMLHttpRequest();
+            xhr1.open('GET', API + '/api/transaction/chain', true);
+            xhr1.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr1.onload = function () {
+                chainDone = true;
+                if (xhr1.status === 200) chainResult = JSON.parse(xhr1.responseText);
+                checkBothDone();
+            };
+            xhr1.onerror = function () { chainDone = true; checkBothDone(); };
+            xhr1.send();
+
+            // Audit
+            var xhr2 = new XMLHttpRequest();
+            xhr2.open('GET', API + '/api/audit', true);
+            xhr2.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr2.onload = function () {
+                auditDone = true;
+                if (xhr2.status === 200) auditResult = JSON.parse(xhr2.responseText);
+                checkBothDone();
+            };
+            xhr2.onerror = function () { auditDone = true; checkBothDone(); };
+            xhr2.send();
+        }
+
+        function renderStatsPreview(chain, audit) {
+            if (!chain || !chain.chain) return;
+
+            var transfers = chain.chain || [];
+            var roles = {};
+            transfers.forEach(function (t) {
+                roles[t.fromUsername] = (roles[t.fromUsername] || 0) + 1;
+            });
+
+            var uniqueDistributors = transfers.filter(function (t) { return t.fromRole === 'Distributor'; })
+                .map(function (t) { return t.fromUsername; })
+                .filter(function (v, i, a) { return a.indexOf(v) === i; }).length;
+
+            var uniquePharmacies = transfers.filter(function (t) { return t.toRole === 'Pharmacy'; })
+                .map(function (t) { return t.toUsername; })
+                .filter(function (v, i, a) { return a.indexOf(v) === i; }).length;
+
+            var failedLogins = audit.filter(function (l) { return l.action === 'FailedLogin'; }).length;
+
+            document.getElementById('statsGrid').innerHTML =
+                '<div class="stat-card"><div class="num">' + transfers.length + '</div><div class="lbl">إجمالي النقلات</div></div>' +
+                '<div class="stat-card"><div class="num">' + uniqueDistributors + '</div><div class="lbl">الموزعون النشطون</div></div>' +
+                '<div class="stat-card"><div class="num">' + uniquePharmacies + '</div><div class="lbl">الصيدليات المستلِمة</div></div>' +
+                '<div class="stat-card"><div class="num">' + failedLogins + '</div><div class="lbl">دخول فاشل</div></div>';
+
+            document.getElementById('statsPreview').style.display = 'block';
+        }
+
+        // ── التحليل الذكي المحلي ──
+        function generateAdviceLocally(data) {
+            var chain = data && data.chain ? (data.chain.chain || []) : [];
+            var audit = data && data.audit ? data.audit : [];
+
+            var totalOps = chain.length;
+            var transfers = chain;
+            var failedLogins = audit.filter(function (l) { return l.action === 'FailedLogin'; }).length;
+            var tampers = audit.filter(function (l) { return l.action === 'TamperDetected'; }).length;
+
+            // حساب إحصائيات الموزعين
+            var distOps = {};
+            transfers.forEach(function (t) {
+                if (t.fromRole === 'Distributor') {
+                    distOps[t.fromUsername] = (distOps[t.fromUsername] || 0) + 1;
+                }
+            });
+
+            var distList = Object.keys(distOps).map(function (name) {
+                var ops = distOps[name];
+                return { name: name, ops: ops, rating: ops >= 10 ? 'جيد' : ops >= 5 ? 'متوسط' : 'ضعيف', note: ops >= 10 ? 'أداء ممتاز — موزع نشط' : ops >= 5 ? 'أداء مقبول — يمكن تحسينه' : 'نشاط منخفض — يحتاج متابعة' };
+            });
+
+            var immediate = [];
+            var strategic = [];
+            var opportunities = [];
+            var alerts = [];
+
+            if (failedLogins > 5) alerts.push({ title: 'محاولات دخول فاشلة مرتفعة', desc: failedLogins + ' محاولة دخول فاشلة — قد يكون هجوم Brute Force. يُنصح بمراجعة سجل العمليات.' });
+            if (tampers > 0) alerts.push({ title: 'تم اكتشاف تلاعب سابق', desc: 'وُجد ' + tampers + ' محاولة تلاعب في السجل — تحقق من Blockchain للتأكد من سلامة السلسلة.' });
+            if (distList.length === 0) alerts.push({ title: 'لا يوجد موزعون نشطون', desc: 'لم يتم تسجيل أي نقلات من موزعين بعد — تحقق من تشغيل النظام.' });
+
+            var weakDist = distList.filter(function (d) { return d.rating === 'ضعيف'; });
+            if (weakDist.length > 0) immediate.push({ title: 'مراجعة الموزعين ضعيفي الأداء', desc: weakDist.map(function (d) { return d.name; }).join(', ') + ' لديهم نشاط منخفض — تواصل معهم لمعرفة السبب أو وزّع العمل على موزعين آخرين.' });
+
+            if (totalOps > 0) immediate.push({ title: 'مراجعة دورية للسلسلة', desc: 'لديك ' + totalOps + ' عملية مسجلة. يُنصح بإجراء Verify Chain يومياً للتأكد من سلامة البيانات.' });
+
+            strategic.push({ title: 'توسيع شبكة الموزعين', desc: 'إضافة موزعين جدد لتوزيع الحمل وتقليل الاعتماد على موزع واحد — يحسن الكفاءة بنسبة تصل إلى 30%.' });
+            strategic.push({ title: 'نظام تنبيه تلقائي', desc: 'إضافة إشعارات تلقائية عند أي انحراف في السلسلة لتسريع وقت الاستجابة للتهديدات.' });
+
+            var goodDist = distList.filter(function (d) { return d.rating === 'جيد'; });
+            if (goodDist.length > 0) opportunities.push({ title: 'تكريم الموزعين المتميزين', desc: goodDist.map(function (d) { return d.name; }).join(', ') + ' يتميزون بأداء عالٍ — منحهم أولوية في العقود الجديدة سيحفز بقية الموزعين.' });
+            opportunities.push({ title: 'تحليل أوقات الذروة', desc: 'تحديد أوقات الذروة في النقلات وتوزيع الموارد بناءً عليها لتقليل التأخيرات.' });
+
+            var summary = 'تم تحليل ' + totalOps + ' عملية نقل مع ' + distList.length + ' موزع نشط. ' + (alerts.length > 0 ? 'وُجدت ' + alerts.length + ' تنبيهات تستوجب الاهتمام الفوري.' : 'الأداء العام مقبول مع وجود فرص تحسين.');
+
+            return { summary: summary, immediate: immediate, strategic: strategic, opportunities: opportunities, alerts: alerts, distributors: distList };
+        }
+
+        async function getAdvice() {
+            var manualText = document.getElementById('manualData').value.trim();
+
+            if (!manualText && !allData) {
+                document.getElementById('aiInfo').className = 'status-strip error-strip';
+                document.getElementById('aiInfo').textContent = '❌ اجلب البيانات أولاً أو أدخلها يدوياً';
+                return;
+            }
+
+            document.getElementById('adviceBtn').disabled = true;
+            document.getElementById('loadingArea').classList.add('show');
+            document.getElementById('resultsArea').classList.remove('show');
+
+            await new Promise(function (r) { setTimeout(r, 1500); });
+
+            try {
+                var result = generateAdviceLocally(allData);
+                lastResult = result;
+                renderAdvice(result);
+            } catch (e) {
+                document.getElementById('aiInfo').className = 'status-strip error-strip';
+                document.getElementById('aiInfo').style.display = 'block';
+                document.getElementById('aiInfo').textContent = '❌ خطأ: ' + e.message;
+            } finally {
+                document.getElementById('adviceBtn').disabled = false;
+                document.getElementById('loadingArea').classList.remove('show');
+            }
+        }
+
+        function renderAdvice(result) {
+            // Summary
+            document.getElementById('perfSummary').innerHTML =
+                '<strong>📋 ملخص التحليل</strong><br><br>' + (result.summary || '');
+
+            // Insights grid
+            var grid = '';
+
+            if (result.immediate && result.immediate.length) {
+                grid += '<div class="insight-card immediate"><div class="insight-header"><div class="insight-icon">🚨</div><div class="insight-title">توصيات فورية — هذا الأسبوع</div></div><div class="insight-items">' +
+                    result.immediate.map(function (i) {
+                        return '<div class="insight-item"><strong>' + i.title + '</strong>' + i.desc + '</div>';
+                    }).join('') + '</div></div>';
+            }
+
+            if (result.strategic && result.strategic.length) {
+                grid += '<div class="insight-card strategic"><div class="insight-header"><div class="insight-icon">📈</div><div class="insight-title">توصيات استراتيجية</div></div><div class="insight-items">' +
+                    result.strategic.map(function (i) {
+                        return '<div class="insight-item"><strong>' + i.title + '</strong>' + i.desc + '</div>';
+                    }).join('') + '</div></div>';
+            }
+
+            if (result.opportunities && result.opportunities.length) {
+                grid += '<div class="insight-card opportunity"><div class="insight-header"><div class="insight-icon">💡</div><div class="insight-title">فرص التحسين</div></div><div class="insight-items">' +
+                    result.opportunities.map(function (i) {
+                        return '<div class="insight-item"><strong>' + i.title + '</strong>' + i.desc + '</div>';
+                    }).join('') + '</div></div>';
+            }
+
+            if (result.alerts && result.alerts.length) {
+                grid += '<div class="insight-card alert"><div class="insight-header"><div class="insight-icon">⚠️</div><div class="insight-title">تنبيهات تحتاج انتباهاً</div></div><div class="insight-items">' +
+                    result.alerts.map(function (i) {
+                        return '<div class="insight-item"><strong>' + i.title + '</strong>' + i.desc + '</div>';
+                    }).join('') + '</div></div>';
+            }
+
+            document.getElementById('insightsGrid').innerHTML = grid;
+
+            // Distributor table
+            if (result.distributors && result.distributors.length) {
+                var ratingColor = { 'جيد': '#48bb78', 'متوسط': '#ed8936', 'ضعيف': '#fc8181' };
+                var barClass = { 'جيد': 'good', 'متوسط': 'avg', 'ضعيف': 'bad' };
+                var maxOps = Math.max.apply(null, result.distributors.map(function (d) { return d.ops || 0; }));
+
+                var tableHtml = '<thead><tr><th>الموزع</th><th>العمليات</th><th>الأداء</th><th>التقييم</th><th>الملاحظة</th></tr></thead><tbody>' +
+                    result.distributors.map(function (d) {
+                        var pct = maxOps > 0 ? Math.round((d.ops / maxOps) * 100) : 0;
+                        var cls = barClass[d.rating] || 'avg';
+                        var col = ratingColor[d.rating] || '#ed8936';
+                        return '<tr>' +
+                            '<td><strong>' + d.name + '</strong></td>' +
+                            '<td>' + d.ops + '</td>' +
+                            '<td><div class="perf-bar-wrap"><div class="perf-bar ' + cls + '" style="width:' + pct + '%"></div></div></td>' +
+                            '<td><span style="color:' + col + ';font-weight:600;">' + d.rating + '</span></td>' +
+                            '<td style="font-size:12px;color:#718096;">' + d.note + '</td>' +
+                            '</tr>';
+                    }).join('') + '</tbody>';
+
+                document.getElementById('distTable').innerHTML = tableHtml;
+                document.getElementById('distTableWrap').style.display = 'block';
+            }
+
+            document.getElementById('resultsArea').classList.add('show');
+            document.getElementById('aiInfo').style.display = 'none';
+        }
+
+        function copyAdvice() {
+            if (!lastResult) return;
+            var text = 'تقرير تحليلات الأداء — PharmaChain\n=====================================\n';
+            text += lastResult.summary + '\n\n';
+            if (lastResult.immediate && lastResult.immediate.length) {
+                text += '🚨 توصيات فورية:\n';
+                lastResult.immediate.forEach(function (i) { text += '  - ' + i.title + ': ' + i.desc + '\n'; });
+            }
+            if (lastResult.strategic && lastResult.strategic.length) {
+                text += '\n📈 توصيات استراتيجية:\n';
+                lastResult.strategic.forEach(function (i) { text += '  - ' + i.title + ': ' + i.desc + '\n'; });
+            }
+            navigator.clipboard.writeText(text).then(function () { alert('تم نسخ التقرير!'); });
+        }
+    </script>
+</body>
+</html>

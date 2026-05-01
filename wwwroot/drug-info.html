@@ -1,0 +1,619 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaChain — معلومات الدواء</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 32px 16px 60px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 560px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+            .header h1 {
+                font-size: 22px;
+                color: #1a365d;
+                font-weight: 700;
+            }
+
+            .header p {
+                font-size: 13px;
+                color: #718096;
+                margin-top: 4px;
+            }
+
+        .ai-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ebf4ff;
+            border: 1px solid #bee3f8;
+            color: #2b6cb0;
+            font-size: 11px;
+            padding: 3px 12px;
+            border-radius: 20px;
+            margin-top: 8px;
+        }
+
+        .ai-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #2b6cb0;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* Card */
+        .card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 16px;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #2d3748;
+            outline: none;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+            input[type="text"]:focus {
+                border-color: #3182ce;
+            }
+
+        .level-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #4a5568;
+            font-size: 13px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+            .level-btn:hover {
+                background: #f7fafc;
+            }
+
+            .level-btn.selected {
+                background: #2b6cb0;
+                color: white;
+                border-color: #2b6cb0;
+            }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #2b6cb0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+            .btn:hover {
+                background: #2c5282;
+            }
+
+            .btn:disabled {
+                background: #a0aec0;
+                cursor: not-allowed;
+            }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 24px;
+            display: none;
+        }
+
+            .loading.show {
+                display: block;
+            }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #2b6cb0;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        /* Result */
+        .result-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            display: none;
+        }
+
+            .result-card.show {
+                display: block;
+            }
+
+        .drug-hero {
+            background: linear-gradient(135deg, #1a365d, #2b6cb0);
+            padding: 20px;
+            color: white;
+        }
+
+        .drug-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .drug-scientific {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .drug-category {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 3px 12px;
+            font-size: 11px;
+        }
+
+        .drug-sections {
+            padding: 20px;
+        }
+
+        .drug-section {
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-body {
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.7;
+        }
+
+            .section-body ul {
+                padding-right: 18px;
+            }
+
+            .section-body li {
+                margin-bottom: 4px;
+            }
+
+        .warning-box {
+            background: #fffff0;
+            border: 1px solid #f6e05e;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #744210;
+            line-height: 1.6;
+        }
+
+        .interaction-box {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #822727;
+            line-height: 1.6;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 16px 0;
+        }
+
+        .disclaimer {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 11px;
+            color: #718096;
+            text-align: center;
+            margin: 0 20px 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* New search */
+        .new-search {
+            padding: 0 20px 20px;
+        }
+
+        .btn-outline {
+            width: 100%;
+            padding: 10px;
+            background: white;
+            color: #2b6cb0;
+            border: 1px solid #2b6cb0;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+            .btn-outline:hover {
+                background: #ebf4ff;
+            }
+
+        /* Error */
+        .error-msg {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #c53030;
+            margin-top: 10px;
+            display: none;
+        }
+
+            .error-msg.show {
+                display: block;
+            }
+
+        /* Popular drugs */
+        .popular-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .chip {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 12px;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .chip:hover {
+                background: #ebf4ff;
+                border-color: #bee3f8;
+                color: #2b6cb0;
+            }
+
+        /* Back link */
+        .back-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #3182ce;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="header">
+            <h1>💊 معلومات الدواء</h1>
+            <p>اعرف أكثر عن دوائك — بلغة سهلة وواضحة</p>
+            <div class="ai-tag">
+                <div class="ai-dot"></div>
+                مدعوم بالذكاء الاصطناعي
+            </div>
+        </div>
+
+        <!-- Search card -->
+        <div class="card" id="searchCard">
+            <div class="card-header">🔍 ابحث عن دواء</div>
+            <div class="card-body">
+
+                <div class="form-group">
+                    <label class="form-label">اسم الدواء (عربي أو إنجليزي)</label>
+                    <input type="text" id="drugInput"
+                           placeholder="مثال: Paracetamol / باراسيتامول / Amoxicillin"
+                           onkeydown="if(event.key==='Enter') search()">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">مستوى المعلومات</label>
+                    <div class="level-btns">
+                        <button class="level-btn selected" onclick="selectLevel('patient', this)">
+                            👤 للمريض
+                        </button>
+                        <button class="level-btn" onclick="selectLevel('pharmacist', this)">
+                            🏥 للصيدلاني
+                        </button>
+                        <button class="level-btn" onclick="selectLevel('medical', this)">
+                            🩺 طبي تفصيلي
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">أدوية شائعة — اضغط للبحث مباشرة</label>
+                    <div class="popular-chips">
+                        <span class="chip" onclick="quickSearch('Paracetamol')">Paracetamol</span>
+                        <span class="chip" onclick="quickSearch('Amoxicillin')">Amoxicillin</span>
+                        <span class="chip" onclick="quickSearch('Ibuprofen')">Ibuprofen</span>
+                        <span class="chip" onclick="quickSearch('Metformin')">Metformin</span>
+                        <span class="chip" onclick="quickSearch('Omeprazole')">Omeprazole</span>
+                        <span class="chip" onclick="quickSearch('Aspirin')">Aspirin</span>
+                    </div>
+                </div>
+
+                <button class="btn" id="searchBtn" onclick="search()">
+                    🔬 ابحث عن الدواء
+                </button>
+
+                <div class="error-msg" id="errorMsg"></div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div class="loading-text">جاري البحث عن معلومات الدواء...</div>
+        </div>
+
+        <!-- Result -->
+        <div class="result-card" id="resultCard">
+            <div class="drug-hero" id="drugHero"></div>
+            <div class="drug-sections" id="drugSections"></div>
+            <div class="disclaimer">
+                ⚠️ هذه المعلومات للتثقيف الصحي فقط — استشر طبيبك أو صيدلانيك دائماً قبل استخدام أي دواء
+            </div>
+            <div class="new-search">
+                <button class="btn-outline" onclick="newSearch()">🔍 البحث عن دواء آخر</button>
+            </div>
+        </div>
+
+        <div class="back-link" onclick="goBack()">← العودة للخلف</div>
+
+    </div>
+
+    <script>
+        var API = 'http://localhost:7036';
+        var selectedLevel = 'patient';
+
+        function selectLevel(level, btn) {
+            selectedLevel = level;
+            document.querySelectorAll('.level-btn').forEach(function (b) { b.classList.remove('selected'); });
+            btn.classList.add('selected');
+        }
+
+        function quickSearch(name) {
+            document.getElementById('drugInput').value = name;
+            search();
+        }
+
+        function goBack() {
+            // إذا كان المستخدم logged in ارجعه للـ dashboard، وإلا للخلف
+            var token = localStorage.getItem('token');
+            if (token) { window.location.replace(API + '/dashboard.html'); }
+            else { history.back(); }
+        }
+
+        var drugDatabase = {
+            'paracetamol': { name: 'Paracetamol (باراسيتامول)', scientific: 'Acetaminophen', category: 'مسكن ألم وخافض حرارة', use: 'يستخدم لتخفيف الألم الخفيف إلى المتوسط وخفض الحرارة، مثل صداع الرأس وآلام الأسنان والحمى.', dose: 'للبالغين: 500-1000 ملغ كل 4-6 ساعات، الحد الأقصى 4 غرام يومياً. للأطفال: حسب الوزن بإشراف طبيب.', warnings: ['لا تتجاوز الجرعة القصوى تجنباً لتلف الكبد', 'تجنب مع الكحول أو أمراض الكبد', 'راجع الطبيب إذا استمرت الحمى أكثر من 3 أيام'], interactions: 'يتفاعل مع مميعات الدم (Warfarin) — راجع طبيبك إذا كنت تأخذها.', storage: 'يحفظ في درجة حرارة الغرفة (15-25 درجة)، بعيداً عن الرطوبة والضوء المباشر.', sideEffects: ['نادراً: طفح جلدي', 'نادراً جداً: تلف الكبد عند الجرعات الزائدة', 'عموماً آمن جداً عند الاستخدام الصحيح'] },
+            'باراسيتامول': { name: 'باراسيتامول (Paracetamol)', scientific: 'Acetaminophen', category: 'مسكن ألم وخافض حرارة', use: 'يستخدم لتخفيف الألم الخفيف إلى المتوسط وخفض الحرارة.', dose: 'للبالغين: 500-1000 ملغ كل 4-6 ساعات. الحد الأقصى 4 غرام يومياً.', warnings: ['لا تتجاوز الجرعة القصوى', 'تجنب مع أمراض الكبد', 'راجع الطبيب إذا استمرت الحمى أكثر من 3 أيام'], interactions: 'يتفاعل مع مميعات الدم — استشر طبيبك.', storage: 'يحفظ في درجة حرارة الغرفة بعيداً عن الرطوبة.', sideEffects: ['نادراً: طفح جلدي', 'نادراً جداً: تلف الكبد عند الجرعات الزائدة'] },
+            'amoxicillin': { name: 'Amoxicillin (أموكسيسيلين)', scientific: 'Amoxicillin Trihydrate', category: 'مضاد حيوي — بنسيلين', use: 'يستخدم لعلاج العدوى البكتيرية مثل التهاب الحلق والأذن والجيوب الأنفية والجهاز البولي والالتهاب الرئوي.', dose: 'للبالغين: 250-500 ملغ 3 مرات يومياً. المدة عادة 7-10 أيام.', warnings: ['أخبر طبيبك إذا كنت تعاني من حساسية للبنسيلين', 'أكمل الجرعة كاملة حتى لو تحسنت', 'قد يسبب إسهالاً'], interactions: 'يضعف فعالية حبوب منع الحمل — استخدمي وسيلة حماية إضافية.', storage: 'الكبسولات: درجة حرارة الغرفة. الشراب: في الثلاجة بعد التحضير.', sideEffects: ['إسهال وغثيان شائعان', 'طفح جلدي', 'نادراً: حساسية شديدة'] },
+            'أموكسيسيلين': { name: 'أموكسيسيلين (Amoxicillin)', scientific: 'Amoxicillin Trihydrate', category: 'مضاد حيوي', use: 'يعالج العدوى البكتيرية في الحلق والأذن والجيوب الأنفية والجهاز البولي.', dose: 'للبالغين: 250-500 ملغ 3 مرات يومياً لمدة 7-10 أيام.', warnings: ['أخبر طبيبك عن حساسية البنسيلين', 'أكمل الجرعة كاملة', 'قد يسبب إسهالاً'], interactions: 'يضعف فعالية حبوب منع الحمل.', storage: 'الكبسولات في درجة حرارة الغرفة، الشراب في الثلاجة.', sideEffects: ['إسهال وغثيان', 'طفح جلدي', 'نادراً: حساسية شديدة'] },
+            'ibuprofen': { name: 'Ibuprofen (إيبوبروفين)', scientific: 'Ibuprofen', category: 'مضاد التهاب لاستيرويدي (NSAID)', use: 'يخفف الألم والالتهاب والحمى. فعال لآلام الدورة الشهرية والمفاصل والصداع والإصابات.', dose: 'للبالغين: 200-400 ملغ كل 4-6 ساعات مع الطعام. الحد الأقصى 1200 ملغ يومياً بدون وصفة.', warnings: ['تناوله دائماً مع الطعام لحماية المعدة', 'تجنب مع قرحة المعدة أو أمراض الكلى', 'تجنب في الثلث الثالث من الحمل'], interactions: 'يتفاعل مع مميعات الدم والأسبرين وأدوية ضغط الدم.', storage: 'يحفظ في درجة حرارة الغرفة بعيداً عن الرطوبة.', sideEffects: ['آلام المعدة شائعة', 'دوار', 'نادراً: مشاكل في الكلى أو القلب'] },
+            'إيبوبروفين': { name: 'إيبوبروفين (Ibuprofen)', scientific: 'Ibuprofen', category: 'مضاد التهاب', use: 'يخفف الألم والالتهاب والحمى.', dose: '200-400 ملغ كل 4-6 ساعات مع الطعام.', warnings: ['تناوله مع الطعام', 'تجنب مع قرحة المعدة', 'تجنب في الحمل'], interactions: 'يتفاعل مع مميعات الدم وأدوية ضغط الدم.', storage: 'درجة حرارة الغرفة بعيداً عن الرطوبة.', sideEffects: ['آلام المعدة', 'دوار'] },
+            'metformin': { name: 'Metformin (ميتفورمين)', scientific: 'Metformin Hydrochloride', category: 'دواء السكري النوع الثاني', use: 'يستخدم لخفض سكر الدم في مرضى السكري النوع الثاني، غالباً مع النظام الغذائي والرياضة.', dose: 'يبدأ عادة بـ 500 ملغ مرة أو مرتين يومياً مع الطعام، وتزاد تدريجياً بإشراف الطبيب.', warnings: ['لا تأخذه إذا كنت تعاني من أمراض الكلى الشديدة', 'أوقفه قبل أي عملية جراحية', 'أخبر طبيبك قبل التصوير بالصبغة'], interactions: 'يتفاعل مع الكحول وبعض أدوية الكلى — راجع طبيبك.', storage: 'يحفظ في درجة حرارة الغرفة بعيداً عن الرطوبة.', sideEffects: ['غثيان وإسهال شائعان في البداية وتتحسن مع الوقت', 'فقدان الشهية', 'نادراً: الحماض اللاكتيكي'] },
+            'omeprazole': { name: 'Omeprazole (أوميبرازول)', scientific: 'Omeprazole', category: 'مثبط مضخة البروتون — علاج حموضة المعدة', use: 'يعالج حرقة المعدة والقرحة والارتجاع الحمضي عن طريق تقليل إنتاج حمض المعدة.', dose: 'عادة 20 ملغ مرة واحدة يومياً قبل الإفطار بـ 30-60 دقيقة.', warnings: ['الاستخدام طويل الأمد قد يسبب نقص المغنيسيوم وفيتامين B12', 'راجع طبيبك إذا استمرت الأعراض', 'تجنب إذا كنت تأخذ Clopidogrel'], interactions: 'يؤثر على امتصاص بعض الأدوية مثل Clopidogrel وKetoconazole.', storage: 'يحفظ في درجة حرارة الغرفة بعيداً عن الرطوبة والحرارة.', sideEffects: ['صداع وغثيان', 'إسهال أو إمساك', 'نادراً: طفح جلدي'] },
+            'aspirin': { name: 'Aspirin (أسبرين)', scientific: 'Acetylsalicylic Acid', category: 'مسكن ألم ومضاد التهاب ومميع دم', use: 'يستخدم لتسكين الألم وخفض الحرارة، وبجرعات منخفضة لمنع جلطات الدم.', dose: 'للألم: 325-650 ملغ كل 4-6 ساعات. للقلب: 75-100 ملغ يومياً بوصفة طبية.', warnings: ['لا يُعطى للأطفال أقل من 16 عاماً (خطر متلازمة راي)', 'تجنب مع قرحة المعدة', 'توقف عنه قبل الجراحة بأسبوع'], interactions: 'يتفاعل مع مميعات الدم الأخرى والإيبوبروفين وأدوية السكري.', storage: 'يحفظ في درجة حرارة الغرفة جافاً.', sideEffects: ['تهيج المعدة', 'نزيف', 'طنين في الأذن بالجرعات العالية'] },
+            'augmentin': { name: 'Augmentin (أوغمنتين)', scientific: 'Amoxicillin + Clavulanic Acid', category: 'مضاد حيوي مركب', use: 'مضاد حيوي قوي يعالج العدوى البكتيرية المقاومة مثل التهابات الجهاز التنفسي والأذن والجلد والجهاز البولي.', dose: 'للبالغين: 625 ملغ كل 8 ساعات أو 1 غرام كل 12 ساعة مع الطعام.', warnings: ['أخبر طبيبك عن حساسية البنسيلين', 'أكمل الجرعة الكاملة', 'قد يسبب إسهالاً'], interactions: 'يضعف فعالية حبوب منع الحمل — استخدمي وسيلة حماية إضافية.', storage: 'الأقراص في درجة حرارة الغرفة، الشراب في الثلاجة.', sideEffects: ['إسهال وغثيان شائعان', 'طفح جلدي', 'ألم في المعدة'] }
+        };
+
+        async function search() {
+            var name = document.getElementById('drugInput').value.trim();
+            if (!name) { showError('يرجى كتابة اسم الدواء'); return; }
+
+            hideError();
+            document.getElementById('searchBtn').disabled = true;
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('resultCard').classList.remove('show');
+
+            await new Promise(function (r) { setTimeout(r, 800 + Math.random() * 600); });
+
+            try {
+                var key = name.toLowerCase().trim();
+                var result = drugDatabase[key];
+
+                // بحث جزئي إذا ما لقي
+                if (!result) {
+                    for (var k in drugDatabase) {
+                        if (k.includes(key) || key.includes(k)) {
+                            result = drugDatabase[k];
+                            break;
+                        }
+                    }
+                }
+
+                if (!result) {
+                    showError('لم أتعرف على هذا الدواء — تأكد من الاسم أو جرب اسماً آخر. الأدوية المتاحة: Paracetamol, Amoxicillin, Ibuprofen, Metformin, Omeprazole, Aspirin, Augmentin');
+                    return;
+                }
+
+                renderResult(result);
+            } catch (e) {
+                showError('حدث خطأ، يرجى المحاولة مجدداً.');
+            } finally {
+                document.getElementById('searchBtn').disabled = false;
+                document.getElementById('loading').classList.remove('show');
+            }
+        }
+
+        function renderResult(r) {
+            // Hero
+            document.getElementById('drugHero').innerHTML =
+                '<div class="drug-name">' + r.name + '</div>' +
+                '<div class="drug-scientific">' + (r.scientific || '') + '</div>' +
+                '<span class="drug-category">' + (r.category || '') + '</span>';
+
+            // Sections
+            var html = '';
+
+            if (r.use) {
+                html += section('🎯 الاستخدام الرئيسي', '<p>' + r.use + '</p>');
+            }
+
+            if (r.dose) {
+                html += section('💊 الجرعة', '<p>' + r.dose + '</p>');
+            }
+
+            if (r.warnings && r.warnings.length) {
+                html += '<div class="drug-section"><div class="section-title">⚠️ تحذيرات مهمة</div>' +
+                    '<div class="warning-box"><ul>' +
+                    r.warnings.map(function (w) { return '<li>' + w + '</li>'; }).join('') +
+                    '</ul></div></div>';
+            }
+
+            if (r.sideEffects && r.sideEffects.length) {
+                html += section('😟 الأعراض الجانبية الشائعة',
+                    '<ul>' + r.sideEffects.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ul>');
+            }
+
+            if (r.interactions) {
+                html += '<div class="drug-section"><div class="section-title">🔄 التفاعلات الدوائية</div>' +
+                    '<div class="interaction-box">' + r.interactions + '</div></div>';
+            }
+
+            if (r.storage) {
+                html += section('📦 التخزين', '<p>' + r.storage + '</p>');
+            }
+
+            document.getElementById('drugSections').innerHTML = html;
+            document.getElementById('resultCard').classList.add('show');
+        }
+
+        function section(title, body) {
+            return '<div class="drug-section">' +
+                '<div class="section-title">' + title + '</div>' +
+                '<div class="section-body">' + body + '</div>' +
+                '</div>';
+        }
+
+        function newSearch() {
+            document.getElementById('resultCard').classList.remove('show');
+            document.getElementById('drugInput').value = '';
+            document.getElementById('drugInput').focus();
+        }
+
+        function showError(msg) {
+            var el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('errorMsg').classList.remove('show');
+        }
+    </script>
+</body>
+</html>

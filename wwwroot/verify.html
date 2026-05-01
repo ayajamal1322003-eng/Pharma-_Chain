@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaChain — التحقق من الدواء</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 16px 60px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .header-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .header-logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #1a365d, #2b6cb0);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #1a365d;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #718096;
+            margin-top: 4px;
+        }
+
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #276749;
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 620px;
+        }
+
+        /* ── QR Alert Banner ── */
+        .qr-alert {
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            display: none;
+            border: 1px solid;
+        }
+
+            .qr-alert.show {
+                display: block;
+            }
+
+            .qr-alert.checking {
+                background: #ebf4ff;
+                border-color: #90cdf4;
+                color: #1a365d;
+            }
+
+            .qr-alert.valid {
+                background: #f0fff4;
+                border-color: #9ae6b4;
+                color: #22543d;
+            }
+
+            .qr-alert.invalid {
+                background: #fff5f5;
+                border-color: #fc8181;
+                color: #742a2a;
+            }
+
+            .qr-alert.warning {
+                background: #fffbeb;
+                border-color: #f6e05e;
+                color: #744210;
+            }
+
+        .qr-alert-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .qr-alert-code {
+            font-family: monospace;
+            font-size: 11px;
+            background: rgba(0,0,0,0.06);
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .search-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .search-card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            background: linear-gradient(135deg, #1a365d, #2b6cb0);
+            color: white;
+        }
+
+        .search-card-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .search-card-sub {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        .search-card-body {
+            padding: 20px;
+        }
+
+        .search-tabs {
+            display: flex;
+            gap: 4px;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 16px;
+        }
+
+        .search-tab {
+            flex: 1;
+            padding: 8px;
+            border-radius: 7px;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            color: #718096;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.2s;
+        }
+
+            .search-tab.active {
+                background: white;
+                color: #2b6cb0;
+                font-weight: 600;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            }
+
+        .name-search-wrap {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 11px 16px 11px 110px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #2d3748;
+            outline: none;
+            font-family: 'Segoe UI', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+            .search-input:focus {
+                border-color: #3182ce;
+                box-shadow: 0 0 0 3px rgba(49,130,206,0.1);
+            }
+
+        .search-btn {
+            position: absolute;
+            left: 6px;
+            top: 6px;
+            bottom: 6px;
+            padding: 0 16px;
+            background: #2b6cb0;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+            white-space: nowrap;
+        }
+
+            .search-btn:hover {
+                background: #2c5282;
+            }
+
+        .drug-select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #2d3748;
+            outline: none;
+            background: white;
+            font-family: 'Segoe UI', sans-serif;
+            cursor: pointer;
+        }
+
+            .drug-select:focus {
+                border-color: #3182ce;
+            }
+
+        .select-verify-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 11px;
+            background: #2b6cb0;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+            .select-verify-btn:hover {
+                background: #2c5282;
+            }
+
+        .search-hint {
+            font-size: 11px;
+            color: #a0aec0;
+            margin-top: 8px;
+        }
+
+        .autocomplete {
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            left: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            z-index: 100;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+            .autocomplete.show {
+                display: block;
+            }
+
+        .autocomplete-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #2d3748;
+            border-bottom: 1px solid #f0f4f8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+            .autocomplete-item:last-child {
+                border-bottom: none;
+            }
+
+            .autocomplete-item:hover {
+                background: #ebf4ff;
+            }
+
+        .autocomplete-name {
+            font-weight: 500;
+        }
+
+        .autocomplete-meta {
+            font-size: 11px;
+            color: #a0aec0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 32px;
+            color: #718096;
+            display: none;
+        }
+
+            .loading.show {
+                display: block;
+            }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #2b6cb0;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            display: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            animation: fadeIn 0.3s ease;
+        }
+
+            .result-card.show {
+                display: block;
+            }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-hero {
+            padding: 24px;
+            text-align: center;
+        }
+
+            .result-hero.authentic {
+                background: linear-gradient(135deg, #f0fff4, #c6f6d5);
+            }
+
+            .result-hero.fake {
+                background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            }
+
+            .result-hero.expired {
+                background: linear-gradient(135deg, #fffbeb, #fefcbf);
+            }
+
+        .result-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .result-hero.authentic .result-title {
+            color: #276749;
+        }
+
+        .result-hero.fake .result-title {
+            color: #822727;
+        }
+
+        .result-hero.expired .result-title {
+            color: #744210;
+        }
+
+        .result-sub {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* ── QR Security Badge inside result ── */
+        .qr-security-strip {
+            margin: 0 20px 16px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            line-height: 1.7;
+            border: 1px solid;
+        }
+
+            .qr-security-strip.sig-ok {
+                background: #f0fff4;
+                border-color: #9ae6b4;
+                color: #22543d;
+            }
+
+            .qr-security-strip.sig-bad {
+                background: #fff5f5;
+                border-color: #fc8181;
+                color: #742a2a;
+            }
+
+            .qr-security-strip.sig-warn {
+                background: #fffbeb;
+                border-color: #f6e05e;
+                color: #744210;
+            }
+
+            .qr-security-strip.sig-none {
+                background: #f7fafc;
+                border-color: #e2e8f0;
+                color: #718096;
+            }
+
+        .sig-title {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .result-body {
+            padding: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 12px 14px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-label {
+            font-size: 10px;
+            color: #a0aec0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .timeline-section {
+            margin-top: 4px;
+        }
+
+        .timeline-header {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timeline-count {
+            background: #ebf4ff;
+            color: #2b6cb0;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .timeline-items {
+            position: relative;
+            padding-right: 20px;
+        }
+
+            .timeline-items::before {
+                content: '';
+                position: absolute;
+                right: 4px;
+                top: 8px;
+                bottom: 8px;
+                width: 2px;
+                background: linear-gradient(to bottom, #3182ce, #48bb78);
+                border-radius: 1px;
+            }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 16px;
+        }
+
+            .timeline-item:last-child {
+                padding-bottom: 0;
+            }
+
+        .timeline-dot {
+            position: absolute;
+            right: -16px;
+            top: 4px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #3182ce;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #3182ce;
+        }
+
+        .timeline-item:last-child .timeline-dot {
+            background: #48bb78;
+            box-shadow: 0 0 0 2px #48bb78;
+        }
+
+        .timeline-step {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 3px;
+        }
+
+        .timeline-date {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .timeline-hash {
+            font-family: monospace;
+            font-size: 10px;
+            color: #a0aec0;
+            margin-top: 3px;
+            word-break: break-all;
+        }
+
+        .ai-section {
+            padding: 16px 20px;
+            border-top: 1px solid #e2e8f0;
+            background: #fafbfc;
+        }
+
+        .ai-section-title {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .ai-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .ai-btn {
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .ai-btn-primary {
+            background: #2b6cb0;
+            color: white;
+        }
+
+            .ai-btn-primary:hover {
+                background: #2c5282;
+            }
+
+        .ai-btn-outline {
+            background: white;
+            color: #2b6cb0;
+            border: 1px solid #2b6cb0;
+        }
+
+            .ai-btn-outline:hover {
+                background: #ebf4ff;
+            }
+
+        .new-search-btn {
+            padding: 11px;
+            background: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 16px 20px 20px;
+            width: calc(100% - 40px);
+            display: block;
+        }
+
+            .new-search-btn:hover {
+                background: #f7fafc;
+            }
+
+        .back-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #3182ce;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header" id="pageHeader">
+        <div class="header-logo">
+            <div class="header-logo-icon">⛓️</div>
+            <h1>PharmaChain</h1>
+        </div>
+        <p>تحقق من أصالة دوائك في ثوانٍ</p>
+        <div class="security-badge">🔒 مؤمّن بتقنية Blockchain</div>
+    </div>
+
+    <div class="container">
+        <!-- QR Alert: يظهر فقط إذا جاء الطلب من QR Code -->
+        <div class="qr-alert checking" id="qrAlert">
+            <div class="qr-alert-title">🔍 جارٍ التحقق من توقيع QR Code...</div>
+            <div>يتم التحقق من صحة الـ Signature والتاريخ قبل عرض النتيجة</div>
+        </div>
+
+        <div class="search-card" id="searchCard">
+            <div class="search-card-header">
+                <div class="search-card-title">🔍 التحقق من الدواء</div>
+                <div class="search-card-sub">ابحث باسم الدواء أو اختره من القائمة أو أدخل رقمه</div>
+            </div>
+            <div class="search-card-body">
+                <div class="search-tabs">
+                    <button class="search-tab active" onclick="switchTab('name')">🔤 بحث بالاسم</button>
+                    <button class="search-tab" onclick="switchTab('list')">📋 اختيار من القائمة</button>
+                    <button class="search-tab" onclick="switchTab('id')">🔢 رقم الدواء</button>
+                </div>
+                <div id="tabName">
+                    <div class="name-search-wrap">
+                        <input type="text" class="search-input" id="nameInput" placeholder="اكتب اسم الدواء... مثال: Panadol" oninput="onNameSearch()" onkeydown="if(event.key==='Enter') searchByName()" autocomplete="off">
+                        <button class="search-btn" onclick="searchByName()">تحقق</button>
+                        <div class="autocomplete" id="autocomplete"></div>
+                    </div>
+                    <div class="search-hint">اكتب اسم الدواء وستظهر اقتراحات تلقائية</div>
+                </div>
+                <div id="tabList" style="display:none">
+                    <select class="drug-select" id="drugSelect"><option value="">⏳ جاري تحميل الأدوية...</option></select>
+                    <button class="select-verify-btn" onclick="verifyFromSelect()">✅ تحقق من الدواء المحدد</button>
+                </div>
+                <div id="tabId" style="display:none">
+                    <div class="name-search-wrap">
+                        <input type="number" class="search-input" id="idInput" placeholder="أدخل رقم الدواء (ID)" min="1" onkeydown="if(event.key==='Enter') verifyById()">
+                        <button class="search-btn" onclick="verifyById()">تحقق</button>
+                    </div>
+                    <div class="search-hint">رقم الدواء موجود على الملصق أو الـ QR Code</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading"><div class="spinner"></div><div>جاري التحقق من قاعدة بيانات Blockchain...</div></div>
+
+        <div class="result-card" id="resultCard">
+            <div class="result-hero" id="resultHero"></div>
+
+            <!-- شريط نتيجة الـ QR Signature — يظهر فقط إذا جاء من QR -->
+            <div class="qr-security-strip sig-none" id="qrSecurityStrip" style="display:none">
+                <div class="sig-title" id="qrSigTitle"></div>
+                <div id="qrSigDetail"></div>
+            </div>
+
+            <div class="result-body" id="resultBody"></div>
+            <div class="ai-section" id="aiSection" style="display:none">
+                <div class="ai-section-title">هل تريد معرفة أكثر عن دوائك؟</div>
+                <div class="ai-btns">
+                    <a class="ai-btn ai-btn-primary" id="chatLink" href="patient-chat.html">🤖 اسأل مساعدنا الذكي</a>
+                    <a class="ai-btn ai-btn-outline" href="drug-info.html">💊 معلومات عن الدواء</a>
+                </div>
+            </div>
+            <button class="new-search-btn" onclick="newSearch()">🔍 تحقق من دواء آخر</button>
+        </div>
+
+        <div class="back-link" onclick="goBack()">← العودة للوحة التحكم</div>
+    </div>
+
+    <script>
+        var API = 'http://localhost:7036';
+        var allDrugs = [];
+        var activeTab = 'name';
+        var qrSigResult = null; // نتيجة التحقق من الـ Signature
+
+        // ────────────────────────────────────────────
+        // QR SIGNATURE VERIFICATION
+        // يُشغَّل أولاً إذا جاءت المعاملات في الـ URL
+        // ────────────────────────────────────────────
+        function verifyQrSignature(id, prod, ts, sig) {
+            var alert = document.getElementById('qrAlert');
+            alert.className = 'qr-alert checking show';
+            alert.innerHTML = '<div class="qr-alert-title">🔍 جارٍ التحقق من توقيع QR Code...</div><div>يتم التحقق من صحة الـ HMAC-SHA256 Signature</div>';
+
+            var url = API + '/api/qr/verify-signature?id=' + encodeURIComponent(id)
+                + '&prod=' + encodeURIComponent(prod)
+                + '&ts=' + encodeURIComponent(ts)
+                + '&sig=' + encodeURIComponent(sig);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            var token = localStorage.getItem('token');
+            if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    try {
+                        qrSigResult = JSON.parse(xhr.responseText);
+                    } catch (e) {
+                        qrSigResult = { isValid: false, attackType: 'PARSE_ERROR', message: 'خطأ في قراءة استجابة السيرفر' };
+                    }
+                } else {
+                    qrSigResult = { isValid: false, attackType: 'SERVER_ERROR', message: 'تعذر الاتصال بالسيرفر للتحقق من الـ Signature' };
+                }
+                renderQrAlert(qrSigResult);
+                // بعد التحقق من الـ Signature — نجلب بيانات الدواء
+                verifyDrug(parseInt(id));
+            };
+
+            xhr.onerror = function () {
+                qrSigResult = { isValid: false, attackType: 'NETWORK_ERROR', message: 'خطأ في الشبكة — تعذر الوصول للسيرفر' };
+                renderQrAlert(qrSigResult);
+                verifyDrug(parseInt(id));
+            };
+
+            xhr.send();
+        }
+
+        // خريطة رموز الهجوم → نص عربي
+        var attackLabels = {
+            'SIGNATURE_MISMATCH': '⚠️ تبديل ملصق — هذا الـ QR ينتمي لدواء مختلف',
+            'DATE_MISMATCH': '⚠️ تلاعب بالتاريخ — تاريخ الإنتاج لا يطابق السجل',
+            'DRUG_NOT_FOUND': '❌ دواء وهمي — الرقم غير موجود في النظام',
+            'QR_EXPIRED': '⏰ QR منتهي الصلاحية — مضى عليه أكثر من سنة',
+            'DELAY_DETECTED': '⚠️ تأخير مشبوه — فجوة زمنية كبيرة في السلسلة',
+            'SERVER_ERROR': '🔴 خطأ في السيرفر',
+            'NETWORK_ERROR': '🔴 خطأ في الشبكة',
+            'PARSE_ERROR': '🔴 خطأ في البيانات'
+        };
+
+        function renderQrAlert(result) {
+            var alert = document.getElementById('qrAlert');
+            if (result.isValid) {
+                alert.className = 'qr-alert valid show';
+                alert.innerHTML = '<div class="qr-alert-title">✅ QR Code موثق وسليم</div>'
+                    + '<div>الـ Signature صحيحة — الدواء لم يتعرض للتلاعب</div>'
+                    + '<div class="qr-alert-code">HMAC-SHA256 ✓ | تاريخ الإنتاج ✓ | السلسلة سليمة ✓</div>';
+            } else {
+                var label = attackLabels[result.attackType] || ('❌ ' + (result.attackType || 'خطأ غير معروف'));
+                var isCritical = ['DRUG_NOT_FOUND', 'SIGNATURE_MISMATCH', 'DATE_MISMATCH'].indexOf(result.attackType) > -1;
+                alert.className = 'qr-alert ' + (isCritical ? 'invalid' : 'warning') + ' show';
+                alert.innerHTML = '<div class="qr-alert-title">' + label + '</div>'
+                    + '<div>' + (result.message || 'تم رصد محاولة تلاعب — يرجى التواصل مع الصيدلاني') + '</div>'
+                    + '<div class="qr-alert-code">كود الهجوم: ' + (result.attackType || 'UNKNOWN') + '</div>';
+            }
+        }
+
+        function renderQrSecurityStrip(result) {
+            var strip = document.getElementById('qrSecurityStrip');
+            var title = document.getElementById('qrSigTitle');
+            var detail = document.getElementById('qrSigDetail');
+            strip.style.display = 'block';
+
+            if (result.isValid) {
+                strip.className = 'qr-security-strip sig-ok';
+                title.textContent = '🔐 التحقق من QR Signature: سليم';
+                detail.innerHTML = 'الـ HMAC-SHA256 Signature صحيحة ✓<br>تاريخ الإنتاج متطابق ✓<br>الـ QR لم يتعرض لأي تلاعب ✓';
+            } else {
+                var isCritical = ['DRUG_NOT_FOUND', 'SIGNATURE_MISMATCH', 'DATE_MISMATCH'].indexOf(result.attackType) > -1;
+                strip.className = 'qr-security-strip ' + (isCritical ? 'sig-bad' : 'sig-warn');
+                var label = attackLabels[result.attackType] || result.attackType;
+                title.textContent = '🚨 تحذير أمني: ' + label;
+                detail.innerHTML = (result.message || 'تم رصد تلاعب محتمل في هذا الـ QR Code')
+                    + '<br><strong>كود الهجوم: ' + (result.attackType || 'UNKNOWN') + '</strong>';
+            }
+        }
+
+        // ────────────────────────────────────────────
+        // باقي الدوال (كما هي + دعم الـ token)
+        // ────────────────────────────────────────────
+        function goBack() {
+            var token = localStorage.getItem('token');
+            if (token) { window.location.replace(API + '/dashboard.html'); }
+            else { history.back(); }
+        }
+
+        function loadAllDrugs() {
+            var token = localStorage.getItem('token');
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API + '/api/drugs', true);
+            if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                if (xhr.status !== 200) return;
+                var response = JSON.parse(xhr.responseText);
+                allDrugs = Array.isArray(response) ? response : (response.drugs || []);
+                var sel = document.getElementById('drugSelect');
+                sel.innerHTML = '<option value="">-- اختر دواء --</option>';
+                allDrugs.forEach(function (d) {
+                    var expired = new Date(d.expiryDate) < new Date();
+                    var opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = (expired ? 'منتهي - ' : 'صالح - ') + d.name + ' — ' + d.manufacturer;
+                    sel.appendChild(opt);
+                });
+            };
+            xhr.send();
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+            document.getElementById('tabName').style.display = tab === 'name' ? 'block' : 'none';
+            document.getElementById('tabList').style.display = tab === 'list' ? 'block' : 'none';
+            document.getElementById('tabId').style.display = tab === 'id' ? 'block' : 'none';
+            document.querySelectorAll('.search-tab').forEach(function (b, i) {
+                b.classList.toggle('active', ['name', 'list', 'id'][i] === tab);
+            });
+            document.getElementById('autocomplete').classList.remove('show');
+        }
+
+        function onNameSearch() {
+            var val = document.getElementById('nameInput').value.trim().toLowerCase();
+            var ac = document.getElementById('autocomplete');
+            if (!val || val.length < 2 || allDrugs.length === 0) { ac.classList.remove('show'); return; }
+            var matches = allDrugs.filter(function (d) {
+                return d.name.toLowerCase().includes(val) || (d.manufacturer || '').toLowerCase().includes(val);
+            }).slice(0, 6);
+            if (matches.length === 0) { ac.classList.remove('show'); return; }
+            var now = new Date();
+            ac.innerHTML = matches.map(function (d) {
+                var expired = new Date(d.expiryDate) < now;
+                return '<div class="autocomplete-item" onclick="selectDrug(' + d.id + ',\'' + d.name.replace(/'/g, '') + '\')">'
+                    + '<div><div class="autocomplete-name">' + (expired ? 'منتهي ' : 'صالح ') + d.name + '</div>'
+                    + '<div class="autocomplete-meta">' + d.manufacturer + ' · رقم ' + d.id + '</div></div>'
+                    + '<div class="autocomplete-meta">' + new Date(d.expiryDate).toLocaleDateString('ar-JO') + '</div></div>';
+            }).join('');
+            ac.classList.add('show');
+        }
+
+        function selectDrug(id, name) {
+            document.getElementById('nameInput').value = name;
+            document.getElementById('autocomplete').classList.remove('show');
+            verifyDrug(id);
+        }
+
+        function searchByName() {
+            var val = document.getElementById('nameInput').value.trim().toLowerCase();
+            if (!val) return;
+            document.getElementById('autocomplete').classList.remove('show');
+            var match = allDrugs.find(function (d) { return d.name.toLowerCase().includes(val); });
+            if (match) { verifyDrug(match.id); }
+            else { showNotFound('لم يتم العثور على دواء بهذا الاسم'); }
+        }
+
+        function verifyFromSelect() {
+            var id = document.getElementById('drugSelect').value;
+            if (!id) return;
+            verifyDrug(parseInt(id));
+        }
+
+        function verifyById() {
+            var id = document.getElementById('idInput').value.trim();
+            if (!id) return;
+            verifyDrug(parseInt(id));
+        }
+
+        function verifyDrug(id) {
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('resultCard').classList.remove('show');
+
+            var token = localStorage.getItem('token');
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API + '/api/verify/' + id, true);
+            if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+
+            xhr.onload = function () {
+                document.getElementById('loading').classList.remove('show');
+                if (xhr.status !== 200) { showNotFound('تعذر الاتصال بالسيرفر'); return; }
+                renderResult(JSON.parse(xhr.responseText), id);
+            };
+            xhr.onerror = function () {
+                document.getElementById('loading').classList.remove('show');
+                showNotFound('تعذر الاتصال بالسيرفر');
+            };
+            xhr.send();
+        }
+
+        function renderResult(data, id) {
+            var hero = document.getElementById('resultHero');
+            var body = document.getElementById('resultBody');
+            var roleMap = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون' };
+
+            if (!data.authentic) {
+                hero.className = 'result-hero fake';
+                hero.innerHTML = '<div class="result-icon">✗</div><div class="result-title">دواء غير موثق</div><div class="result-sub">هذا الدواء غير مسجل في نظام PharmaChain</div>';
+                body.innerHTML = '<div style="text-align:center;padding:20px;color:#718096;font-size:13px;">تحقق من رقم الدواء أو تواصل مع الصيدلاني</div>';
+                document.getElementById('aiSection').style.display = 'none';
+            } else {
+                var expiry = new Date(data.expiryDate);
+                if (data.isExpired) {
+                    hero.className = 'result-hero expired';
+                    hero.innerHTML = '<div class="result-icon">⚠️</div><div class="result-title">دواء منتهي الصلاحية</div><div class="result-sub">الدواء مسجل لكن تجاوز تاريخ الانتهاء</div>';
+                } else {
+                    hero.className = 'result-hero authentic';
+                    hero.innerHTML = '<div class="result-icon">✓</div><div class="result-title">دواء أصلي موثق</div><div class="result-sub">تم التحقق من الأصالة عبر Blockchain</div>';
+                }
+
+                var html = '<div class="info-grid">'
+                    + '<div class="info-item"><div class="info-label">اسم الدواء</div><div class="info-value">' + data.name + '</div></div>'
+                    + '<div class="info-item"><div class="info-label">الشركة المصنعة</div><div class="info-value">' + data.manufacturer + '</div></div>'
+                    + '<div class="info-item"><div class="info-label">تاريخ الانتهاء</div><div class="info-value">' + expiry.toLocaleDateString('ar-JO') + '</div></div>'
+                    + '<div class="info-item"><div class="info-label">الحالة</div><div class="info-value">' + data.status + '</div></div>'
+                    + '</div>';
+
+                if (data.trackingHistory && data.trackingHistory.length > 0) {
+                    html += '<div class="timeline-section"><div class="timeline-header">⛓️ مسار الدواء عبر Blockchain <span class="timeline-count">' + data.trackingHistory.length + ' نقلة</span></div><div class="timeline-items">';
+                    data.trackingHistory.forEach(function (t) {
+                        html += '<div class="timeline-item"><div class="timeline-dot"></div><div>'
+                            + '<div class="timeline-step">' + (roleMap[t.fromRole] || t.fromRole) + ' ← ' + (roleMap[t.toRole] || t.toRole) + '</div>'
+                            + '<div class="timeline-date">' + new Date(t.timestamp).toLocaleString('ar-JO') + '</div>'
+                            + '<div class="timeline-hash">Block Hash: ' + t.blockHash + '</div>'
+                            + '</div></div>';
+                    });
+                    html += '</div></div>';
+                } else {
+                    html += '<div style="text-align:center;color:#718096;font-size:13px;padding:16px 0;">لا توجد عمليات نقل مسجلة بعد</div>';
+                }
+
+                body.innerHTML = html;
+                document.getElementById('chatLink').href = 'patient-chat.html?id=' + id;
+                document.getElementById('aiSection').style.display = 'block';
+            }
+
+            // إذا كان فيه نتيجة QR Signature — اعرضها داخل الكارد
+            if (qrSigResult !== null) {
+                renderQrSecurityStrip(qrSigResult);
+            }
+
+            document.getElementById('resultCard').classList.add('show');
+            document.getElementById('pageHeader').style.display = 'none';
+            document.getElementById('searchCard').style.display = 'none';
+        }
+
+        function showNotFound(msg) {
+            document.getElementById('resultHero').className = 'result-hero fake';
+            document.getElementById('resultHero').innerHTML = '<div class="result-icon">🔍</div><div class="result-title">لم يتم العثور</div><div class="result-sub">' + msg + '</div>';
+            document.getElementById('resultBody').innerHTML = '';
+            document.getElementById('aiSection').style.display = 'none';
+            document.getElementById('resultCard').classList.add('show');
+            document.getElementById('pageHeader').style.display = 'none';
+            document.getElementById('searchCard').style.display = 'none';
+        }
+
+        function newSearch() {
+            document.getElementById('resultCard').classList.remove('show');
+            document.getElementById('pageHeader').style.display = 'block';
+            document.getElementById('searchCard').style.display = 'block';
+            document.getElementById('qrAlert').classList.remove('show');
+            document.getElementById('nameInput').value = '';
+            document.getElementById('idInput').value = '';
+            document.getElementById('drugSelect').value = '';
+            qrSigResult = null;
+            switchTab('name');
+        }
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.name-search-wrap'))
+                document.getElementById('autocomplete').classList.remove('show');
+        });
+
+        // ────────────────────────────────────────────
+        // INIT — تحقق من الـ URL Parameters
+        // ────────────────────────────────────────────
+        loadAllDrugs();
+
+        var params = new URLSearchParams(window.location.search);
+        var idFromUrl = params.get('id');
+        var prodFromUrl = params.get('prod');
+        var tsFromUrl = params.get('ts');
+        var sigFromUrl = params.get('sig');
+
+        if (idFromUrl) {
+            switchTab('id');
+            document.getElementById('idInput').value = idFromUrl;
+
+            // إذا في sig → جاء من QR Code → تحقق من الـ Signature أولاً
+            if (sigFromUrl && prodFromUrl && tsFromUrl) {
+                setTimeout(function () {
+                    verifyQrSignature(idFromUrl, prodFromUrl, tsFromUrl, sigFromUrl);
+                }, 200);
+            } else {
+                // بحث عادي بالـ id بدون Signature
+                document.getElementById('qrAlert').classList.remove('show');
+                setTimeout(function () { verifyDrug(parseInt(idFromUrl)); }, 300);
+            }
+        } else {
+            document.getElementById('qrAlert').classList.remove('show');
+        }
+    </script>
+</body>
+</html>

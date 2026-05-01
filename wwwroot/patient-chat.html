@@ -1,0 +1,729 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaChain — مساعد المريض</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 32px 16px 60px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 560px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+            .header h1 {
+                font-size: 22px;
+                color: #1a365d;
+                font-weight: 700;
+            }
+
+            .header p {
+                font-size: 13px;
+                color: #718096;
+                margin-top: 4px;
+            }
+
+        .ai-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ebf4ff;
+            border: 1px solid #bee3f8;
+            color: #2b6cb0;
+            font-size: 11px;
+            padding: 3px 12px;
+            border-radius: 20px;
+            margin-top: 8px;
+        }
+
+        .ai-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #48bb78;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 16px;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Drug ID lookup */
+        .lookup-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #2d3748;
+            outline: none;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+            input:focus {
+                border-color: #3182ce;
+            }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .btn-primary {
+            background: #2b6cb0;
+            color: white;
+        }
+
+            .btn-primary:hover:not(:disabled) {
+                background: #2c5282;
+            }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 13px;
+        }
+
+        /* Drug info strip */
+        .drug-strip {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            display: none;
+        }
+
+            .drug-strip.show {
+                display: block;
+            }
+
+        .drug-strip-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #276749;
+            margin-bottom: 4px;
+        }
+
+        .drug-strip-details {
+            font-size: 12px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-ok {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .status-expired {
+            background: #fed7d7;
+            color: #822727;
+        }
+
+        .error-strip {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #c53030;
+            margin-top: 10px;
+            display: none;
+        }
+
+            .error-strip.show {
+                display: block;
+            }
+
+        /* Suggested questions */
+        .suggested {
+            margin-top: 12px;
+        }
+
+        .suggested-label {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 8px;
+        }
+
+        .q-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .q-chip {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 12px;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+            .q-chip:hover {
+                background: #ebf4ff;
+                border-color: #bee3f8;
+                color: #2b6cb0;
+            }
+
+        /* Chat */
+        .chat-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bot-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #1a365d, #2b6cb0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .bot-info .bot-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .bot-info .bot-status {
+            font-size: 11px;
+            color: #48bb78;
+        }
+
+        /* Messages */
+        .messages {
+            height: 360px;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+            .messages::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .messages::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .messages::-webkit-scrollbar-thumb {
+                background: #e2e8f0;
+                border-radius: 2px;
+            }
+
+        .msg {
+            max-width: 85%;
+        }
+
+            .msg.bot {
+                align-self: flex-start;
+            }
+
+            .msg.user {
+                align-self: flex-end;
+            }
+
+        .msg-bubble {
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .msg.bot .msg-bubble {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px 12px 12px 2px;
+            color: #2d3748;
+        }
+
+        .msg.user .msg-bubble {
+            background: #2b6cb0;
+            color: white;
+            border-radius: 12px 12px 2px 12px;
+        }
+
+        .msg-time {
+            font-size: 10px;
+            color: #a0aec0;
+            margin-top: 4px;
+            padding: 0 4px;
+        }
+
+        .msg.user .msg-time {
+            text-align: left;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            align-self: flex-start;
+            display: none;
+        }
+
+            .typing-indicator.show {
+                display: flex;
+            }
+
+        .typing-bubble {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px 12px 12px 2px;
+            padding: 12px 16px;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .typing-dot {
+            width: 7px;
+            height: 7px;
+            background: #a0aec0;
+            border-radius: 50%;
+            animation: typing 1.2s ease-in-out infinite;
+        }
+
+            .typing-dot:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            .typing-dot:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+
+        @keyframes typing {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-4px);
+                background: #718096;
+            }
+        }
+
+        /* Input row */
+        .input-row {
+            padding: 12px 16px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 8px;
+        }
+
+            .input-row input {
+                flex: 1;
+            }
+
+        /* Welcome state */
+        .welcome-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .welcome-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .welcome-text {
+            font-size: 14px;
+            color: #718096;
+            line-height: 1.7;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #3182ce;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="header">
+            <h1>🤖 مساعد المريض الذكي</h1>
+            <p>اسأل عن دوائك بالعربي — إجابات فورية وواضحة</p>
+            <div class="ai-tag">
+                <div class="ai-dot"></div>
+                متصل — مدعوم بالذكاء الاصطناعي
+            </div>
+        </div>
+
+        <!-- Drug lookup -->
+        <div class="card">
+            <div class="card-header">🔍 ابحث عن دوائك أولاً (اختياري)</div>
+            <div class="card-body">
+                <div class="lookup-row">
+                    <input type="number" id="drugIdInput" placeholder="رقم الدواء (ID) من الملصق أو QR" min="1">
+                    <button class="btn btn-primary" onclick="lookupDrug()" id="lookupBtn">تحقق</button>
+                </div>
+
+                <div class="drug-strip" id="drugStrip">
+                    <div class="drug-strip-name" id="stripName"></div>
+                    <div class="drug-strip-details" id="stripDetails"></div>
+                </div>
+
+                <div class="error-strip" id="lookupError"></div>
+
+                <div class="suggested" id="suggestedArea" style="display:none;">
+                    <div class="suggested-label">أسئلة مقترحة بناءً على دوائك:</div>
+                    <div class="q-chips" id="suggestedChips"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat -->
+        <div class="chat-card">
+            <div class="chat-header">
+                <div class="bot-avatar">🤖</div>
+                <div class="bot-info">
+                    <div class="bot-name">مساعد PharmaChain</div>
+                    <div class="bot-status">● متصل الآن</div>
+                </div>
+            </div>
+
+            <div class="messages" id="messages">
+                <div class="welcome-state" id="welcomeState">
+                    <div class="welcome-icon">👋</div>
+                    <div class="welcome-text">
+                        أهلاً! أنا مساعدك لمعلومات الدواء.<br>
+                        يمكنك البحث عن رقم دوائك أعلاه للحصول على إجابات مخصصة،<br>
+                        أو اكتب سؤالك مباشرة وسأساعدك.
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-bubble">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <input type="text" id="msgInput"
+                       placeholder="اكتب سؤالك هنا... (مثال: هل دوائي أصلي؟)"
+                       onkeydown="if(event.key==='Enter' && !event.shiftKey) sendMsg()">
+                <button class="btn btn-primary" onclick="sendMsg()" id="sendBtn">إرسال</button>
+            </div>
+        </div>
+
+        <div class="back-link" onclick="goBack()">← العودة للخلف</div>
+
+    </div>
+
+    <script>
+        var API = 'http://localhost:7036';
+        var chatHistory = [];
+        var drugContext = '';
+        var drugData = null;
+
+        // إذا جاء المستخدم من verify.html برقم دواء، اجلبه تلقائياً
+        var urlParams = new URLSearchParams(window.location.search);
+        var autoId = urlParams.get('id');
+        if (autoId) {
+            window.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('drugIdInput').value = autoId;
+                lookupDrug();
+            });
+        }
+
+        function goBack() {
+            var token = localStorage.getItem('token');
+            if (token) { window.location.replace(API + '/dashboard.html'); }
+            else { history.back(); }
+        }
+
+        // ── جلب بيانات الدواء ──
+        function lookupDrug() {
+            var id = document.getElementById('drugIdInput').value.trim();
+            if (!id) return;
+
+            var btn = document.getElementById('lookupBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳';
+
+            document.getElementById('lookupError').classList.remove('show');
+            document.getElementById('drugStrip').classList.remove('show');
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API + '/api/verify/' + id, true);
+            xhr.onload = function () {
+                btn.disabled = false;
+                btn.textContent = 'تحقق';
+
+                if (xhr.status !== 200) {
+                    showLookupError('تعذر الاتصال بالسيرفر');
+                    return;
+                }
+
+                var data = JSON.parse(xhr.responseText);
+
+                if (!data.authentic) {
+                    showLookupError('الدواء غير موجود في النظام');
+                    return;
+                }
+
+                drugData = data;
+                var roleAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون' };
+                var history = (data.trackingHistory || []).map(function (t) {
+                    return (roleAr[t.fromRole] || t.fromRole) + ' ← ' + (roleAr[t.toRole] || t.toRole);
+                }).join(' ← ');
+
+                var expiry = new Date(data.expiryDate).toLocaleDateString('ar-JO');
+                var statusClass = data.isExpired ? 'status-expired' : 'status-ok';
+
+                document.getElementById('stripName').innerHTML =
+                    data.name + ' &nbsp; <span class="status-pill ' + statusClass + '">' + data.status + '</span>';
+
+                document.getElementById('stripDetails').innerHTML =
+                    'الشركة المصنعة: ' + data.manufacturer + ' | تاريخ الانتهاء: ' + expiry +
+                    (history ? '<br>المسار: ' + history : '');
+
+                document.getElementById('drugStrip').classList.add('show');
+
+                // بناء السياق للـ AI
+                drugContext = 'معلومات دواء المريض:\n' +
+                    'الاسم: ' + data.name + '\n' +
+                    'الشركة المصنعة: ' + data.manufacturer + '\n' +
+                    'تاريخ الانتهاء: ' + expiry + '\n' +
+                    'الحالة: ' + data.status + '\n' +
+                    'منتهي الصلاحية: ' + (data.isExpired ? 'نعم ❌' : 'لا ✅') + '\n' +
+                    (history ? 'مسار التتبع: ' + history : '');
+
+                // أسئلة مقترحة
+                showSuggestedQuestions(data);
+
+                // رسالة ترحيب في الشات
+                addBotMsg('وجدت بيانات دوائك! 🎉\n\nاسم الدواء: ' + data.name + '\nالحالة: ' + data.status + '\n\nكيف يمكنني مساعدتك؟ يمكنك السؤال عن أي شيء يخص دوائك.');
+            };
+
+            xhr.onerror = function () {
+                btn.disabled = false;
+                btn.textContent = 'تحقق';
+                showLookupError('تعذر الاتصال بالسيرفر');
+            };
+            xhr.send();
+        }
+
+        function showSuggestedQuestions(data) {
+            var questions = ['هل دوائي أصلي؟', 'من أين جاء الدواء؟', 'كيف أتناول الدواء بشكل صحيح؟'];
+            if (data.isExpired) questions.unshift('دوائي منتهي الصلاحية — ماذا أفعل؟');
+            if (data.trackingHistory && data.trackingHistory.length > 1) questions.push('كم مرة نُقل الدواء؟');
+
+            document.getElementById('suggestedChips').innerHTML = questions.map(function (q) {
+                return '<span class="q-chip" onclick="askSuggested(\'' + q + '\')">' + q + '</span>';
+            }).join('');
+
+            document.getElementById('suggestedArea').style.display = 'block';
+        }
+
+        function askSuggested(q) {
+            document.getElementById('msgInput').value = q;
+            sendMsg();
+        }
+
+        function showLookupError(msg) {
+            var el = document.getElementById('lookupError');
+            el.textContent = msg;
+            el.classList.add('show');
+        }
+
+        // ── Chat ──
+        function addBotMsg(text) {
+            removeWelcome();
+            var div = document.createElement('div');
+            div.className = 'msg bot';
+            var time = new Date().toLocaleTimeString('ar-JO', { hour: '2-digit', minute: '2-digit' });
+            div.innerHTML = '<div class="msg-bubble">' + text.replace(/\n/g, '<br>') + '</div>' +
+                '<div class="msg-time">' + time + '</div>';
+            document.getElementById('messages').appendChild(div);
+            scrollDown();
+        }
+
+        function addUserMsg(text) {
+            removeWelcome();
+            var div = document.createElement('div');
+            div.className = 'msg user';
+            var time = new Date().toLocaleTimeString('ar-JO', { hour: '2-digit', minute: '2-digit' });
+            div.innerHTML = '<div class="msg-bubble">' + text + '</div>' +
+                '<div class="msg-time">' + time + '</div>';
+            document.getElementById('messages').appendChild(div);
+            scrollDown();
+        }
+
+        function removeWelcome() {
+            var w = document.getElementById('welcomeState');
+            if (w) w.remove();
+        }
+
+        function scrollDown() {
+            var msgs = document.getElementById('messages');
+            msgs.scrollTop = msgs.scrollHeight;
+        }
+
+        function generateSmartReply(msg) {
+            var m = msg.toLowerCase();
+            var name = drugData ? drugData.name : '';
+            var expired = drugData ? drugData.isExpired : false;
+            var manufacturer = drugData ? drugData.manufacturer : '';
+            var history = drugData ? (drugData.trackingHistory || []) : [];
+            var roleAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون' };
+
+            if (m.includes('أصلي') || m.includes('اصلي') || m.includes('موثق') || m.includes('حقيقي') || m.includes('مزيف')) {
+                if (!drugData) return 'يرجى إدخال رقم الدواء أعلاه أولاً حتى أتمكن من التحقق من أصالته. 🔍';
+                return 'نعم! دواء ' + name + ' أصلي وموثق بالكامل في نظام PharmaChain. ✅\nتم التحقق من كل مرحلة في سلسلة التوريد بتقنية Blockchain، ولا يمكن التلاعب بهذه البيانات.';
+            }
+            if (m.includes('صلاحية') || m.includes('منتهي') || m.includes('تاريخ انتهاء')) {
+                if (!drugData) return 'أدخل رقم دوائك أعلاه لأتحقق من تاريخ صلاحيته. 📅';
+                if (expired) return '⚠️ تنبيه: دواء ' + name + ' منتهي الصلاحية!\nيرجى عدم استخدامه والتواصل مع الصيدلاني فوراً للحصول على بديل.';
+                return 'دواء ' + name + ' ضمن الصلاحية وصالح للاستخدام. ✅\nتأكد دائماً من الاحتفاظ بالدواء في مكان مناسب بعيد عن الحرارة والرطوبة.';
+            }
+            if (m.includes('من أين') || m.includes('مصدر') || m.includes('مصنع') || m.includes('شركة')) {
+                if (!drugData) return 'أدخل رقم دوائك لأريك معلومات المصنّع. 🏭';
+                return 'دواء ' + name + ' مصنّع من قبل شركة ' + manufacturer + '. 🏭\nتم تتبع مساره بالكامل من المصنع حتى وصل إليك عبر نظام Blockchain الآمن.';
+            }
+            if (m.includes('مسار') || m.includes('رحلة') || m.includes('كم مرة') || m.includes('نقل')) {
+                if (!drugData || history.length === 0) return 'أدخل رقم دوائك لأريك مسار تتبعه الكامل. 📦';
+                var path = history.map(function (t) { return (roleAr[t.fromRole] || t.fromRole) + ' ← ' + (roleAr[t.toRole] || t.toRole); }).join('\n');
+                return 'مسار دواء ' + name + ' الكامل:\n' + path + '\n\nكل نقلة مسجلة في Blockchain ولا يمكن تعديلها. 🔒';
+            }
+            if (m.includes('جرعة') || m.includes('كيف') || m.includes('استخدام') || m.includes('اشرب') || m.includes('اتناول')) {
+                return 'بخصوص جرعة ' + (name || 'الدواء') + '، يجب الرجوع إلى:\n• الطبيب المعالج الذي وصف الدواء\n• الصيدلاني المختص\n• النشرة الداخلية للدواء\n\nلا أستطيع تحديد الجرعة المناسبة لك، فكل حالة تختلف عن الأخرى. 🏥';
+            }
+            if (m.includes('تخزين') || m.includes('احفظ') || m.includes('حرارة') || m.includes('تلف')) {
+                return 'للحفاظ على ' + (name || 'الدواء') + ':\n• احفظه في مكان بارد وجاف بعيد عن الشمس\n• لا تتركه في السيارة\n• احفظه بعيداً عن متناول الأطفال\n• تحقق من تاريخ الانتهاء بانتظام. 📦';
+            }
+            if (m.includes('أعراض') || m.includes('اعراض') || m.includes('آثار') || m.includes('ضار')) {
+                return 'إذا لاحظت أي أعراض غير طبيعية بعد تناول ' + (name || 'الدواء') + ':\n• توقف عن استخدامه فوراً\n• تواصل مع طبيبك أو الصيدلاني\n• في حالات الطوارئ اتصل بالإسعاف\n\nصحتك أهم شيء! 🏥';
+            }
+            if (m.includes('شكر') || m.includes('تمام') || m.includes('ممتاز')) {
+                return 'بكل سرور! 😊 إذا كان لديك أي سؤال آخر عن دوائك لا تتردد. صحتك بالسلامة! 🌟';
+            }
+            if (!drugData) {
+                return 'يمكنني مساعدتك بمعلومات دوائك! 💊\nابحث برقم الدواء أعلاه للحصول على معلومات مخصصة، أو اسألني عن: الأصالة، الصلاحية، التخزين، الأعراض الجانبية.';
+            }
+            return 'بخصوص دواء ' + name + '، يسعدني مساعدتك! 😊\nيمكنك سؤالي عن: الأصالة، الصلاحية، المصدر، مسار التتبع، التخزين، أو الأعراض الجانبية.\nللمعلومات الطبية التفصيلية يُنصح بمراجعة الصيدلاني المختص.';
+        }
+
+        async function sendMsg() {
+            var input = document.getElementById('msgInput');
+            var msg = input.value.trim();
+            if (!msg) return;
+
+            input.value = '';
+            addUserMsg(msg);
+
+            document.getElementById('sendBtn').disabled = true;
+            document.getElementById('typingIndicator').classList.add('show');
+            scrollDown();
+
+            await new Promise(function (r) { setTimeout(r, 900 + Math.random() * 700); });
+
+            var reply = generateSmartReply(msg);
+            addBotMsg(reply);
+
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('typingIndicator').classList.remove('show');
+        }
+    </script>
+</body>
+</html>

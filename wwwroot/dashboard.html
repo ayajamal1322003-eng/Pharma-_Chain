@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>PharmaChain — Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: #1a365d;
+            color: white;
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 0 20px 24px;
+            border-bottom: 1px solid #2d4a7a;
+            margin-bottom: 16px;
+        }
+
+            .sidebar-logo h2 {
+                font-size: 18px;
+                color: white;
+            }
+
+            .sidebar-logo p {
+                font-size: 11px;
+                color: #90cdf4;
+                margin-top: 2px;
+            }
+
+        .nav-item {
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #bee3f8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+            .nav-item:hover, .nav-item.active {
+                background: #2b4c7e;
+                color: white;
+            }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #63b3ed;
+            flex-shrink: 0;
+        }
+
+        .nav-section {
+            padding: 8px 20px 4px;
+            font-size: 10px;
+            color: #4a6fa5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 6px;
+        }
+
+        .role-badge {
+            margin: 0 16px 16px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .role-Factory {
+            background: #ebf8ff;
+            color: #2b6cb0;
+            border: 1px solid #bee3f8;
+        }
+
+        .role-Distributor {
+            background: #f0fff4;
+            color: #276749;
+            border: 1px solid #9ae6b4;
+        }
+
+        .role-Pharmacy {
+            background: #fff5f5;
+            color: #c53030;
+            border: 1px solid #fed7d7;
+        }
+
+        .role-Admin {
+            background: #faf5ff;
+            color: #553c9a;
+            border: 1px solid #d6bcfa;
+        }
+
+        .role-LedgerAdmin {
+            background: #fffbeb;
+            color: #744210;
+            border: 1px solid #f6cc5b;
+        }
+
+        .user-info {
+            margin-top: auto;
+            padding: 16px 20px;
+            border-top: 1px solid #2d4a7a;
+            font-size: 13px;
+        }
+
+            .user-info .name {
+                color: white;
+                font-weight: 500;
+            }
+
+            .user-info .role {
+                color: #90cdf4;
+                font-size: 11px;
+            }
+
+        .logout-btn {
+            margin-top: 8px;
+            background: none;
+            border: 1px solid #4a6fa5;
+            color: #bee3f8;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            width: 100%;
+        }
+
+        .main {
+            margin-right: 220px;
+            flex: 1;
+            padding: 28px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a365d;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .btn-primary {
+            background: #2b6cb0;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background: #2c5282;
+            }
+
+        .btn-outline {
+            background: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+            .btn-outline:hover {
+                background: #f7fafc;
+            }
+
+        .role-info {
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 20px;
+            padding: 10px 14px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ledger-banner {
+            background: #fffbeb;
+            border: 1px solid #f6cc5b;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #744210;
+            line-height: 1.6;
+        }
+
+            .ledger-banner strong {
+                display: block;
+                font-size: 14px;
+                margin-bottom: 4px;
+            }
+
+        .alert-box {
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .alert-warn {
+            background: #fff8e1;
+            border: 1px solid #f6cc5b;
+            color: #744210;
+        }
+
+        .alert-danger {
+            background: #fed7d7;
+            border: 1px solid #fc8181;
+            color: #822727;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px 20px;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            }
+
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a365d;
+        }
+
+        .stat-badge {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge-green {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .badge-yellow {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .badge-red {
+            background: #fed7d7;
+            color: #822727;
+        }
+
+        .stat-hint {
+            font-size: 10px;
+            color: #a0aec0;
+            margin-top: 4px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-count {
+            background: #ebf4ff;
+            color: #2b6cb0;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .filter-bar {
+            padding: 14px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            background: #fafbfc;
+        }
+
+        .search-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 32px 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #2d3748;
+            outline: none;
+            font-family: 'Segoe UI', sans-serif;
+            background: white;
+        }
+
+            .search-input:focus {
+                border-color: #3182ce;
+            }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #4a5568;
+            outline: none;
+            background: white;
+            font-family: 'Segoe UI', sans-serif;
+            cursor: pointer;
+        }
+
+            .filter-select:focus {
+                border-color: #3182ce;
+            }
+
+        .filter-active-badge {
+            background: #ebf4ff;
+            border: 1px solid #bee3f8;
+            color: #2b6cb0;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+            .filter-active-badge.show {
+                display: inline-flex;
+            }
+
+            .filter-active-badge:hover {
+                background: #c3dafe;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: right;
+            padding: 10px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #718096;
+            background: #f7fafc;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+            th:hover {
+                background: #edf2f7;
+                color: #2d3748;
+            }
+
+            th .sort-icon {
+                margin-right: 4px;
+                opacity: 0.4;
+                font-size: 10px;
+            }
+
+            th.sort-asc .sort-icon, th.sort-desc .sort-icon {
+                opacity: 1;
+                color: #2b6cb0;
+            }
+
+        td {
+            padding: 10px 16px;
+            color: #2d3748;
+            border-bottom: 1px solid #f0f4f8;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f7fafc;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .pill-green {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .pill-red {
+            background: #fed7d7;
+            color: #822727;
+        }
+
+        .pill-yellow {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .qty-low {
+            color: #822727;
+            font-weight: 600;
+        }
+
+        .qty-ok {
+            color: #276749;
+            font-weight: 600;
+        }
+
+        .hash {
+            font-family: monospace;
+            font-size: 11px;
+            color: #718096;
+            background: #f7fafc;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .action-links {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .link-btn {
+            font-size: 11px;
+            text-decoration: none;
+            padding: 3px 9px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .link-verify {
+            color: #3182ce;
+            background: #ebf4ff;
+        }
+
+            .link-verify:hover {
+                background: #c3dafe;
+            }
+
+        .link-qr {
+            color: #276749;
+            background: #c6f6d5;
+        }
+
+            .link-qr:hover {
+                background: #9ae6b4;
+            }
+
+        .link-chain {
+            color: #553c9a;
+            background: #e9d8fd;
+        }
+
+            .link-chain:hover {
+                background: #d6bcfa;
+            }
+
+        .link-attack {
+            color: #c05621;
+            background: #feebc8;
+        }
+
+            .link-attack:hover {
+                background: #fbd38d;
+            }
+
+        .link-delete {
+            color: #822727;
+            background: #fed7d7;
+        }
+
+            .link-delete:hover {
+                background: #feb2b2;
+            }
+
+        .pagination-wrap {
+            padding: 14px 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #718096;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 4px;
+        }
+
+        .page-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #4a5568;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+            .page-btn:hover {
+                background: #f7fafc;
+            }
+
+            .page-btn.active {
+                background: #2b6cb0;
+                color: white;
+                border-color: #2b6cb0;
+            }
+
+            .page-btn:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+        .page-size-select {
+            padding: 4px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #4a5568;
+            outline: none;
+            background: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: #a0aec0;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(60px);
+            background: #2d3748;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            transition: transform 0.3s ease;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+            .toast.show {
+                transform: translateX(-50%) translateY(0);
+            }
+    </style>
+</head>
+<body>
+    <div class="layout">
+
+        <div class="sidebar">
+            <div class="sidebar-logo"><h2>PharmaChain</h2><p>نظام تتبع الأدوية</p></div>
+            <div class="role-badge" id="roleBadge"></div>
+
+            <a class="nav-item active" onclick="goTo('dashboard.html')"><div class="nav-dot"></div> لوحة التحكم</a>
+            <!-- إضافة دواء: Admin + Factory فقط -->
+            <a class="nav-item" id="navAddDrug" style="display:none" onclick="goTo('add-drug.html')"><div class="nav-dot"></div> إضافة دواء</a>
+            <!-- نقل دواء: مخفي عن LedgerAdmin -->
+            <a class="nav-item" id="navTransfer" onclick="goTo('transfer.html')"><div class="nav-dot"></div> نقل دواء</a>
+            <!-- Blockchain: الكل يشوفه -->
+            <a class="nav-item" onclick="goTo('blockchain.html')"><div class="nav-dot"></div> Blockchain</a>
+            <!-- التحقق: مخفي عن LedgerAdmin -->
+            <a class="nav-item" id="navVerify" onclick="goTo('verify.html')"><div class="nav-dot"></div> التحقق من دواء</a>
+            <!-- كشف التلاعب: Admin + LedgerAdmin -->
+            <a class="nav-item" id="navAttack" style="display:none" onclick="goTo('attack-demo.html')"><div class="nav-dot"></div> كشف التلاعب</a>
+            <!-- سجل العمليات: Admin فقط -->
+            <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><div class="nav-dot"></div> سجل العمليات</a>
+            <div class="nav-section" id="navAISection" style="display:none">الذكاء الاصطناعي</div>
+            <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><div class="nav-dot"></div> محلل المخاطر AI</a>
+            <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><div class="nav-dot"></div> تحليلات الأداء AI</a>
+
+            <div class="user-info">
+                <div class="name" id="sidebarUsername">...</div>
+                <div class="role" id="sidebarRole">...</div>
+                <button class="logout-btn" onclick="logout()">تسجيل خروج</button>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="page-header">
+                <div class="page-title">لوحة التحكم</div>
+                <div class="header-actions">
+                    <button class="btn btn-outline" id="exportBtn" onclick="exportCSV()">⬇️ تصدير CSV</button>
+                    <button class="btn btn-primary" id="headerAddBtn" style="display:none" onclick="goTo('add-drug.html')">+ إضافة دواء</button>
+                </div>
+            </div>
+
+            <div class="role-info" id="roleInfo"></div>
+
+            <!-- بانر خاص بـ LedgerAdmin -->
+            <div class="ledger-banner" id="ledgerBanner" style="display:none">
+                <strong>⚖️ وضع Ledger Admin — محايد تقنياً</strong>
+                صلاحياتك مقتصرة على مراقبة سلسلة Blockchain والتحقق من سلامتها.
+                لا تملك صلاحية إضافة أدوية أو نقلها أو حذفها — هذا يضمن حياديتك التامة.
+            </div>
+
+            <div class="alert-box alert-danger" id="tamperAlert"></div>
+            <div class="alert-box alert-warn" id="alertBox"></div>
+
+            <!-- إحصائيات — مخفية عن LedgerAdmin -->
+            <div class="stats" id="statsSection">
+                <div class="stat-card" onclick="filterByStatus('')">
+                    <div class="stat-label">إجمالي الأدوية</div>
+                    <div class="stat-value" id="totalDrugs">0</div>
+                    <span class="stat-badge badge-green">مسجلة</span>
+                    <div class="stat-hint">اضغط للعرض الكامل</div>
+                </div>
+                <div class="stat-card" onclick="filterByStatus('expired')">
+                    <div class="stat-label">منتهية الصلاحية</div>
+                    <div class="stat-value" id="expiredDrugs">0</div>
+                    <span class="stat-badge badge-red">منتهية</span>
+                    <div class="stat-hint">اضغط للفلترة</div>
+                </div>
+                <div class="stat-card" onclick="filterByStatus('soon')">
+                    <div class="stat-label">تنتهي قريباً</div>
+                    <div class="stat-value" id="soonDrugs">0</div>
+                    <span class="stat-badge badge-yellow">خلال 30 يوم</span>
+                    <div class="stat-hint">اضغط للفلترة</div>
+                </div>
+                <div class="stat-card" onclick="filterByStatus('low')">
+                    <div class="stat-label">كمية منخفضة</div>
+                    <div class="stat-value" id="lowStockDrugs">0</div>
+                    <span class="stat-badge badge-yellow">أقل من 10</span>
+                    <div class="stat-hint">اضغط للفلترة</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">
+                        الأدوية المسجلة
+                        <span class="card-count" id="tableCount">0</span>
+                    </span>
+                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                        <span class="filter-active-badge" id="filterBadge" onclick="clearAllFilters()">
+                            <span id="filterBadgeText"></span> ✕ إزالة الفلتر
+                        </span>
+                        <button class="btn btn-outline" onclick="loadDrugs()" style="padding:6px 12px;font-size:12px;">🔄 تحديث</button>
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="search-wrap">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" id="searchInput" placeholder="ابحث بالاسم أو الشركة أو الرقم..." oninput="applyFilters()">
+                    </div>
+                    <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                        <option value="">كل الحالات</option>
+                        <option value="valid">صالح ✅</option>
+                        <option value="soon">ينتهي قريباً ⚠️</option>
+                        <option value="expired">منتهي ❌</option>
+                    </select>
+                    <select class="filter-select" id="manufacturerFilter" onchange="applyFilters()">
+                        <option value="">كل الشركات</option>
+                    </select>
+                    <select class="filter-select" id="qtyFilter" onchange="applyFilters()">
+                        <option value="">كل الكميات</option>
+                        <option value="low">كمية منخفضة ≤10</option>
+                        <option value="ok">كمية كافية >10</option>
+                    </select>
+                </div>
+
+                <div id="drugsTable"><div class="loading">⏳ جاري تحميل البيانات...</div></div>
+
+                <div class="pagination-wrap" id="paginationWrap" style="display:none;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span id="pageInfo"></span>
+                        <select class="page-size-select" id="pageSizeSelect" onchange="changePageSize()">
+                            <option value="10">10 لكل صفحة</option>
+                            <option value="25" selected>25 لكل صفحة</option>
+                            <option value="50">50 لكل صفحة</option>
+                            <option value="100">100 لكل صفحة</option>
+                        </select>
+                    </div>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        var API = 'http://localhost:7036';
+        var token = localStorage.getItem('token');
+        var username = localStorage.getItem('username');
+        var role = localStorage.getItem('role');
+
+        if (!token) { window.location.replace(API + '/login.html'); }
+
+        document.getElementById('sidebarUsername').textContent = username || '';
+        document.getElementById('sidebarRole').textContent = role || '';
+
+        // ── صلاحيات كل دور ──
+        var roleLabels = {
+            Factory: 'مصنع — يمكنك إضافة الأدوية ونقلها للموزع',
+            Distributor: 'موزع — يمكنك نقل الأدوية للصيدليات',
+            Pharmacy: 'صيدلية — يمكنك استلام الأدوية والتحقق منها',
+            Admin: 'مدير — صلاحيات كاملة على النظام',
+            LedgerAdmin: 'مدير السجل — مراقبة Blockchain فقط (محايد تقنياً)'
+        };
+        var roleClasses = {
+            Factory: 'role-Factory',
+            Distributor: 'role-Distributor',
+            Pharmacy: 'role-Pharmacy',
+            Admin: 'role-Admin',
+            LedgerAdmin: 'role-LedgerAdmin'
+        };
+
+        document.getElementById('roleBadge').textContent = role;
+        document.getElementById('roleBadge').className = 'role-badge ' + (roleClasses[role] || '');
+        document.getElementById('roleInfo').textContent = roleLabels[role] || '';
+
+        var isLedger = role === 'LedgerAdmin';
+        var isAdmin = role === 'Admin';
+
+        // ── إعداد الـ Sidebar حسب الدور ──
+        if (role === 'Factory' || isAdmin) {
+            document.getElementById('navAddDrug').style.display = 'flex';
+            document.getElementById('headerAddBtn').style.display = 'inline-flex';
+        }
+        if (isLedger) {
+            // LedgerAdmin: يشوف Blockchain وكشف التلاعب فقط
+            document.getElementById('navTransfer').style.display = 'none';
+            document.getElementById('navVerify').style.display = 'none';
+            document.getElementById('navAttack').style.display = 'flex';
+            document.getElementById('ledgerBanner').style.display = 'block';
+            document.getElementById('exportBtn').style.display = 'none';
+        } else {
+            // باقي الأدوار
+            document.getElementById('navAttack').style.display = 'flex';
+        }
+        if (isAdmin) {
+            document.getElementById('navAudit').style.display = 'flex';
+            document.getElementById('navRisk').style.display = 'flex';
+            document.getElementById('navAdvisor').style.display = 'flex';
+            document.getElementById('navAISection').style.display = 'block';
+        }
+
+        function goTo(page) { window.location.replace(API + '/' + page); }
+        function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+
+        var allDrugs = [], filteredDrugs = [], currentPage = 1, pageSize = 25, sortCol = '', sortDir = 1;
+        var now = new Date();
+        var soon = new Date(); soon.setDate(soon.getDate() + 30);
+
+        function loadDrugs() {
+            document.getElementById('drugsTable').innerHTML = '<div class="loading">⏳ جاري تحميل البيانات...</div>';
+            document.getElementById('paginationWrap').style.display = 'none';
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API + '/api/drugs', true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                if (xhr.status === 401) { window.location.replace(API + '/login.html'); return; }
+                if (xhr.status !== 200) { document.getElementById('drugsTable').innerHTML = '<div class="loading">تعذر تحميل البيانات</div>'; return; }
+                var response = JSON.parse(xhr.responseText);
+                allDrugs = Array.isArray(response) ? response : (response.drugs || []);
+                if (response.securityAlert) {
+                    var ta = document.getElementById('tamperAlert');
+                    ta.style.display = 'block';
+                    ta.textContent = '🚨 تحذير أمني: ' + response.securityAlert;
+                }
+                updateStats();
+                populateManufacturerFilter();
+                applyFilters();
+            };
+            xhr.onerror = function () { document.getElementById('drugsTable').innerHTML = '<div class="loading">تعذر الاتصال بالسيرفر</div>'; };
+            xhr.send();
+        }
+
+        function updateStats() {
+            var expired = allDrugs.filter(function (d) { return new Date(d.expiryDate) < now; });
+            var expSoon = allDrugs.filter(function (d) { var e = new Date(d.expiryDate); return e >= now && e <= soon; });
+            var lowStock = allDrugs.filter(function (d) { return d.quantity <= 10 && d.quantity > 0; });
+            document.getElementById('totalDrugs').textContent = allDrugs.length;
+            document.getElementById('expiredDrugs').textContent = expired.length;
+            document.getElementById('soonDrugs').textContent = expSoon.length;
+            document.getElementById('lowStockDrugs').textContent = lowStock.length;
+            var alerts = [];
+            if (expired.length > 0) alerts.push(expired.length + ' دواء منتهي الصلاحية');
+            if (lowStock.length > 0) alerts.push(lowStock.length + ' دواء كميته منخفضة');
+            if (expSoon.length > 0) alerts.push(expSoon.length + ' دواء ينتهي خلال 30 يوم');
+            if (alerts.length > 0) {
+                var ab = document.getElementById('alertBox');
+                ab.style.display = 'block';
+                ab.textContent = '⚠️ تنبيه: ' + alerts.join(' | ');
+            }
+        }
+
+        function populateManufacturerFilter() {
+            var mfrs = [];
+            allDrugs.forEach(function (d) { if (d.manufacturer && mfrs.indexOf(d.manufacturer) === -1) mfrs.push(d.manufacturer); });
+            mfrs.sort();
+            var sel = document.getElementById('manufacturerFilter');
+            sel.innerHTML = '<option value="">كل الشركات</option>';
+            mfrs.forEach(function (m) { sel.innerHTML += '<option value="' + m + '">' + m + '</option>'; });
+        }
+
+        function filterByStatus(status) {
+            document.getElementById('statusFilter').value = (status === 'expired' || status === 'soon' || status === 'valid') ? status : '';
+            document.getElementById('qtyFilter').value = status === 'low' ? 'low' : '';
+            currentPage = 1; applyFilters();
+        }
+
+        function clearAllFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('manufacturerFilter').value = '';
+            document.getElementById('qtyFilter').value = '';
+            document.getElementById('filterBadge').classList.remove('show');
+            currentPage = 1; applyFilters();
+        }
+
+        function applyFilters() {
+            var search = document.getElementById('searchInput').value.trim().toLowerCase();
+            var status = document.getElementById('statusFilter').value;
+            var manufacturer = document.getElementById('manufacturerFilter').value;
+            var qty = document.getElementById('qtyFilter').value;
+
+            filteredDrugs = allDrugs.filter(function (d) {
+                var expiry = new Date(d.expiryDate);
+                var isExpired = expiry < now;
+                var isSoon = expiry >= now && expiry <= soon;
+                if (search && !(d.name.toLowerCase().includes(search) || (d.manufacturer || '').toLowerCase().includes(search) || String(d.id).includes(search))) return false;
+                if (status === 'expired' && !isExpired) return false;
+                if (status === 'soon' && !isSoon) return false;
+                if (status === 'valid' && (isExpired || isSoon)) return false;
+                if (manufacturer && d.manufacturer !== manufacturer) return false;
+                if (qty === 'low' && !(d.quantity <= 10 && d.quantity > 0)) return false;
+                if (qty === 'ok' && d.quantity <= 10) return false;
+                return true;
+            });
+
+            if (sortCol) {
+                filteredDrugs.sort(function (a, b) {
+                    var va = a[sortCol], vb = b[sortCol];
+                    if (sortCol === 'expiryDate') { va = new Date(va); vb = new Date(vb); }
+                    return va < vb ? -sortDir : va > vb ? sortDir : 0;
+                });
+            }
+
+            var hasFilter = search || status || manufacturer || qty;
+            var badge = document.getElementById('filterBadge');
+            if (hasFilter) {
+                badge.classList.add('show');
+                var parts = [];
+                if (search) parts.push('بحث: "' + search + '"');
+                if (status) parts.push({ expired: 'منتهي', soon: 'ينتهي قريباً', valid: 'صالح' }[status] || '');
+                if (manufacturer) parts.push(manufacturer);
+                if (qty) parts.push(qty === 'low' ? 'كمية منخفضة' : 'كمية كافية');
+                document.getElementById('filterBadgeText').textContent = parts.filter(Boolean).join(' | ');
+            } else { badge.classList.remove('show'); }
+
+            currentPage = 1;
+            document.getElementById('tableCount').textContent = filteredDrugs.length;
+            renderTable();
+        }
+
+        function sortBy(col) {
+            if (sortCol === col) sortDir = -sortDir; else { sortCol = col; sortDir = 1; }
+            document.querySelectorAll('th[data-col]').forEach(function (th) { th.classList.remove('sort-asc', 'sort-desc'); th.querySelector('.sort-icon').textContent = '⇅'; });
+            var th = document.querySelector('th[data-col="' + col + '"]');
+            if (th) { th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc'); th.querySelector('.sort-icon').textContent = sortDir === 1 ? '↑' : '↓'; }
+            applyFilters();
+        }
+
+        function renderTable() {
+            if (filteredDrugs.length === 0) {
+                document.getElementById('drugsTable').innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div>لا توجد نتائج مطابقة</div></div>';
+                document.getElementById('paginationWrap').style.display = 'none';
+                return;
+            }
+            var start = (currentPage - 1) * pageSize;
+            var end = Math.min(start + pageSize, filteredDrugs.length);
+            var pageDrugs = filteredDrugs.slice(start, end);
+            var showDelete = isAdmin;
+
+            var html = '<table><thead><tr>'
+                + '<th data-col="id"           onclick="sortBy(\'id\')"><span class="sort-icon">⇅</span>#</th>'
+                + '<th data-col="name"         onclick="sortBy(\'name\')"><span class="sort-icon">⇅</span>اسم الدواء</th>'
+                + '<th>Hash الدفعة</th>'
+                + '<th data-col="expiryDate"   onclick="sortBy(\'expiryDate\')"><span class="sort-icon">⇅</span>تاريخ الانتهاء</th>'
+                + '<th data-col="manufacturer" onclick="sortBy(\'manufacturer\')"><span class="sort-icon">⇅</span>الشركة المصنعة</th>'
+                + '<th data-col="quantity"     onclick="sortBy(\'quantity\')"><span class="sort-icon">⇅</span>الكمية</th>'
+                + '<th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>';
+
+            pageDrugs.forEach(function (d) {
+                var expiry = new Date(d.expiryDate);
+                var isExpired = expiry < now, isSoon = expiry >= now && expiry <= soon;
+                var sc = isExpired ? 'pill-red' : isSoon ? 'pill-yellow' : 'pill-green';
+                var st = isExpired ? 'منتهي ❌' : isSoon ? 'ينتهي قريباً ⚠️' : 'صالح ✅';
+                var qc = d.quantity <= 10 ? 'qty-low' : 'qty-ok';
+                var qt = d.quantity <= 10 ? d.quantity + ' ⚠' : d.quantity;
+
+                // أزرار الإجراءات — LedgerAdmin يشوف Chain فقط
+                var actions = '';
+                if (!isLedger) {
+                    actions += '<a class="link-btn link-verify" href="' + API + '/verify.html?id=' + d.id + '">تحقق</a>';
+                    actions += '<a class="link-btn link-qr"     href="' + API + '/api/qr/' + d.id + '?token=' + token + '" target="_blank">QR</a>';
+                }
+                actions += '<a class="link-btn link-chain"  href="' + API + '/blockchain.html?drug=' + d.id + '">Chain</a>';
+                if (!isLedger) {
+                    actions += '<a class="link-btn link-attack" href="' + API + '/attack-demo.html?drug=' + d.id + '">فحص</a>';
+                }
+                if (showDelete) {
+                    actions += '<button class="link-btn link-delete" onclick="deleteDrug(' + d.id + ',\'' + d.name.replace(/'/g, '') + '\')" >حذف</button>';
+                }
+
+                html += '<tr>'
+                    + '<td>' + d.id + '</td>'
+                    + '<td><strong>' + d.name + '</strong></td>'
+                    + '<td><span class="hash">' + d.batchNumber + '</span></td>'
+                    + '<td>' + expiry.toLocaleDateString('ar-JO') + '</td>'
+                    + '<td>' + (d.manufacturer || '—') + '</td>'
+                    + '<td><span class="' + qc + '">' + qt + '</span></td>'
+                    + '<td><span class="pill ' + sc + '">' + st + '</span></td>'
+                    + '<td><div class="action-links">' + actions + '</div></td></tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('drugsTable').innerHTML = html;
+            renderPagination(start, end);
+        }
+
+        function renderPagination(start, end) {
+            var total = filteredDrugs.length;
+            var totalPages = Math.ceil(total / pageSize);
+            document.getElementById('pageInfo').textContent = 'عرض ' + (start + 1) + ' إلى ' + end + ' من ' + total;
+            var pag = document.getElementById('pagination'); pag.innerHTML = '';
+            var prev = document.createElement('button'); prev.className = 'page-btn'; prev.textContent = '→'; prev.disabled = currentPage === 1;
+            prev.onclick = function () { currentPage--; renderTable(); }; pag.appendChild(prev);
+            var pages = [];
+            if (totalPages <= 7) { for (var i = 1; i <= totalPages; i++) pages.push(i); }
+            else {
+                pages = [1];
+                if (currentPage > 3) pages.push('...');
+                for (var j = Math.max(2, currentPage - 1); j <= Math.min(totalPages - 1, currentPage + 1); j++) pages.push(j);
+                if (currentPage < totalPages - 2) pages.push('...');
+                pages.push(totalPages);
+            }
+            pages.forEach(function (p) {
+                var btn = document.createElement('button'); btn.className = 'page-btn' + (p === currentPage ? ' active' : ''); btn.textContent = p;
+                if (p === '...') btn.disabled = true;
+                else btn.onclick = (function (pg) { return function () { currentPage = pg; renderTable(); }; })(p);
+                pag.appendChild(btn);
+            });
+            var next = document.createElement('button'); next.className = 'page-btn'; next.textContent = '←'; next.disabled = currentPage === totalPages;
+            next.onclick = function () { currentPage++; renderTable(); }; pag.appendChild(next);
+            document.getElementById('paginationWrap').style.display = total > pageSize ? 'flex' : 'none';
+        }
+
+        function changePageSize() { pageSize = parseInt(document.getElementById('pageSizeSelect').value); currentPage = 1; renderTable(); }
+
+        function deleteDrug(id, name) {
+            if (!confirm('هل أنت متأكد من حذف "' + name + '"؟')) return;
+            var xhr = new XMLHttpRequest(); xhr.open('DELETE', API + '/api/drugs/' + id, true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () { if (xhr.status === 200) { showToast('✅ تم حذف ' + name); loadDrugs(); } else showToast('❌ تعذر الحذف'); };
+            xhr.send();
+        }
+
+        function exportCSV() {
+            if (filteredDrugs.length === 0) { showToast('لا توجد بيانات للتصدير'); return; }
+            var headers = ['#', 'اسم الدواء', 'Hash الدفعة', 'تاريخ الانتهاء', 'الشركة المصنعة', 'الكمية', 'الحالة'];
+            var rows = filteredDrugs.map(function (d) {
+                var expiry = new Date(d.expiryDate); var isExpired = expiry < now, isSoon = expiry >= now && expiry <= soon;
+                var st = isExpired ? 'منتهي' : isSoon ? 'ينتهي قريباً' : 'صالح';
+                return [d.id, '"' + d.name + '"', d.batchNumber, expiry.toLocaleDateString('ar-JO'), '"' + (d.manufacturer || '') + '"', d.quantity, st].join(',');
+            });
+            var csv = '\uFEFF' + headers.join(',') + '\n' + rows.join('\n');
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a'); a.href = url;
+            a.download = 'PharmaChain_' + new Date().toLocaleDateString('ar-JO').replace(/\//g, '-') + '.csv';
+            a.click(); URL.revokeObjectURL(url);
+            showToast('✅ تم تصدير ' + filteredDrugs.length + ' دواء');
+        }
+
+        function showToast(msg) { var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(function () { t.classList.remove('show'); }, 2800); }
+
+        loadDrugs();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>PharmaChain — نقل دواء</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 220px;
+            background: #1a365d;
+            color: white;
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 0 20px 24px;
+            border-bottom: 1px solid #2d4a7a;
+            margin-bottom: 16px;
+        }
+
+            .sidebar-logo h2 {
+                font-size: 18px;
+                color: white;
+            }
+
+            .sidebar-logo p {
+                font-size: 11px;
+                color: #90cdf4;
+                margin-top: 2px;
+            }
+
+        .nav-item {
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #bee3f8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+            .nav-item:hover, .nav-item.active {
+                background: #2b4c7e;
+                color: white;
+            }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #63b3ed;
+            flex-shrink: 0;
+        }
+
+        .nav-section {
+            padding: 8px 20px 4px;
+            font-size: 10px;
+            color: #4a6fa5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 6px;
+        }
+
+        .user-info {
+            margin-top: auto;
+            padding: 16px 20px;
+            border-top: 1px solid #2d4a7a;
+            font-size: 13px;
+        }
+
+            .user-info .name {
+                color: white;
+                font-weight: 500;
+            }
+
+            .user-info .role {
+                color: #90cdf4;
+                font-size: 11px;
+            }
+
+        .logout-btn {
+            margin-top: 8px;
+            background: none;
+            border: 1px solid #4a6fa5;
+            color: #bee3f8;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            width: 100%;
+        }
+
+        /* ── Main ── */
+        .main {
+            margin-right: 220px;
+            flex: 1;
+            padding: 28px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a365d;
+            margin-bottom: 4px;
+        }
+
+        .page-sub {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        /* ── Layout ── */
+        .form-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* ── Cards ── */
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+            .card-icon.blue {
+                background: #ebf4ff;
+            }
+
+            .card-icon.green {
+                background: #f0fff4;
+            }
+
+            .card-icon.purple {
+                background: #faf5ff;
+            }
+
+            .card-icon.orange {
+                background: #fffaf0;
+            }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .card-sub {
+            font-size: 11px;
+            color: #a0aec0;
+            margin-top: 1px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* ── Form ── */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .label-required {
+            color: #e53e3e;
+            font-size: 14px;
+        }
+
+        .label-badge {
+            font-size: 10px;
+            background: #ebf4ff;
+            color: #2b6cb0;
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .field-hint {
+            font-size: 11px;
+            color: #a0aec0;
+            margin-top: 4px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #2d3748;
+            outline: none;
+            font-family: 'Segoe UI', sans-serif;
+            background: white;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+            input:focus, select:focus {
+                border-color: #3182ce;
+                box-shadow: 0 0 0 3px rgba(49,130,206,0.1);
+            }
+
+            input.error-field, select.error-field {
+                border-color: #e53e3e;
+                box-shadow: 0 0 0 3px rgba(229,62,62,0.1);
+            }
+
+        .field-error {
+            font-size: 11px;
+            color: #e53e3e;
+            margin-top: 4px;
+            display: none;
+        }
+
+            .field-error.show {
+                display: block;
+            }
+
+        .section-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 18px 0;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+
+        /* ── Drug selector ── */
+        .drug-select-wrap {
+            position: relative;
+        }
+
+            .drug-select-wrap select {
+                padding-right: 14px;
+            }
+
+        /* ── Drug info card ── */
+        .drug-preview {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 12px;
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+
+            .drug-preview.show {
+                display: block;
+            }
+
+            .drug-preview.expired {
+                background: #fff5f5;
+                border-color: #feb2b2;
+            }
+
+            .drug-preview.low {
+                background: #fffbeb;
+                border-color: #f6e05e;
+            }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .drug-preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .drug-preview-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a365d;
+        }
+
+        .drug-status-pill {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .pill-ok {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .pill-warn {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .pill-bad {
+            background: #fed7d7;
+            color: #822727;
+        }
+
+        .drug-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .drug-meta-item {
+            background: white;
+            border-radius: 6px;
+            padding: 8px 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .drug-meta-label {
+            font-size: 10px;
+            color: #a0aec0;
+            margin-bottom: 2px;
+        }
+
+        .drug-meta-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .drug-hash {
+            margin-top: 10px;
+            background: #1a202c;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #68d391;
+            word-break: break-all;
+        }
+
+        /* ── Transfer arrow ── */
+        .transfer-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ebf8ff, #f0fff4);
+            border-radius: 10px;
+            margin: 16px 0;
+        }
+
+        .flow-node {
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .flow-icon {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .flow-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .flow-sub {
+            font-size: 10px;
+            color: #718096;
+            margin-top: 2px;
+        }
+
+        .flow-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            color: #3182ce;
+        }
+
+        .flow-arrow-line {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, #3182ce, #48bb78);
+            border-radius: 2px;
+            position: relative;
+        }
+
+            .flow-arrow-line::after {
+                content: '◀';
+                position: absolute;
+                left: -8px;
+                top: -7px;
+                font-size: 10px;
+                color: #3182ce;
+            }
+
+        .flow-arrow-text {
+            font-size: 10px;
+            color: #718096;
+        }
+
+        /* ── Recipient input ── */
+        .recipient-wrap {
+            position: relative;
+        }
+
+        .recipient-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #a0aec0;
+        }
+
+        .recipient-wrap input {
+            padding-right: 36px;
+        }
+
+        /* ── Submit ── */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #276749, #2f855a);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(39,103,73,0.3);
+        }
+
+            .btn-submit:hover:not(:disabled) {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 16px rgba(39,103,73,0.4);
+            }
+
+            .btn-submit:disabled {
+                background: #a0aec0;
+                cursor: not-allowed;
+                box-shadow: none;
+                transform: none;
+            }
+
+        /* ── Alerts ── */
+        .alert {
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+            line-height: 1.6;
+        }
+
+            .alert.show {
+                display: block;
+            }
+
+        .alert-success {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #276749;
+        }
+
+        .alert-error {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            color: #c53030;
+        }
+
+        /* ── Blockchain info strip ── */
+        .blockchain-strip {
+            background: linear-gradient(135deg, #1a202c, #2d3748);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .blockchain-strip-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #68d391;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .blockchain-strip-items {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .blockchain-strip-item {
+            font-size: 11px;
+            color: #a0aec0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .blockchain-strip-item span {
+                color: #90cdf4;
+            }
+
+        /* ── Side panel ── */
+        .side-panel {
+            position: sticky;
+            top: 28px;
+        }
+
+        /* History */
+        .history-item {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f4f8;
+        }
+
+            .history-item:last-child {
+                border-bottom: none;
+            }
+
+        .history-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #3182ce;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .history-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .history-sub {
+            font-size: 11px;
+            color: #a0aec0;
+            margin-top: 2px;
+        }
+
+        .history-hash {
+            font-family: monospace;
+            font-size: 10px;
+            color: #718096;
+            margin-top: 2px;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 20px;
+            color: #a0aec0;
+            font-size: 13px;
+        }
+
+        /* Allowed roles */
+        .role-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+        }
+
+        .role-node {
+            text-align: center;
+            font-size: 11px;
+        }
+
+            .role-node .rn-icon {
+                font-size: 20px;
+            }
+
+            .role-node .rn-label {
+                color: #4a5568;
+                margin-top: 3px;
+            }
+
+            .role-node.active-role .rn-label {
+                color: #2b6cb0;
+                font-weight: 700;
+            }
+
+        .role-arrow {
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        /* No access */
+        .no-access {
+            text-align: center;
+            padding: 60px;
+            color: #822727;
+            font-size: 15px;
+        }
+
+        /* Loading */
+        .loading-drugs {
+            text-align: center;
+            padding: 20px;
+            color: #718096;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-logo"><h2>PharmaChain</h2><p>نظام تتبع الأدوية</p></div>
+            <a class="nav-item" onclick="goTo('dashboard.html')"><div class="nav-dot"></div> لوحة التحكم</a>
+            <a class="nav-item" onclick="goTo('add-drug.html')"><div class="nav-dot"></div> إضافة دواء</a>
+            <a class="nav-item active"><div class="nav-dot"></div> نقل دواء</a>
+            <a class="nav-item" onclick="goTo('blockchain.html')"><div class="nav-dot"></div> Blockchain</a>
+            <a class="nav-item" onclick="goTo('verify.html')"><div class="nav-dot"></div> التحقق من دواء</a>
+            <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><div class="nav-dot"></div> سجل العمليات</a>
+            <div class="nav-section" id="navAISection" style="display:none">الذكاء الاصطناعي</div>
+            <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><div class="nav-dot"></div> محلل المخاطر AI</a>
+            <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><div class="nav-dot"></div> تحليلات الأداء AI</a>
+            <div class="user-info">
+                <div class="name" id="sidebarUsername">...</div>
+                <div class="role" id="sidebarRole">...</div>
+                <button class="logout-btn" onclick="logout()">تسجيل خروج</button>
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div class="main">
+            <div class="page-header">
+                <div class="page-title">نقل دواء</div>
+                <div class="page-sub">كل عملية نقل تُسجَّل في Blockchain — لا يمكن التلاعب بها</div>
+            </div>
+
+            <div id="noAccessMsg" style="display:none">
+                <div class="card"><div class="card-body"><div class="no-access">ليس لديك صلاحية نقل الأدوية</div></div></div>
+            </div>
+
+            <div id="formContent">
+                <div class="form-layout">
+
+                    <!-- Left: Form -->
+                    <div>
+                        <!-- Blockchain strip -->
+                        <div class="blockchain-strip">
+                            <div class="blockchain-strip-title">⛓️ Blockchain Protection</div>
+                            <div class="blockchain-strip-items">
+                                <div class="blockchain-strip-item">🔒 <span>Hash Chaining:</span> كل Block مرتبط بالسابق</div>
+                                <div class="blockchain-strip-item">⚡ <span>Proof of Work:</span> Mining تلقائي عند كل نقل</div>
+                                <div class="blockchain-strip-item">🌲 <span>Merkle Root:</span> تلخيص كل بيانات الـ Block</div>
+                            </div>
+                        </div>
+
+                        <!-- Drug selection -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon blue">💊</div>
+                                <div>
+                                    <div class="card-title">اختيار الدواء</div>
+                                    <div class="card-sub">اختر الدواء المراد نقله</div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>الدواء <span class="label-required">*</span></label>
+                                    <div class="drug-select-wrap">
+                                        <select id="drugId" onchange="onDrugSelect()">
+                                            <option value="">-- اختر دواء --</option>
+                                        </select>
+                                    </div>
+                                    <div class="field-error" id="drugError">⚠️ يرجى اختيار الدواء</div>
+                                    <div class="field-hint">يتم عرض الأدوية المتاحة في النظام</div>
+                                </div>
+
+                                <!-- Drug preview -->
+                                <div class="drug-preview" id="drugPreview">
+                                    <div class="drug-preview-header">
+                                        <div class="drug-preview-name" id="prevName">—</div>
+                                        <span class="drug-status-pill" id="prevStatus">—</span>
+                                    </div>
+                                    <div class="drug-meta-grid">
+                                        <div class="drug-meta-item">
+                                            <div class="drug-meta-label">الكمية المتاحة</div>
+                                            <div class="drug-meta-value" id="prevQty">—</div>
+                                        </div>
+                                        <div class="drug-meta-item">
+                                            <div class="drug-meta-label">الشركة المصنعة</div>
+                                            <div class="drug-meta-value" id="prevMfr">—</div>
+                                        </div>
+                                        <div class="drug-meta-item">
+                                            <div class="drug-meta-label">تاريخ الانتهاء</div>
+                                            <div class="drug-meta-value" id="prevExp">—</div>
+                                        </div>
+                                        <div class="drug-meta-item">
+                                            <div class="drug-meta-label">رقم الدواء</div>
+                                            <div class="drug-meta-value" id="prevId">—</div>
+                                        </div>
+                                    </div>
+                                    <div class="drug-hash" id="prevHash"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transfer details -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon green">🔄</div>
+                                <div>
+                                    <div class="card-title">تفاصيل النقل</div>
+                                    <div class="card-sub">المستلم والمسار</div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+
+                                <!-- Transfer flow visual -->
+                                <div class="transfer-flow" id="transferFlow">
+                                    <div class="flow-node" id="fromNode">
+                                        <div class="flow-icon" id="fromIcon">🏭</div>
+                                        <div class="flow-label" id="fromLabel">أنت</div>
+                                        <div class="flow-sub" id="fromSub">المرسل</div>
+                                    </div>
+                                    <div class="flow-arrow">
+                                        <div class="flow-arrow-line"></div>
+                                        <div class="flow-arrow-text">نقل دواء</div>
+                                    </div>
+                                    <div class="flow-node" id="toNode">
+                                        <div class="flow-icon" id="toIcon">🚚</div>
+                                        <div class="flow-label" id="toLabel">المستلم</div>
+                                        <div class="flow-sub" id="toSub">الوجهة</div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>اسم المستخدم المستلم <span class="label-required">*</span></label>
+                                    <div class="recipient-wrap">
+                                        <span class="recipient-icon">👤</span>
+                                        <input type="text" id="toUsername" placeholder="أدخل اسم المستخدم المستلم" oninput="onRecipientInput()" style="padding-right:36px;">
+                                    </div>
+                                    <div class="field-error" id="usernameError">⚠️ اسم المستخدم المستلم مطلوب</div>
+                                    <div class="field-hint" id="recipientHint">المستلم يجب أن يكون <span id="expectedRole" style="font-weight:600;color:#2b6cb0"></span></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>ملاحظات النقل <span class="label-badge">اختياري</span></label>
+                                    <textarea id="transferNotes" placeholder="أي ملاحظات خاصة بهذا النقل..." rows="2"></textarea>
+                                </div>
+
+                                <button class="btn-submit" id="transferBtn" onclick="transferDrug()">
+                                    <span id="transferIcon">🔄</span>
+                                    <span id="transferText">نقل الدواء وتسجيله في الـ Blockchain</span>
+                                </button>
+
+                                <div class="alert alert-success" id="successMsg"></div>
+                                <div class="alert alert-error" id="errorMsg"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Side panel -->
+                    <div class="side-panel">
+
+                        <!-- Transfer path -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon green">🗺️</div>
+                                <div>
+                                    <div class="card-title">مسار التوريد</div>
+                                    <div class="card-sub">دورك الحالي في السلسلة</div>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding:12px 20px;">
+                                <div class="role-flow">
+                                    <div class="role-node" id="rn-factory">
+                                        <div class="rn-icon">🏭</div>
+                                        <div class="rn-label">المصنع</div>
+                                    </div>
+                                    <div class="role-arrow">←</div>
+                                    <div class="role-node" id="rn-distributor">
+                                        <div class="rn-icon">🚚</div>
+                                        <div class="rn-label">الموزع</div>
+                                    </div>
+                                    <div class="role-arrow">←</div>
+                                    <div class="role-node" id="rn-pharmacy">
+                                        <div class="rn-icon">🏥</div>
+                                        <div class="rn-label">الصيدلية</div>
+                                    </div>
+                                    <div class="role-arrow">←</div>
+                                    <div class="role-node" id="rn-customer">
+                                        <div class="rn-icon">👤</div>
+                                        <div class="rn-label">الزبون</div>
+                                    </div>
+                                </div>
+                                <div style="text-align:center;font-size:12px;color:#718096;margin-top:8px;" id="roleDescription"></div>
+                            </div>
+                        </div>
+
+                        <!-- Recent transfers -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon purple">📋</div>
+                                <div>
+                                    <div class="card-title">آخر النقلات</div>
+                                    <div class="card-sub">نقلاتك الأخيرة</div>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding:8px 20px;" id="recentTransfers">
+                                <div class="empty-history">⏳ جاري التحميل...</div>
+                            </div>
+                        </div>
+
+                        <!-- Tips -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon orange">💡</div>
+                                <div><div class="card-title">تذكير مهم</div></div>
+                            </div>
+                            <div class="card-body" style="padding:14px 20px;">
+                                <div style="display:flex;flex-direction:column;gap:10px;font-size:12px;color:#4a5568;">
+                                    <div style="display:flex;gap:8px;"><span>⚠️</span><span>تأكد من اسم المستلم قبل النقل — لا يمكن التراجع</span></div>
+                                    <div style="display:flex;gap:8px;"><span>⛓️</span><span>سيتم Mining الـ Block تلقائياً (Nonce + Hash)</span></div>
+                                    <div style="display:flex;gap:8px;"><span>📱</span><span>يمكن للمستلم التحقق من الدواء عبر QR Code</span></div>
+                                    <div style="display:flex;gap:8px;"><span>🔔</span><span>العملية تُسجَّل في Audit Log مع الـ IP</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var API = 'http://localhost:7036';
+        var token = localStorage.getItem('token');
+        var role = localStorage.getItem('role');
+        var drugsData = [];
+
+        if (!token) { window.location.replace(API + '/login.html'); }
+
+        document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
+        document.getElementById('sidebarRole').textContent = role || '';
+
+        if (role === 'Admin') {
+            document.getElementById('navAudit').style.display = 'flex';
+            document.getElementById('navRisk').style.display = 'flex';
+            document.getElementById('navAdvisor').style.display = 'flex';
+            document.getElementById('navAISection').style.display = 'block';
+        }
+
+        var allowedTransfers = { Factory: 'Distributor', Distributor: 'Pharmacy', Pharmacy: 'Customer' };
+        var roleLabelsAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون', Admin: 'المدير' };
+        var roleIcons = { Factory: '🏭', Distributor: '🚚', Pharmacy: '🏥', Customer: '👤', Admin: '👨‍💼' };
+
+        function goTo(page) { window.location.replace(API + '/' + page); }
+        function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+
+        // ── Highlight active role ──
+        function setupRoleFlow() {
+            var roleMap = { Factory: 'factory', Distributor: 'distributor', Pharmacy: 'pharmacy', Customer: 'customer' };
+            var key = roleMap[role];
+            if (key) {
+                var el = document.getElementById('rn-' + key);
+                if (el) el.classList.add('active-role');
+            }
+            var target = allowedTransfers[role];
+            document.getElementById('roleDescription').textContent = role === 'Admin'
+                ? 'لديك صلاحية النقل لأي جهة'
+                : 'يمكنك النقل من ' + (roleLabelsAr[role] || role) + ' إلى ' + (roleLabelsAr[target] || '—');
+
+            // Update flow nodes
+            document.getElementById('fromIcon').textContent = roleIcons[role] || '👤';
+            document.getElementById('fromLabel').textContent = roleLabelsAr[role] || role;
+            document.getElementById('fromSub').textContent = localStorage.getItem('username') || 'أنت';
+
+            if (target) {
+                document.getElementById('toIcon').textContent = roleIcons[target] || '👤';
+                document.getElementById('toLabel').textContent = roleLabelsAr[target];
+                document.getElementById('toSub').textContent = 'الوجهة التالية';
+                document.getElementById('expectedRole').textContent = roleLabelsAr[target];
+            } else if (role === 'Admin') {
+                document.getElementById('toIcon').textContent = '👤';
+                document.getElementById('toLabel').textContent = 'أي جهة';
+                document.getElementById('expectedRole').textContent = 'أي دور';
+            }
+        }
+
+        // ── Load drugs ──
+        function loadDrugs() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API + '/api/drugs', true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    drugsData = Array.isArray(response) ? response : (response.drugs || []);
+                    var select = document.getElementById('drugId');
+                    var now = new Date();
+                    drugsData.forEach(function (d) {
+                        var opt = document.createElement('option');
+                        var isExpired = new Date(d.expiryDate) < now;
+                        opt.value = d.id;
+                        opt.textContent = (isExpired ? '❌ ' : '✅ ') + d.name + ' — كمية: ' + d.quantity;
+                        if (isExpired) opt.style.color = '#c53030';
+                        select.appendChild(opt);
+                    });
+                }
+            };
+            xhr.send();
+        }
+
+        // ── Load recent transfers ──
+        function loadRecentTransfers() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API + '/api/transaction/chain', true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                if (xhr.status !== 200) { document.getElementById('recentTransfers').innerHTML = '<div class="empty-history">تعذر التحميل</div>'; return; }
+                var data = JSON.parse(xhr.responseText);
+                var chain = data.chain || [];
+                var myUsername = localStorage.getItem('username');
+                var mine = chain.filter(function (b) { return b.fromUsername === myUsername; }).slice(-5).reverse();
+                if (mine.length === 0) { document.getElementById('recentTransfers').innerHTML = '<div class="empty-history">لا توجد نقلات سابقة</div>'; return; }
+                var roleAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون' };
+                var html = mine.map(function (b) {
+                    return '<div class="history-item">' +
+                        '<div class="history-dot"></div>' +
+                        '<div><div class="history-title">' + b.drugName + '</div>' +
+                        '<div class="history-sub">' + (roleAr[b.fromRole] || b.fromRole) + ' ← ' + (roleAr[b.toRole] || b.toRole) + ' · ' + b.toUsername + '</div>' +
+                        '<div class="history-sub">' + new Date(b.timestamp).toLocaleString('ar-JO') + '</div>' +
+                        '<div class="history-hash">Block #' + b.blockNumber + ' · ' + b.blockHash + '</div>' +
+                        '</div></div>';
+                }).join('');
+                document.getElementById('recentTransfers').innerHTML = html;
+            };
+            xhr.onerror = function () { document.getElementById('recentTransfers').innerHTML = '<div class="empty-history">تعذر التحميل</div>'; };
+            xhr.send();
+        }
+
+        // ── Drug select ──
+        function onDrugSelect() {
+            var id = document.getElementById('drugId').value;
+            document.getElementById('drugError').classList.remove('show');
+            document.getElementById('drugId').classList.remove('error-field');
+
+            if (!id) { document.getElementById('drugPreview').classList.remove('show'); return; }
+
+            var drug = drugsData.find(function (d) { return d.id == id; });
+            if (!drug) return;
+
+            var now = new Date();
+            var soon = new Date(); soon.setDate(soon.getDate() + 30);
+            var expiry = new Date(drug.expiryDate);
+            var isExpired = expiry < now;
+            var isSoon = expiry >= now && expiry <= soon;
+
+            var preview = document.getElementById('drugPreview');
+            preview.className = 'drug-preview show' + (isExpired ? ' expired' : isSoon ? ' low' : '');
+
+            document.getElementById('prevName').textContent = drug.name;
+            document.getElementById('prevId').textContent = '#' + drug.id;
+            document.getElementById('prevQty').textContent = drug.quantity + ' وحدة' + (drug.quantity <= 10 ? ' ⚠️' : '');
+            document.getElementById('prevMfr').textContent = drug.manufacturer || '—';
+            document.getElementById('prevExp').textContent = expiry.toLocaleDateString('ar-JO');
+            document.getElementById('prevHash').textContent = 'Batch Hash: ' + drug.batchNumber;
+
+            var statusEl = document.getElementById('prevStatus');
+            if (isExpired) { statusEl.className = 'drug-status-pill pill-bad'; statusEl.textContent = 'منتهي الصلاحية ❌'; }
+            else if (isSoon) { statusEl.className = 'drug-status-pill pill-warn'; statusEl.textContent = 'ينتهي قريباً ⚠️'; }
+            else { statusEl.className = 'drug-status-pill pill-ok'; statusEl.textContent = 'صالح ✅'; }
+        }
+
+        // ── Recipient input ──
+        function onRecipientInput() {
+            document.getElementById('usernameError').classList.remove('show');
+            document.getElementById('toUsername').classList.remove('error-field');
+        }
+
+        // ── Transfer ──
+        function transferDrug() {
+            var drugId = parseInt(document.getElementById('drugId').value);
+            var toUsername = document.getElementById('toUsername').value.trim();
+            var valid = true;
+
+            if (!drugId) { document.getElementById('drugError').classList.add('show'); document.getElementById('drugId').classList.add('error-field'); valid = false; }
+            if (!toUsername) { document.getElementById('usernameError').classList.add('show'); document.getElementById('toUsername').classList.add('error-field'); valid = false; }
+            if (!valid) return;
+
+            var btn = document.getElementById('transferBtn');
+            btn.disabled = true;
+            document.getElementById('transferIcon').textContent = '⏳';
+            document.getElementById('transferText').textContent = 'جاري النقل والـ Mining...';
+            document.getElementById('errorMsg').classList.remove('show');
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', API + '/api/transaction/transfer', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                btn.disabled = false;
+                document.getElementById('transferIcon').textContent = '🔄';
+                document.getElementById('transferText').textContent = 'نقل الدواء وتسجيله في الـ Blockchain';
+
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    var drug = drugsData.find(function (d) { return d.id == drugId; });
+                    var successEl = document.getElementById('successMsg');
+                    successEl.classList.add('show');
+                    successEl.innerHTML =
+                        '✅ تم نقل <strong>' + (drug ? drug.name : 'الدواء') + '</strong> بنجاح!<br>' +
+                        '<span style="font-size:12px;color:#276749">Block Hash: <span style="font-family:monospace">' + data.blockHash + '</span></span><br>' +
+                        '<span style="font-size:12px;color:#276749">Nonce: ' + (data.nonce || '—') + ' · Block #' + (data.blockNumber || '—') + '</span>';
+                    setTimeout(function () { goTo('dashboard.html'); }, 3000);
+                } else if (xhr.status === 401) {
+                    localStorage.clear(); window.location.replace(API + '/login.html');
+                } else {
+                    var errEl = document.getElementById('errorMsg');
+                    errEl.textContent = '❌ ' + (xhr.responseText || 'حدث خطأ غير متوقع');
+                    errEl.classList.add('show');
+                }
+            };
+            xhr.onerror = function () {
+                btn.disabled = false;
+                document.getElementById('transferIcon').textContent = '🔄';
+                document.getElementById('transferText').textContent = 'نقل الدواء وتسجيله في الـ Blockchain';
+                document.getElementById('errorMsg').textContent = '❌ تعذر الاتصال بالسيرفر';
+                document.getElementById('errorMsg').classList.add('show');
+            };
+            xhr.send(JSON.stringify({ drugId: drugId, toUsername: toUsername }));
+        }
+
+        // ── Init ──
+        var hasAccess = allowedTransfers[role] || role === 'Admin';
+        if (hasAccess) {
+            setupRoleFlow();
+            loadDrugs();
+            loadRecentTransfers();
+        } else {
+            document.getElementById('noAccessMsg').style.display = 'block';
+            document.getElementById('formContent').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
