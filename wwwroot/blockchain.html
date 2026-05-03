@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -7,797 +7,483 @@
     <link rel="stylesheet" href="/pharma-styles.css">
     <style>
         .controls-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-            align-items: flex-end;
+            display: flex; gap: 12px; margin-bottom: 18px;
+            flex-wrap: wrap; align-items: flex-end;
         }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .control-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--gray-600);
-        }
+        .control-group { display: flex; flex-direction: column; gap: 6px; }
+        .control-label { font-size: 12px; font-weight: 600; color: var(--gray-600); }
 
         .stats-bar {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 18px;
+            display: flex; gap: 12px; margin-bottom: 18px;
             flex-wrap: wrap;
         }
-
         .stat-chip {
-            background: white;
-            border: 1px solid var(--gray-100);
-            border-radius: var(--radius-lg);
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: var(--shadow-sm);
-            flex: 1;
-            min-width: 160px;
+            background: white; border: 1px solid var(--gray-100);
+            border-radius: var(--radius-lg); padding: 12px 16px;
+            display: flex; align-items: center; gap: 12px;
+            box-shadow: var(--shadow-sm); flex: 1; min-width: 160px;
         }
-
-        .stat-chip-icon {
-            font-size: 22px;
-        }
-
-        .stat-chip-val {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--gray-900);
-        }
-
-        .stat-chip-lbl {
-            font-size: 11px;
-            color: var(--gray-500);
-            margin-top: 1px;
-        }
+        .stat-chip-icon { font-size: 22px; }
+        .stat-chip-val  { font-size: 20px; font-weight: 800; color: var(--gray-900); }
+        .stat-chip-lbl  { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
 
         .verify-result {
-            border-radius: var(--radius-md);
-            padding: 13px 16px;
-            margin-bottom: 16px;
-            font-size: 13.5px;
-            display: none;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
+            border-radius: var(--radius-md); padding: 13px 16px;
+            margin-bottom: 16px; font-size: 13.5px;
+            display: none; align-items: center; gap: 10px; font-weight: 600;
         }
-
-            .verify-result.show {
-                display: flex;
-            }
-
-            .verify-result.ok {
-                background: var(--emerald-50);
-                border: 1.5px solid var(--emerald-200);
-                color: #065f46;
-            }
-
-            .verify-result.err {
-                background: var(--rose-50);
-                border: 1.5px solid var(--rose-200);
-                color: #9f1239;
-            }
+        .verify-result.show { display: flex; }
+        .verify-result.ok  { background: var(--emerald-50); border: 1.5px solid var(--emerald-200); color: #065f46; }
+        .verify-result.err { background: var(--rose-50);    border: 1.5px solid var(--rose-200);    color: #9f1239; }
 
         /* Demo card */
         .demo-card {
-            background: var(--amber-50);
-            border: 1.5px solid var(--amber-200);
-            border-radius: var(--radius-lg);
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            display: none;
+            background: var(--amber-50); border: 1.5px solid var(--amber-200);
+            border-radius: var(--radius-lg); padding: 16px 20px;
+            margin-bottom: 20px; display: none;
         }
-
         .demo-card-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: #92400e;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 7px;
+            font-size: 12px; font-weight: 700; color: #92400e;
+            margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
         }
-
-        .demo-btns {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
+        .demo-btns { display: flex; gap: 10px; flex-wrap: wrap; }
         .demo-result {
-            margin-top: 10px;
-            font-size: 12.5px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            display: none;
+            margin-top: 10px; font-size: 12.5px;
+            padding: 10px 12px; border-radius: 8px; display: none;
         }
-
-            .demo-result.show {
-                display: block;
-            }
-
-            .demo-result.red {
-                background: var(--rose-50);
-                color: #9f1239;
-                border: 1px solid var(--rose-200);
-            }
-
-            .demo-result.green {
-                background: var(--emerald-50);
-                color: #065f46;
-                border: 1px solid var(--emerald-200);
-            }
+        .demo-result.show { display: block; }
+        .demo-result.red   { background: var(--rose-50);    color: #9f1239; border: 1px solid var(--rose-200); }
+        .demo-result.green { background: var(--emerald-50); color: #065f46; border: 1px solid var(--emerald-200); }
 
         /* Chain layout */
         .chain-layout {
             display: grid;
             grid-template-columns: 1fr 290px;
-            gap: 22px;
-            align-items: start;
+            gap: 22px; align-items: start;
         }
 
         /* Genesis block */
         .genesis {
             background: linear-gradient(135deg, #1e2d5e, #1e3a8a);
-            color: white;
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 0;
+            color: white; border-radius: var(--radius-lg);
+            padding: 20px; text-align: center; margin-bottom: 0;
             box-shadow: 0 8px 24px rgba(30,45,94,0.35);
         }
-
-        .genesis-label {
-            font-size: 10px;
-            color: rgba(255,255,255,0.5);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 8px;
-        }
-
-        .genesis-name {
-            font-size: 17px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .genesis-hash {
-            font-family: 'Consolas', monospace;
-            font-size: 11px;
-            color: rgba(255,255,255,0.65);
-            background: rgba(255,255,255,0.1);
-            padding: 5px 12px;
-            border-radius: 20px;
-            display: inline-block;
-        }
+        .genesis-label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .genesis-name  { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+        .genesis-hash  { font-family: 'Consolas', monospace; font-size: 11px; color: rgba(255,255,255,0.65); background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 20px; display: inline-block; }
 
         /* Connector */
         .chain-connector {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 42px;
-            position: relative;
+            display: flex; align-items: center; justify-content: center;
+            height: 42px; position: relative;
         }
-
-            .chain-connector::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                right: 50%;
-                width: 2px;
-                background: linear-gradient(180deg, var(--blue-400), var(--blue-600));
-            }
-
+        .chain-connector::before {
+            content: ''; position: absolute;
+            top: 0; bottom: 0; right: 50%; width: 2px;
+            background: linear-gradient(180deg, var(--blue-400), var(--blue-600));
+        }
         .connector-badge {
-            background: var(--blue-50);
-            color: var(--blue-600);
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 14px;
-            border-radius: 20px;
-            border: 1px solid var(--blue-200);
-            z-index: 1;
-            position: relative;
+            background: var(--blue-50); color: var(--blue-600);
+            font-size: 11px; font-weight: 700; padding: 4px 14px;
+            border-radius: 20px; border: 1px solid var(--blue-200);
+            z-index: 1; position: relative;
         }
 
         /* Block card */
         .block-card {
-            background: white;
-            border-radius: var(--radius-lg);
-            border: 2px solid var(--gray-100);
-            overflow: hidden;
+            background: white; border-radius: var(--radius-lg);
+            border: 2px solid var(--gray-100); overflow: hidden;
             transition: border-color 0.2s, box-shadow 0.2s;
             box-shadow: var(--shadow-md);
         }
-
-            .block-card:hover {
-                border-color: var(--blue-300);
-                box-shadow: 0 4px 16px rgba(59,130,246,0.12);
-            }
-
-            .block-card.tampered {
-                border-color: var(--rose-400) !important;
-                background: var(--rose-50);
-                animation: shake 0.4s ease;
-            }
+        .block-card:hover { border-color: var(--blue-300); box-shadow: 0 4px 16px rgba(59,130,246,0.12); }
+        .block-card.tampered { border-color: var(--rose-400) !important; background: var(--rose-50); animation: shake 0.4s ease; }
 
         .block-top {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--gray-100);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 12px 16px; border-bottom: 1px solid var(--gray-100);
+            display: flex; align-items: center; justify-content: space-between;
             background: var(--gray-50);
         }
+        .block-num { background: var(--blue-600); color: white; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .block-num.tampered-num { background: var(--rose-600); }
+        .block-time { font-size: 11px; color: var(--gray-400); }
 
-        .block-num {
-            background: var(--blue-600);
-            color: white;
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-        }
+        .block-body { padding: 14px 16px; }
 
-            .block-num.tampered-num {
-                background: var(--rose-600);
-            }
+        .block-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .block-field { background: var(--gray-50); border-radius: 8px; padding: 9px 11px; border: 1px solid var(--gray-100); }
+        .block-field-label { font-size: 9.5px; color: var(--gray-400); font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+        .block-field-value { font-size: 13px; color: var(--gray-700); font-weight: 500; }
 
-        .block-time {
-            font-size: 11px;
-            color: var(--gray-400);
-        }
+        .block-meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .meta-chip { background: var(--amber-50); border: 1px solid var(--amber-200); border-radius: 8px; padding: 8px 11px; }
+        .meta-chip-label { font-size: 9.5px; color: var(--amber-600); font-weight: 700; margin-bottom: 3px; }
+        .meta-chip-value { font-size: 11.5px; color: #78350f; font-family: 'Consolas', monospace; font-weight: 700; word-break: break-all; }
 
-        .block-body {
-            padding: 14px 16px;
-        }
-
-        .block-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .block-field {
-            background: var(--gray-50);
-            border-radius: 8px;
-            padding: 9px 11px;
-            border: 1px solid var(--gray-100);
-        }
-
-        .block-field-label {
-            font-size: 9.5px;
-            color: var(--gray-400);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            margin-bottom: 4px;
-        }
-
-        .block-field-value {
-            font-size: 13px;
-            color: var(--gray-700);
-            font-weight: 500;
-        }
-
-        .block-meta-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .meta-chip {
-            background: var(--amber-50);
-            border: 1px solid var(--amber-200);
-            border-radius: 8px;
-            padding: 8px 11px;
-        }
-
-        .meta-chip-label {
-            font-size: 9.5px;
-            color: var(--amber-600);
-            font-weight: 700;
-            margin-bottom: 3px;
-        }
-
-        .meta-chip-value {
-            font-size: 11.5px;
-            color: #78350f;
-            font-family: 'Consolas', monospace;
-            font-weight: 700;
-            word-break: break-all;
-        }
-
-        .block-hashes {
-            border-top: 1px solid var(--gray-100);
-            padding-top: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .hash-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
-
-        .hash-label {
-            font-size: 10px;
-            color: var(--gray-400);
-            min-width: 90px;
-            padding-top: 3px;
-            font-weight: 600;
-        }
-
-        .hash-val {
-            font-family: 'Consolas', monospace;
-            font-size: 10.5px;
-            padding: 3px 8px;
-            border-radius: 5px;
-            word-break: break-all;
-            flex: 1;
-        }
-
-        .hash-prev {
-            background: var(--purple-50);
-            color: #4c1d95;
-        }
-
-        .hash-curr {
-            background: var(--emerald-50);
-            color: #065f46;
-        }
+        .block-hashes { border-top: 1px solid var(--gray-100); padding-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .hash-row { display: flex; align-items: flex-start; gap: 8px; }
+        .hash-label { font-size: 10px; color: var(--gray-400); min-width: 90px; padding-top: 3px; font-weight: 600; }
+        .hash-val { font-family: 'Consolas', monospace; font-size: 10.5px; padding: 3px 8px; border-radius: 5px; word-break: break-all; flex: 1; }
+        .hash-prev { background: var(--purple-50); color: #4c1d95; }
+        .hash-curr { background: var(--emerald-50); color: #065f46; }
 
         /* Right panel */
-        .right-panel {
-            position: sticky;
-            top: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+        .right-panel { position: sticky; top: 28px; display: flex; flex-direction: column; gap: 16px; }
 
         .integrity-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 0;
-            border-bottom: 1px solid var(--gray-100);
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 0; border-bottom: 1px solid var(--gray-100);
             font-size: 12.5px;
         }
-
-            .integrity-item:last-child {
-                border-bottom: none;
-            }
-
-        .integrity-icon {
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .integrity-label {
-            color: var(--gray-600);
-            flex: 1;
-        }
-
-        .integrity-status {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 3px 9px;
-            border-radius: 10px;
-        }
-
-        .s-ok {
-            background: var(--emerald-100);
-            color: #065f46;
-        }
-
-        .s-err {
-            background: var(--rose-100);
-            color: #9f1239;
-        }
-
-        .s-pending {
-            background: var(--gray-100);
-            color: var(--gray-500);
-        }
+        .integrity-item:last-child { border-bottom: none; }
+        .integrity-icon { font-size: 16px; flex-shrink: 0; }
+        .integrity-label { color: var(--gray-600); flex: 1; }
+        .integrity-status { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 10px; }
+        .s-ok      { background: var(--emerald-100); color: #065f46; }
+        .s-err     { background: var(--rose-100);    color: #9f1239; }
+        .s-pending { background: var(--gray-100);    color: var(--gray-500); }
 
         .summary-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 0;
-            border-bottom: 1px solid var(--gray-100);
-            cursor: pointer;
-            transition: background 0.15s;
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 0; border-bottom: 1px solid var(--gray-100);
+            cursor: pointer; transition: background 0.15s;
         }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-item:hover { background: var(--blue-50); margin: 0 -16px; padding: 9px 16px; }
+        .summary-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--blue-400); flex-shrink: 0; }
+        .summary-dot.tampered { background: var(--rose-500); }
+        .summary-title { font-size: 12.5px; font-weight: 600; color: var(--gray-700); }
+        .summary-sub   { font-size: 10.5px; color: var(--gray-400); margin-top: 1px; }
 
-            .summary-item:last-child {
-                border-bottom: none;
-            }
-
-            .summary-item:hover {
-                background: var(--blue-50);
-                margin: 0 -16px;
-                padding: 9px 16px;
-            }
-
-        .summary-dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: var(--blue-400);
-            flex-shrink: 0;
-        }
-
-            .summary-dot.tampered {
-                background: var(--rose-500);
-            }
-
-        .summary-title {
-            font-size: 12.5px;
-            font-weight: 600;
-            color: var(--gray-700);
-        }
-
-        .summary-sub {
-            font-size: 10.5px;
-            color: var(--gray-400);
-            margin-top: 1px;
-        }
-
-        .empty-chain {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--gray-400);
-        }
-
-        .empty-chain-icon {
-            font-size: 44px;
-            margin-bottom: 14px;
-        }
+        .empty-chain { text-align: center; padding: 60px 20px; color: var(--gray-400); }
+        .empty-chain-icon { font-size: 44px; margin-bottom: 14px; }
     </style>
 </head>
 <body>
-    <div class="layout">
+<div class="layout">
 
-        <!-- ══ SIDEBAR ══ -->
-        <div class="sidebar">
-            <div class="sidebar-logo"><h2>PharmaChain</h2><p>نظام تتبع الأدوية</p></div>
-            <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> لوحة التحكم</a>
-            <a class="nav-item" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> إضافة دواء</a>
-            <a class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> نقل دواء</a>
-            <a class="nav-item active"><span class="nav-icon">⛓️</span> Blockchain</a>
-            <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> التحقق من دواء</a>
-            <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> سجل العمليات</a>
-            <div class="nav-section-hdr" id="navAISection" style="display:none">الذكاء الاصطناعي</div>
-            <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> محلل المخاطر AI</a>
-            <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> تحليلات الأداء AI</a>
-            <div class="user-info-bar">
-                <div class="user-row">
-                    <div class="user-avatar">👤</div>
-                    <div>
-                        <div class="user-name" id="sidebarUsername">...</div>
-                        <div class="user-role" id="sidebarRole">...</div>
-                    </div>
-                </div>
-                <button class="logout-btn" onclick="logout()">🚪 تسجيل خروج</button>
-            </div>
-        </div>
-
-        <!-- ══ MAIN ══ -->
-        <div class="main">
-            <div class="page-header">
+    <!-- ══ SIDEBAR ══ -->
+    <div class="sidebar">
+        <div class="sidebar-logo"><h2>PharmaChain</h2><p>نظام تتبع الأدوية</p></div>
+        <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> لوحة التحكم</a>
+        <a class="nav-item" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> إضافة دواء</a>
+        <a class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> نقل دواء</a>
+        <a class="nav-item active"><span class="nav-icon">⛓️</span> Blockchain</a>
+        <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> التحقق من دواء</a>
+        <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> سجل العمليات</a>
+        <div class="nav-section-hdr" id="navAISection" style="display:none">الذكاء الاصطناعي</div>
+        <a class="nav-item" id="navRisk"    style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> محلل المخاطر AI</a>
+        <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> تحليلات الأداء AI</a>
+        <div class="user-info-bar">
+            <div class="user-row">
+                <div class="user-avatar">👤</div>
                 <div>
-                    <div class="page-title">⛓️ سلسلة Blockchain</div>
-                    <div class="page-subtitle">تتبع مسار الدواء من المصنع للمريض — كل كتلة مرتبطة بالسابقة بـ SHA-256 + Proof of Work</div>
+                    <div class="user-name" id="sidebarUsername">...</div>
+                    <div class="user-role" id="sidebarRole">...</div>
                 </div>
             </div>
-
-            <div class="controls-row">
-                <div class="control-group" style="flex:1;min-width:220px;">
-                    <div class="control-label">اختر الدواء</div>
-                    <select id="drugSelect" onchange="loadChain()" style="width:100%;">
-                        <option value="">-- اختر دواء لعرض سلسلته --</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary" onclick="verifyChain()">🔍 تحقق من سلامة السلسلة</button>
-                <button class="btn btn-outline" onclick="loadChain()" id="refreshBtn">🔄 تحديث</button>
-            </div>
-
-            <div class="stats-bar" id="statsBar" style="display:none;">
-                <div class="stat-chip">
-                    <div class="stat-chip-icon">📦</div>
-                    <div><div class="stat-chip-val" id="statBlocks">0</div><div class="stat-chip-lbl">عدد الـ Blocks</div></div>
-                </div>
-                <div class="stat-chip">
-                    <div class="stat-chip-icon">⛏️</div>
-                    <div><div class="stat-chip-val" id="statNonce">—</div><div class="stat-chip-lbl">آخر Nonce</div></div>
-                </div>
-                <div class="stat-chip">
-                    <div class="stat-chip-icon">🌿</div>
-                    <div><div class="stat-chip-val" id="statMerkle" style="font-size:13px;font-family:'Consolas',monospace;">—</div><div class="stat-chip-lbl">آخر Merkle Root</div></div>
-                </div>
-                <div class="stat-chip">
-                    <div class="stat-chip-icon" id="statIntIcon">✅</div>
-                    <div><div class="stat-chip-val" id="statInt" style="font-size:15px;">سليمة</div><div class="stat-chip-lbl">حالة السلسلة</div></div>
-                </div>
-            </div>
-
-            <div class="verify-result" id="verifyResult"></div>
-
-            <div class="demo-card" id="demoCard">
-                <div class="demo-card-title">⚙️ منطقة العرض التجريبي — للأدمن فقط</div>
-                <div class="demo-btns">
-                    <button class="btn btn-danger" onclick="demoTamper()">🔓 كسر السلسلة (محاكاة هجوم)</button>
-                    <button class="btn btn-success" onclick="demoRestore()">🔒 استعادة من Backup</button>
-                </div>
-                <div class="demo-result" id="demoResult"></div>
-            </div>
-
-            <div id="mainArea">
-                <div class="empty-chain">
-                    <div class="empty-chain-icon">⛓️</div>
-                    <div style="font-size:15px;font-weight:600;color:var(--gray-500);">اختر دواء لعرض سلسلة Blockchain</div>
-                    <div style="font-size:13px;margin-top:6px;">كل نقل دواء يُسجَّل كـ Block جديد مرتبط بالسابق</div>
-                </div>
-            </div>
+            <button class="logout-btn" onclick="logout()">🚪 تسجيل خروج</button>
         </div>
     </div>
 
-    <script>
-        var API = 'http://localhost:7036';
-        var token = localStorage.getItem('token');
-        var role = localStorage.getItem('role');
-        var drugsData = [], firstBlockId = null, currentTransactions = [];
+    <!-- ══ MAIN ══ -->
+    <div class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">⛓️ سلسلة Blockchain</div>
+                <div class="page-subtitle">تتبع مسار الدواء من المصنع للمريض — كل كتلة مرتبطة بالسابقة بـ SHA-256 + Proof of Work</div>
+            </div>
+        </div>
 
-        if (!token) { window.location.replace(API + '/login.html'); }
+        <div class="controls-row">
+            <div class="control-group" style="flex:1;min-width:220px;">
+                <div class="control-label">اختر الدواء</div>
+                <select id="drugSelect" onchange="loadChain()" style="width:100%;">
+                    <option value="">-- اختر دواء لعرض سلسلته --</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="verifyChain()">🔍 تحقق من سلامة السلسلة</button>
+            <button class="btn btn-outline" onclick="loadChain()" id="refreshBtn">🔄 تحديث</button>
+        </div>
 
-        document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
-        document.getElementById('sidebarRole').textContent = role || '';
+        <div class="stats-bar" id="statsBar" style="display:none;">
+            <div class="stat-chip">
+                <div class="stat-chip-icon">📦</div>
+                <div><div class="stat-chip-val" id="statBlocks">0</div><div class="stat-chip-lbl">عدد الـ Blocks</div></div>
+            </div>
+            <div class="stat-chip">
+                <div class="stat-chip-icon">⛏️</div>
+                <div><div class="stat-chip-val" id="statNonce">—</div><div class="stat-chip-lbl">آخر Nonce</div></div>
+            </div>
+            <div class="stat-chip">
+                <div class="stat-chip-icon">🌿</div>
+                <div><div class="stat-chip-val" id="statMerkle" style="font-size:13px;font-family:'Consolas',monospace;">—</div><div class="stat-chip-lbl">آخر Merkle Root</div></div>
+            </div>
+            <div class="stat-chip">
+                <div class="stat-chip-icon" id="statIntIcon">✅</div>
+                <div><div class="stat-chip-val" id="statInt" style="font-size:15px;">سليمة</div><div class="stat-chip-lbl">حالة السلسلة</div></div>
+            </div>
+        </div>
 
-        if (role === 'Admin') {
-            document.getElementById('navAudit').style.display = 'flex';
-            document.getElementById('navRisk').style.display = 'flex';
-            document.getElementById('navAdvisor').style.display = 'flex';
-            document.getElementById('navAISection').style.display = 'block';
-            document.getElementById('demoCard').style.display = 'block';
+        <div class="verify-result" id="verifyResult"></div>
+
+        <div class="demo-card" id="demoCard">
+            <div class="demo-card-title">⚙️ منطقة العرض التجريبي — للأدمن فقط</div>
+            <div class="demo-btns">
+                <button class="btn btn-danger" onclick="demoTamper()">🔓 كسر السلسلة (محاكاة هجوم)</button>
+                <button class="btn btn-success" onclick="demoRestore()">🔒 استعادة من Backup</button>
+            </div>
+            <div class="demo-result" id="demoResult"></div>
+        </div>
+
+        <div id="mainArea">
+            <div class="empty-chain">
+                <div class="empty-chain-icon">⛓️</div>
+                <div style="font-size:15px;font-weight:600;color:var(--gray-500);">اختر دواء لعرض سلسلة Blockchain</div>
+                <div style="font-size:13px;margin-top:6px;">كل نقل دواء يُسجَّل كـ Block جديد مرتبط بالسابق</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var API = 'http://localhost:7036';
+    var token = localStorage.getItem('token');
+    var role  = localStorage.getItem('role');
+    var drugsData = [], firstBlockId = null, currentTransactions = [];
+
+    if (!token) { window.location.replace(API + '/login.html'); }
+
+    document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
+    document.getElementById('sidebarRole').textContent = role || '';
+
+    if (role === 'Admin') {
+        document.getElementById('navAudit').style.display = 'flex';
+        document.getElementById('navRisk').style.display = 'flex';
+        document.getElementById('navAdvisor').style.display = 'flex';
+        document.getElementById('navAISection').style.display = 'block';
+        document.getElementById('demoCard').style.display = 'block';
+    }
+
+    var roleLabels = { Factory:'المصنع', Distributor:'الموزع', Pharmacy:'الصيدلية', Customer:'الزبون', Admin:'المدير' };
+    var roleIcons  = { Factory:'🏭', Distributor:'🚚', Pharmacy:'🏥', Customer:'👤' };
+
+    function goTo(page) { window.location.replace(API + '/' + page); }
+    function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+
+    function loadDrugs() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', API + '/api/drugs', true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function () {
+            if (xhr.status !== 200) return;
+            var response = JSON.parse(xhr.responseText);
+            drugsData = Array.isArray(response) ? response : (response.drugs || []);
+            var sel = document.getElementById('drugSelect');
+            drugsData.forEach(function (d) {
+                var opt = document.createElement('option');
+                opt.value = d.id;
+                opt.textContent = d.name + ' (ID: ' + d.id + ')';
+                sel.appendChild(opt);
+            });
+            var params = new URLSearchParams(window.location.search);
+            var drugFromUrl = params.get('drug');
+            if (drugFromUrl) { sel.value = drugFromUrl; loadChain(); }
+        };
+        xhr.send();
+    }
+
+    function loadChain() {
+        var drugId = document.getElementById('drugSelect').value;
+        document.getElementById('verifyResult').classList.remove('show');
+        document.getElementById('statsBar').style.display = 'none';
+        firstBlockId = null; currentTransactions = [];
+
+        if (!drugId) {
+            document.getElementById('mainArea').innerHTML = '<div class="empty-chain"><div class="empty-chain-icon">⛓️</div><div style="font-size:15px;font-weight:600;color:var(--gray-500);">اختر دواء لعرض سلسلة Blockchain</div></div>';
+            return;
         }
 
-        var roleLabels = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون', Admin: 'المدير' };
-        var roleIcons = { Factory: '🏭', Distributor: '🚚', Pharmacy: '🏥', Customer: '👤' };
+        document.getElementById('mainArea').innerHTML = '<div class="loading-state"><div class="spinner"></div>⛏️ جاري تحميل السلسلة...</div>';
 
-        function goTo(page) { window.location.replace(API + '/' + page); }
-        function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
-
-        function loadDrugs() {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', API + '/api/drugs', true);
-            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-            xhr.onload = function () {
-                if (xhr.status !== 200) return;
-                var response = JSON.parse(xhr.responseText);
-                drugsData = Array.isArray(response) ? response : (response.drugs || []);
-                var sel = document.getElementById('drugSelect');
-                drugsData.forEach(function (d) {
-                    var opt = document.createElement('option');
-                    opt.value = d.id;
-                    opt.textContent = d.name + ' (ID: ' + d.id + ')';
-                    sel.appendChild(opt);
-                });
-                var params = new URLSearchParams(window.location.search);
-                var drugFromUrl = params.get('drug');
-                if (drugFromUrl) { sel.value = drugFromUrl; loadChain(); }
-            };
-            xhr.send();
-        }
-
-        function loadChain() {
-            var drugId = document.getElementById('drugSelect').value;
-            document.getElementById('verifyResult').classList.remove('show');
-            document.getElementById('statsBar').style.display = 'none';
-            firstBlockId = null; currentTransactions = [];
-
-            if (!drugId) {
-                document.getElementById('mainArea').innerHTML = '<div class="empty-chain"><div class="empty-chain-icon">⛓️</div><div style="font-size:15px;font-weight:600;color:var(--gray-500);">اختر دواء لعرض سلسلة Blockchain</div></div>';
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', API + '/api/transaction/history/' + drugId, true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function () {
+            if (xhr.status !== 200) { document.getElementById('mainArea').innerHTML = '<div class="loading-state">⚠️ تعذر تحميل السلسلة</div>'; return; }
+            var transactions = JSON.parse(xhr.responseText);
+            if (transactions.length === 0) {
+                document.getElementById('mainArea').innerHTML = '<div class="empty-chain"><div class="empty-chain-icon">📭</div><div style="font-size:15px;font-weight:600;color:var(--gray-500);">لا توجد عمليات نقل لهذا الدواء بعد</div></div>';
                 return;
             }
+            currentTransactions = transactions;
+            firstBlockId = transactions[0].id;
+            renderChain(transactions);
+            updateStats(transactions);
+        };
+        xhr.onerror = function () { document.getElementById('mainArea').innerHTML = '<div class="loading-state">⚠️ تعذر الاتصال بالسيرفر</div>'; };
+        xhr.send();
+    }
 
-            document.getElementById('mainArea').innerHTML = '<div class="loading-state"><div class="spinner"></div>⛏️ جاري تحميل السلسلة...</div>';
+    function renderChain(transactions) {
+        var drug = drugsData.find(function (d) { return d.id == document.getElementById('drugSelect').value; }) || { name: 'الدواء' };
+        var chainHtml = '<div class="genesis">'
+            + '<div class="genesis-label">Genesis Block — كتلة التأسيس</div>'
+            + '<div class="genesis-name">⛓️ ' + drug.name + '</div>'
+            + '<div class="genesis-hash">0000000000000000</div>'
+            + '</div>';
 
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', API + '/api/transaction/history/' + drugId, true);
-            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-            xhr.onload = function () {
-                if (xhr.status !== 200) { document.getElementById('mainArea').innerHTML = '<div class="loading-state">⚠️ تعذر تحميل السلسلة</div>'; return; }
-                var transactions = JSON.parse(xhr.responseText);
-                if (transactions.length === 0) {
-                    document.getElementById('mainArea').innerHTML = '<div class="empty-chain"><div class="empty-chain-icon">📭</div><div style="font-size:15px;font-weight:600;color:var(--gray-500);">لا توجد عمليات نقل لهذا الدواء بعد</div></div>';
-                    return;
-                }
-                currentTransactions = transactions;
-                firstBlockId = transactions[0].id;
-                renderChain(transactions);
-                updateStats(transactions);
-            };
-            xhr.onerror = function () { document.getElementById('mainArea').innerHTML = '<div class="loading-state">⚠️ تعذر الاتصال بالسيرفر</div>'; };
-            xhr.send();
-        }
+        transactions.forEach(function (t, i) {
+            chainHtml += '<div class="chain-connector"><span class="connector-badge">⬇ Hash Chain</span></div>';
+            chainHtml += buildBlockHtml(t, t.blockNumber || (i + 1));
+        });
 
-        function renderChain(transactions) {
-            var drug = drugsData.find(function (d) { return d.id == document.getElementById('drugSelect').value; }) || { name: 'الدواء' };
-            var chainHtml = '<div class="genesis">'
-                + '<div class="genesis-label">Genesis Block — كتلة التأسيس</div>'
-                + '<div class="genesis-name">⛓️ ' + drug.name + '</div>'
-                + '<div class="genesis-hash">0000000000000000</div>'
+        var summaryItems = transactions.map(function (t, i) {
+            return '<div class="summary-item" onclick="scrollToBlock(\'' + t.id + '\')">'
+                + '<div class="summary-dot" id="sdot-' + t.id + '"></div>'
+                + '<div><div class="summary-title">Block #' + (t.blockNumber||(i+1)) + ' — ' + t.drugName + '</div>'
+                + '<div class="summary-sub">' + (roleLabels[t.fromRole]||t.fromRole) + ' ← ' + (roleLabels[t.toRole]||t.toRole) + ' · ' + new Date(t.timestamp).toLocaleDateString('ar-JO') + '</div>'
+                + '</div></div>';
+        }).join('');
+
+        var rightHtml = '<div class="card"><div class="card-header"><div class="card-header-left"><div class="card-icon ci-blue">📋</div><div><div class="card-title">ملخص الـ Blocks</div></div></div></div><div class="card-body" style="padding:8px 16px;">' + summaryItems + '</div></div>'
+            + '<div class="card"><div class="card-header"><div class="card-header-left"><div class="card-icon ci-dark">🔐</div><div><div class="card-title">عناصر الأمان</div></div></div></div><div class="card-body" style="padding:8px 16px;">' + buildIntegrityItems() + '</div></div>';
+
+        document.getElementById('mainArea').innerHTML =
+            '<div class="chain-layout"><div id="chainBlocks">' + chainHtml + '</div><div class="right-panel">' + rightHtml + '</div></div>';
+    }
+
+    function buildBlockHtml(t, bNum) {
+        return '<div class="block-card" id="block-' + t.id + '">'
+            + '<div class="block-top">'
+            + '<span class="block-num" id="badge-' + t.id + '">كتلة #' + bNum + '</span>'
+            + '<span class="block-time">' + new Date(t.timestamp).toLocaleString('ar-JO') + '</span>'
+            + '</div><div class="block-body">'
+            + '<div class="block-grid">'
+            + '<div class="block-field"><div class="block-field-label">من</div><div class="block-field-value">' + (roleIcons[t.fromRole]||'') + ' <span class="role-tag role-' + t.fromRole + '">' + (roleLabels[t.fromRole]||t.fromRole) + '</span></div></div>'
+            + '<div class="block-field"><div class="block-field-label">إلى</div><div class="block-field-value">' + (roleIcons[t.toRole]||'') + ' <span class="role-tag role-' + t.toRole + '">' + (roleLabels[t.toRole]||t.toRole) + '</span></div></div>'
+            + '<div class="block-field"><div class="block-field-label">المرسل</div><div class="block-field-value">' + t.fromUsername + '</div></div>'
+            + '<div class="block-field"><div class="block-field-label">المستلم</div><div class="block-field-value">' + t.toUsername + '</div></div>'
+            + '</div>'
+            + '<div class="block-meta-row">'
+            + '<div class="meta-chip"><div class="meta-chip-label">⛏️ Proof of Work — Nonce</div><div class="meta-chip-value">' + (t.nonce||0) + '</div></div>'
+            + '<div class="meta-chip"><div class="meta-chip-label">🌿 Merkle Root</div><div class="meta-chip-value">' + (t.merkleRoot||'—') + '</div></div>'
+            + '</div>'
+            + '<div class="block-hashes">'
+            + '<div class="hash-row"><span class="hash-label">Previous Hash</span><span class="hash-val hash-prev">' + t.previousHash + '</span></div>'
+            + '<div class="hash-row"><span class="hash-label">Block Hash</span><span class="hash-val hash-curr">' + t.blockHash + '</span></div>'
+            + '</div></div></div>';
+    }
+
+    function buildIntegrityItems() {
+        return [
+            { icon: '🔗', label: 'Hash Chaining', id: 'Hash-Chaining', status: 'pending' },
+            { icon: '⛏️', label: 'Proof of Work', id: 'Proof-of-Work', status: 'pending' },
+            { icon: '🌿', label: 'Merkle Root',   id: 'Merkle-Root',   status: 'pending' },
+            { icon: '💾', label: 'JSON Backup',   id: 'JSON-Backup',   status: 'ok' }
+        ].map(function (item) {
+            var cls = item.status === 'ok' ? 's-ok' : 's-pending';
+            var txt = item.status === 'ok' ? 'متاح' : 'في انتظار التحقق';
+            return '<div class="integrity-item" id="intg-' + item.id + '">'
+                + '<div class="integrity-icon">' + item.icon + '</div>'
+                + '<div class="integrity-label">' + item.label + '</div>'
+                + '<span class="integrity-status ' + cls + '" id="intg-status-' + item.id + '">' + txt + '</span>'
                 + '</div>';
+        }).join('');
+    }
 
-            transactions.forEach(function (t, i) {
-                chainHtml += '<div class="chain-connector"><span class="connector-badge">⬇ Hash Chain</span></div>';
-                chainHtml += buildBlockHtml(t, t.blockNumber || (i + 1));
-            });
+    function updateStats(transactions) {
+        var last = transactions[transactions.length - 1];
+        document.getElementById('statBlocks').textContent = transactions.length;
+        document.getElementById('statNonce').textContent  = last.nonce || '0';
+        document.getElementById('statMerkle').textContent = ((last.merkleRoot||'—').substring(0,10)) + '...';
+        document.getElementById('statsBar').style.display = 'flex';
+    }
 
-            var summaryItems = transactions.map(function (t, i) {
-                return '<div class="summary-item" onclick="scrollToBlock(\'' + t.id + '\')">'
-                    + '<div class="summary-dot" id="sdot-' + t.id + '"></div>'
-                    + '<div><div class="summary-title">Block #' + (t.blockNumber || (i + 1)) + ' — ' + t.drugName + '</div>'
-                    + '<div class="summary-sub">' + (roleLabels[t.fromRole] || t.fromRole) + ' ← ' + (roleLabels[t.toRole] || t.toRole) + ' · ' + new Date(t.timestamp).toLocaleDateString('ar-JO') + '</div>'
-                    + '</div></div>';
-            }).join('');
-
-            var rightHtml = '<div class="card"><div class="card-header"><div class="card-header-left"><div class="card-icon ci-blue">📋</div><div><div class="card-title">ملخص الـ Blocks</div></div></div></div><div class="card-body" style="padding:8px 16px;">' + summaryItems + '</div></div>'
-                + '<div class="card"><div class="card-header"><div class="card-header-left"><div class="card-icon ci-dark">🔐</div><div><div class="card-title">عناصر الأمان</div></div></div></div><div class="card-body" style="padding:8px 16px;">' + buildIntegrityItems() + '</div></div>';
-
-            document.getElementById('mainArea').innerHTML =
-                '<div class="chain-layout"><div id="chainBlocks">' + chainHtml + '</div><div class="right-panel">' + rightHtml + '</div></div>';
+    function scrollToBlock(id) {
+        var el = document.getElementById('block-' + id);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.35)';
+            setTimeout(function () { el.style.boxShadow = ''; }, 2000);
         }
+    }
 
-        function buildBlockHtml(t, bNum) {
-            return '<div class="block-card" id="block-' + t.id + '">'
-                + '<div class="block-top">'
-                + '<span class="block-num" id="badge-' + t.id + '">كتلة #' + bNum + '</span>'
-                + '<span class="block-time">' + new Date(t.timestamp).toLocaleString('ar-JO') + '</span>'
-                + '</div><div class="block-body">'
-                + '<div class="block-grid">'
-                + '<div class="block-field"><div class="block-field-label">من</div><div class="block-field-value">' + (roleIcons[t.fromRole] || '') + ' <span class="role-tag role-' + t.fromRole + '">' + (roleLabels[t.fromRole] || t.fromRole) + '</span></div></div>'
-                + '<div class="block-field"><div class="block-field-label">إلى</div><div class="block-field-value">' + (roleIcons[t.toRole] || '') + ' <span class="role-tag role-' + t.toRole + '">' + (roleLabels[t.toRole] || t.toRole) + '</span></div></div>'
-                + '<div class="block-field"><div class="block-field-label">المرسل</div><div class="block-field-value">' + t.fromUsername + '</div></div>'
-                + '<div class="block-field"><div class="block-field-label">المستلم</div><div class="block-field-value">' + t.toUsername + '</div></div>'
-                + '</div>'
-                + '<div class="block-meta-row">'
-                + '<div class="meta-chip"><div class="meta-chip-label">⛏️ Proof of Work — Nonce</div><div class="meta-chip-value">' + (t.nonce || 0) + '</div></div>'
-                + '<div class="meta-chip"><div class="meta-chip-label">🌿 Merkle Root</div><div class="meta-chip-value">' + (t.merkleRoot || '—') + '</div></div>'
-                + '</div>'
-                + '<div class="block-hashes">'
-                + '<div class="hash-row"><span class="hash-label">Previous Hash</span><span class="hash-val hash-prev">' + t.previousHash + '</span></div>'
-                + '<div class="hash-row"><span class="hash-label">Block Hash</span><span class="hash-val hash-curr">' + t.blockHash + '</span></div>'
-                + '</div></div></div>';
-        }
-
-        function buildIntegrityItems() {
-            return [
-                { icon: '🔗', label: 'Hash Chaining', id: 'Hash-Chaining', status: 'pending' },
-                { icon: '⛏️', label: 'Proof of Work', id: 'Proof-of-Work', status: 'pending' },
-                { icon: '🌿', label: 'Merkle Root', id: 'Merkle-Root', status: 'pending' },
-                { icon: '💾', label: 'JSON Backup', id: 'JSON-Backup', status: 'ok' }
-            ].map(function (item) {
-                var cls = item.status === 'ok' ? 's-ok' : 's-pending';
-                var txt = item.status === 'ok' ? 'متاح' : 'في انتظار التحقق';
-                return '<div class="integrity-item" id="intg-' + item.id + '">'
-                    + '<div class="integrity-icon">' + item.icon + '</div>'
-                    + '<div class="integrity-label">' + item.label + '</div>'
-                    + '<span class="integrity-status ' + cls + '" id="intg-status-' + item.id + '">' + txt + '</span>'
-                    + '</div>';
-            }).join('');
-        }
-
-        function updateStats(transactions) {
-            var last = transactions[transactions.length - 1];
-            document.getElementById('statBlocks').textContent = transactions.length;
-            document.getElementById('statNonce').textContent = last.nonce || '0';
-            document.getElementById('statMerkle').textContent = ((last.merkleRoot || '—').substring(0, 10)) + '...';
-            document.getElementById('statsBar').style.display = 'flex';
-        }
-
-        function scrollToBlock(id) {
-            var el = document.getElementById('block-' + id);
-            if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                el.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.35)';
-                setTimeout(function () { el.style.boxShadow = ''; }, 2000);
-            }
-        }
-
-        function verifyChain() {
-            var result = document.getElementById('verifyResult');
-            result.classList.remove('show');
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', API + '/api/transaction/verify-chain', true);
-            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-            xhr.onload = function () {
-                if (xhr.status !== 200) return;
-                var data = JSON.parse(xhr.responseText);
-                if (data.valid) {
-                    result.className = 'verify-result show ok';
-                    result.textContent = '✅ ' + data.message;
-                    document.getElementById('statInt').textContent = 'سليمة ✅';
-                    updateIntegrityStatus(true, null);
-                } else {
-                    result.className = 'verify-result show err';
-                    result.textContent = '🚨 ' + data.message;
-                    document.getElementById('statInt').textContent = 'تلاعب مكتشف 🚨';
-                    document.getElementById('statIntIcon').textContent = '🚨';
-                    updateIntegrityStatus(false, data.tamperedBlock);
-                    if (data.tamperedBlock) {
-                        currentTransactions.forEach(function (t) {
-                            if (String(t.blockNumber || '') === String(data.tamperedBlock)) {
-                                var card = document.getElementById('block-' + t.id);
-                                var badge = document.getElementById('badge-' + t.id);
-                                var sdot = document.getElementById('sdot-' + t.id);
-                                if (card) card.classList.add('tampered');
-                                if (badge) badge.classList.add('tampered-num');
-                                if (sdot) sdot.classList.add('tampered');
-                            }
-                        });
-                    }
+    function verifyChain() {
+        var result = document.getElementById('verifyResult');
+        result.classList.remove('show');
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', API + '/api/transaction/verify-chain', true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function () {
+            if (xhr.status !== 200) return;
+            var data = JSON.parse(xhr.responseText);
+            if (data.valid) {
+                result.className = 'verify-result show ok';
+                result.textContent = '✅ ' + data.message;
+                document.getElementById('statInt').textContent = 'سليمة ✅';
+                updateIntegrityStatus(true, null);
+            } else {
+                result.className = 'verify-result show err';
+                result.textContent = '🚨 ' + data.message;
+                document.getElementById('statInt').textContent = 'تلاعب مكتشف 🚨';
+                document.getElementById('statIntIcon').textContent = '🚨';
+                updateIntegrityStatus(false, data.tamperedBlock);
+                if (data.tamperedBlock) {
+                    currentTransactions.forEach(function (t) {
+                        if (String(t.blockNumber||'') === String(data.tamperedBlock)) {
+                            var card  = document.getElementById('block-' + t.id);
+                            var badge = document.getElementById('badge-' + t.id);
+                            var sdot  = document.getElementById('sdot-' + t.id);
+                            if (card)  card.classList.add('tampered');
+                            if (badge) badge.classList.add('tampered-num');
+                            if (sdot)  sdot.classList.add('tampered');
+                        }
+                    });
                 }
-            };
-            xhr.send();
-        }
+            }
+        };
+        xhr.send();
+    }
 
-        function updateIntegrityStatus(valid, tamperedBlock) {
-            ['Hash-Chaining', 'Proof-of-Work', 'Merkle-Root'].forEach(function (key) {
-                var el = document.getElementById('intg-status-' + key);
-                if (!el) return;
-                if (valid) { el.className = 'integrity-status s-ok'; el.textContent = 'سليم ✓'; }
-                else { el.className = 'integrity-status s-err'; el.textContent = 'خطأ ✗'; }
-            });
-        }
+    function updateIntegrityStatus(valid, tamperedBlock) {
+        ['Hash-Chaining', 'Proof-of-Work', 'Merkle-Root'].forEach(function (key) {
+            var el = document.getElementById('intg-status-' + key);
+            if (!el) return;
+            if (valid) { el.className = 'integrity-status s-ok';  el.textContent = 'سليم ✓'; }
+            else       { el.className = 'integrity-status s-err'; el.textContent = 'خطأ ✗'; }
+        });
+    }
 
-        function demoTamper() {
-            if (!firstBlockId) { showDemo('⚠️ اختر دواء أولاً', 'red'); return; }
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', API + '/api/transaction/demo-tamper/' + firstBlockId, true);
-            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-            xhr.onload = function () { showDemo(JSON.parse(xhr.responseText).message, 'red'); loadChain(); };
-            xhr.send();
-        }
+    function demoTamper() {
+        if (!firstBlockId) { showDemo('⚠️ اختر دواء أولاً', 'red'); return; }
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', API + '/api/transaction/demo-tamper/' + firstBlockId, true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function () { showDemo(JSON.parse(xhr.responseText).message, 'red'); loadChain(); };
+        xhr.send();
+    }
 
-        function demoRestore() {
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', API + '/api/transaction/demo-restore', true);
-            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-            xhr.onload = function () {
-                showDemo(JSON.parse(xhr.responseText).message, 'green');
-                loadChain();
-                document.getElementById('verifyResult').classList.remove('show');
-            };
-            xhr.send();
-        }
+    function demoRestore() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', API + '/api/transaction/demo-restore', true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function () {
+            showDemo(JSON.parse(xhr.responseText).message, 'green');
+            loadChain();
+            document.getElementById('verifyResult').classList.remove('show');
+        };
+        xhr.send();
+    }
 
-        function showDemo(msg, type) {
-            var el = document.getElementById('demoResult');
-            el.textContent = msg;
-            el.className = 'demo-result show ' + type;
-        }
+    function showDemo(msg, type) {
+        var el = document.getElementById('demoResult');
+        el.textContent = msg;
+        el.className = 'demo-result show ' + type;
+    }
 
-        loadDrugs();
-    </script>
+    loadDrugs();
+</script>
 </body>
 </html>

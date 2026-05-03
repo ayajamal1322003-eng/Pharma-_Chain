@@ -12,735 +12,581 @@
             gap: 22px;
             align-items: start;
         }
-
-        .side-panel {
-            position: sticky;
-            top: 28px;
-        }
+        .side-panel { position: sticky; top: 28px; }
 
         .security-strip {
             background: linear-gradient(135deg, var(--blue-50), var(--emerald-50));
             border: 1.5px solid var(--blue-200);
             border-radius: var(--radius-lg);
             padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
+            display: flex; align-items: center; gap: 14px;
             margin-bottom: 18px;
         }
+        .security-strip-icon { font-size: 24px; flex-shrink: 0; }
+        .security-strip-text { font-size: 12.5px; color: #1e3a8a; line-height: 1.6; }
+        .security-strip-text strong { display: block; font-size: 13px; margin-bottom: 3px; }
 
-        .security-strip-icon {
-            font-size: 24px;
-            flex-shrink: 0;
-        }
-
-        .security-strip-text {
-            font-size: 12.5px;
-            color: #1e3a8a;
-            line-height: 1.6;
-        }
-
-            .security-strip-text strong {
-                display: block;
-                font-size: 13px;
-                margin-bottom: 3px;
-            }
-
-        .category-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
+        .category-grid { display: flex; flex-wrap: wrap; gap: 8px; }
         .cat-pill {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12.5px;
-            border: 1.5px solid var(--gray-200);
-            background: white;
-            cursor: pointer;
-            transition: var(--t);
-            color: var(--gray-600);
+            padding: 6px 14px; border-radius: 20px;
+            font-size: 12.5px; border: 1.5px solid var(--gray-200);
+            background: white; cursor: pointer; transition: var(--t); color: var(--gray-600);
         }
-
-            .cat-pill:hover {
-                border-color: var(--blue-400);
-                color: var(--blue-600);
-                background: var(--blue-50);
-            }
-
-            .cat-pill.selected {
-                background: var(--blue-500);
-                color: white;
-                border-color: var(--blue-500);
-            }
+        .cat-pill:hover { border-color: var(--blue-400); color: var(--blue-600); background: var(--blue-50); }
+        .cat-pill.selected { background: var(--blue-500); color: white; border-color: var(--blue-500); }
 
         .expiry-preview {
-            margin-top: 8px;
-            border-radius: var(--radius-md);
-            padding: 9px 13px;
-            font-size: 12.5px;
-            display: none;
-            align-items: center;
-            gap: 8px;
+            margin-top: 8px; border-radius: var(--radius-md);
+            padding: 9px 13px; font-size: 12.5px;
+            display: none; align-items: center; gap: 8px;
         }
+        .expiry-preview.show { display: flex; }
+        .expiry-preview.expired { background: var(--rose-50);    border: 1px solid var(--rose-200);    color: #881337; }
+        .expiry-preview.soon    { background: var(--amber-50);   border: 1px solid var(--amber-200);   color: #78350f; }
+        .expiry-preview.ok      { background: var(--emerald-50); border: 1px solid var(--emerald-200); color: #065f46; }
 
-            .expiry-preview.show {
-                display: flex;
-            }
-
-            .expiry-preview.expired {
-                background: var(--rose-50);
-                border: 1px solid var(--rose-200);
-                color: #881337;
-            }
-
-            .expiry-preview.soon {
-                background: var(--amber-50);
-                border: 1px solid var(--amber-200);
-                color: #78350f;
-            }
-
-            .expiry-preview.ok {
-                background: var(--emerald-50);
-                border: 1px solid var(--emerald-200);
-                color: #065f46;
-            }
-
-        .qty-meter {
-            margin-top: 8px;
-            display: none;
-        }
-
-            .qty-meter.show {
-                display: block;
-            }
-
-        .qty-bar-bg {
-            height: 6px;
-            background: var(--gray-200);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .qty-bar {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.3s, background 0.3s;
-        }
-
-        .qty-label {
-            font-size: 11.5px;
-            margin-top: 5px;
-        }
+        .qty-meter { margin-top: 8px; display: none; }
+        .qty-meter.show { display: block; }
+        .qty-bar-bg { height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
+        .qty-bar { height: 100%; border-radius: 3px; transition: width 0.3s, background 0.3s; }
+        .qty-label { font-size: 11.5px; margin-top: 5px; }
 
         .hash-preview-box {
-            background: #0f172a;
-            border-radius: var(--radius-md);
-            padding: 12px 14px;
-            font-family: 'Consolas', monospace;
-            font-size: 11px;
-            color: #4ade80;
-            word-break: break-all;
-            line-height: 1.7;
-            min-height: 48px;
-            display: flex;
-            align-items: center;
+            background: #0f172a; border-radius: var(--radius-md);
+            padding: 12px 14px; font-family: 'Consolas', monospace;
+            font-size: 11px; color: #4ade80;
+            word-break: break-all; line-height: 1.7; min-height: 48px;
+            display: flex; align-items: center;
         }
-
-        .hash-placeholder {
-            color: #475569;
-            font-style: italic;
-        }
+        .hash-placeholder { color: #475569; font-style: italic; }
 
         /* Step tracker */
         .step {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--gray-100);
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 10px 0; border-bottom: 1px solid var(--gray-100);
         }
-
-            .step:last-child {
-                border-bottom: none;
-            }
-
+        .step:last-child { border-bottom: none; }
         .step-dot {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 700;
-            flex-shrink: 0;
-            margin-top: 1px;
+            width: 26px; height: 26px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
             transition: var(--t);
         }
-
-            .step-dot.pending {
-                background: var(--gray-100);
-                color: var(--gray-400);
-            }
-
-            .step-dot.active {
-                background: var(--blue-50);
-                color: var(--blue-600);
-                border: 2px solid var(--blue-400);
-            }
-
-            .step-dot.done {
-                background: var(--emerald-100);
-                color: #065f46;
-            }
-
-        .step-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--gray-700);
-        }
-
-        .step-desc {
-            font-size: 11px;
-            color: var(--gray-400);
-            margin-top: 2px;
-        }
+        .step-dot.pending { background: var(--gray-100); color: var(--gray-400); }
+        .step-dot.active  { background: var(--blue-50); color: var(--blue-600); border: 2px solid var(--blue-400); }
+        .step-dot.done    { background: var(--emerald-100); color: #065f46; }
+        .step-title { font-size: 13px; font-weight: 600; color: var(--gray-700); }
+        .step-desc  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
 
         .tip-item {
-            display: flex;
-            gap: 10px;
-            padding: 8px 0;
+            display: flex; gap: 10px; padding: 8px 0;
             border-bottom: 1px solid var(--gray-100);
-            font-size: 12.5px;
-            color: var(--gray-600);
-            line-height: 1.55;
+            font-size: 12.5px; color: var(--gray-600); line-height: 1.55;
         }
-
-            .tip-item:last-child {
-                border-bottom: none;
-            }
-
-        .tip-icon {
-            flex-shrink: 0;
-            font-size: 14px;
-        }
+        .tip-item:last-child { border-bottom: none; }
+        .tip-icon { flex-shrink: 0; font-size: 14px; }
 
         .no-access {
-            text-align: center;
-            padding: 60px;
-            color: #881337;
-            font-size: 15px;
+            text-align: center; padding: 60px; color: #881337; font-size: 15px;
         }
     </style>
 </head>
 <body>
-    <div class="layout">
+<div class="layout">
 
-        <!-- ══ SIDEBAR ══ -->
-        <div class="sidebar">
-            <div class="sidebar-logo"><h2>PharmaChain</h2><p>نظام تتبع الأدوية</p></div>
-            <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> لوحة التحكم</a>
-            <a class="nav-item active"><span class="nav-icon">💊</span> إضافة دواء</a>
-            <a class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> نقل دواء</a>
-            <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> Blockchain</a>
-            <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> التحقق من دواء</a>
-            <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> سجل العمليات</a>
-            <div class="nav-section-hdr" id="navAISection" style="display:none">الذكاء الاصطناعي</div>
-            <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> محلل المخاطر AI</a>
-            <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> تحليلات الأداء AI</a>
-            <div class="user-info-bar">
-                <div class="user-row">
-                    <div class="user-avatar">👤</div>
-                    <div>
-                        <div class="user-name" id="sidebarUsername">...</div>
-                        <div class="user-role" id="sidebarRole">...</div>
-                    </div>
+    <!-- ══ SIDEBAR ══ -->
+    <div class="sidebar">
+        <div class="sidebar-logo"><h2>PharmaChain</h2><p>نظام تتبع الأدوية</p></div>
+        <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> لوحة التحكم</a>
+        <a class="nav-item active"><span class="nav-icon">💊</span> إضافة دواء</a>
+        <a class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> نقل دواء</a>
+        <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> Blockchain</a>
+        <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> التحقق من دواء</a>
+        <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> سجل العمليات</a>
+        <div class="nav-section-hdr" id="navAISection" style="display:none">الذكاء الاصطناعي</div>
+        <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> محلل المخاطر AI</a>
+        <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> تحليلات الأداء AI</a>
+        <div class="user-info-bar">
+            <div class="user-row">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div class="user-name" id="sidebarUsername">...</div>
+                    <div class="user-role" id="sidebarRole">...</div>
                 </div>
-                <button class="logout-btn" onclick="logout()">🚪 تسجيل خروج</button>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪 تسجيل خروج</button>
+        </div>
+    </div>
+
+    <!-- ══ MAIN ══ -->
+    <div class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">إضافة دواء جديد</div>
+                <div class="page-subtitle">أدخل بيانات الدواء — سيتم تسجيله في Blockchain تلقائياً</div>
             </div>
         </div>
 
-        <!-- ══ MAIN ══ -->
-        <div class="main">
-            <div class="page-header">
+        <div id="noAccessMsg" style="display:none">
+            <div class="card"><div class="card-body"><div class="no-access">⛔ ليس لديك صلاحية إضافة الأدوية<br><small style="font-size:13px;color:var(--gray-500)">هذه الصفحة للمصنع والمدير فقط</small></div></div></div>
+        </div>
+
+        <div id="formContent">
+            <div class="form-layout">
+
+                <!-- ── Left: Form ── -->
                 <div>
-                    <div class="page-title">إضافة دواء جديد</div>
-                    <div class="page-subtitle">أدخل بيانات الدواء — سيتم تسجيله في Blockchain تلقائياً</div>
+                    <div class="security-strip">
+                        <div class="security-strip-icon">🔐</div>
+                        <div class="security-strip-text">
+                            <strong>الحماية الأمنية مفعّلة</strong>
+                            رقم الدفعة يُشفَّر بـ SHA-256 · الـ Checksum يُحسب تلقائياً · كل عملية مسجلة في Audit Log
+                        </div>
+                    </div>
+
+                    <!-- Basic info -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <div class="card-icon ci-blue">💊</div>
+                                <div>
+                                    <div class="card-title">معلومات الدواء الأساسية</div>
+                                    <div class="card-subtitle">الاسم التجاري والتصنيف</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="section-label">تصنيف الدواء</div>
+                            <div class="category-grid" id="categoryGrid">
+                                <span class="cat-pill" onclick="selectCategory(this,'مضاد حيوي')">💊 مضاد حيوي</span>
+                                <span class="cat-pill" onclick="selectCategory(this,'مسكن ألم')">🩹 مسكن ألم</span>
+                                <span class="cat-pill" onclick="selectCategory(this,'خافض حرارة')">🌡️ خافض حرارة</span>
+                                <span class="cat-pill" onclick="selectCategory(this,'فيتامينات')">🍊 فيتامينات</span>
+                                <span class="cat-pill" onclick="selectCategory(this,'أمراض مزمنة')">❤️ أمراض مزمنة</span>
+                                <span class="cat-pill" onclick="selectCategory(this,'أدوية قلب')">🫀 أدوية قلب</span>
+                                <span class="cat-pill" onclick="selectCategory(this,'جهاز هضمي')">🫁 جهاز هضمي</span>
+                                <span class="cat-pill" onclick="selectCategory(this,'أخرى')">📦 أخرى</span>
+                            </div>
+                            <div class="section-divider"></div>
+                            <div class="form-grid">
+                                <div class="form-group full">
+                                    <label>اسم الدواء <span class="req">*</span> <span class="field-badge">يظهر في Blockchain</span></label>
+                                    <input type="text" id="name" placeholder="مثال: Panadol Extra 500mg" oninput="onNameInput()" maxlength="100">
+                                    <div class="field-err" id="nameError">⚠️ اسم الدواء مطلوب</div>
+                                </div>
+                                <div class="form-group full">
+                                    <label>الاسم العلمي (المادة الفعالة) <span class="field-badge">اختياري</span></label>
+                                    <input type="text" id="scientificName" placeholder="مثال: Paracetamol + Caffeine">
+                                    <div class="field-hint">المادة الفعالة — للمرجعية الطبية</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Production info -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <div class="card-icon ci-emerald">🏭</div>
+                                <div>
+                                    <div class="card-title">بيانات الإنتاج والتتبع</div>
+                                    <div class="card-subtitle">رقم الدفعة والشركة المصنعة</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>رقم الدفعة <span class="req">*</span></label>
+                                    <input type="text" id="batchNumber" placeholder="مثال: A-2024-001" oninput="onBatchInput()" style="font-family:'Consolas',monospace;">
+                                    <div class="field-err" id="batchNumberError">⚠️ رقم الدفعة مطلوب</div>
+                                    <div class="field-hint">سيُشفَّر بـ SHA-256 قبل الحفظ</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>الشركة المصنعة <span class="req">*</span></label>
+                                    <input type="text" id="manufacturer" placeholder="مثال: GSK Jordan" oninput="clearErr('manufacturer')">
+                                    <div class="field-err" id="manufacturerError">⚠️ الشركة المصنعة مطلوبة</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>بلد المنشأ <span class="field-badge">اختياري</span></label>
+                                    <select id="country">
+                                        <option value="">اختر البلد</option>
+                                        <option>الأردن</option><option>مصر</option><option>السعودية</option>
+                                        <option>الإمارات</option><option>ألمانيا</option>
+                                        <option>المملكة المتحدة</option><option>الولايات المتحدة</option>
+                                        <option>فرنسا</option><option>سويسرا</option><option>الهند</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>شكل الدواء <span class="field-badge">اختياري</span></label>
+                                    <select id="drugForm">
+                                        <option value="">اختر الشكل</option>
+                                        <option>أقراص (Tablets)</option><option>كبسولات (Capsules)</option>
+                                        <option>شراب (Syrup)</option><option>حقن (Injection)</option>
+                                        <option>كريم (Cream)</option><option>قطرات (Drops)</option>
+                                        <option>بخاخ (Spray)</option><option>مسحوق (Powder)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dates & Quantity -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <div class="card-icon ci-amber">📦</div>
+                                <div>
+                                    <div class="card-title">الصلاحية والكمية</div>
+                                    <div class="card-subtitle">تواريخ الإنتاج والانتهاء وعدد الوحدات</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>تاريخ الإنتاج <span class="field-badge">اختياري</span></label>
+                                    <input type="date" id="productionDate">
+                                </div>
+                                <div class="form-group">
+                                    <label>تاريخ انتهاء الصلاحية <span class="req">*</span></label>
+                                    <input type="date" id="expiryDate" oninput="onExpiryInput()">
+                                    <div class="field-err" id="expiryDateError">⚠️ تاريخ الانتهاء مطلوب</div>
+                                    <div class="expiry-preview" id="expiryPreview"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label>الكمية (وحدة) <span class="req">*</span></label>
+                                    <input type="number" id="quantity" placeholder="مثال: 500" min="1" oninput="onQtyInput()">
+                                    <div class="field-err" id="quantityError">⚠️ الكمية يجب أن تكون أكبر من صفر</div>
+                                    <div class="qty-meter" id="qtyMeter">
+                                        <div class="qty-bar-bg"><div class="qty-bar" id="qtyBar"></div></div>
+                                        <div class="qty-label" id="qtyLabel"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>سعر الوحدة (JD) <span class="field-badge">اختياري</span></label>
+                                    <input type="number" id="price" placeholder="مثال: 2.500" min="0" step="0.001">
+                                </div>
+                            </div>
+                            <div class="section-divider"></div>
+                            <div class="form-group" style="margin-bottom:0">
+                                <label>ملاحظات إضافية <span class="field-badge">اختياري</span></label>
+                                <textarea id="notes" placeholder="أي معلومات إضافية عن الدواء، شروط التخزين، تحذيرات..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <button class="btn btn-primary btn-full" id="submitBtn" onclick="submitDrug()" style="font-size:15px;padding:14px;border-radius:12px;box-shadow:0 6px 20px rgba(37,99,235,0.35);">
+                        <span id="submitIcon">➕</span>
+                        <span id="submitText">إضافة الدواء وتسجيله في النظام</span>
+                    </button>
+                    <button class="btn btn-outline btn-full" onclick="resetForm()" style="margin-top:8px;">🔄 مسح الحقول</button>
+
+                    <div class="alert alert-success" id="successMsg" style="margin-top:12px;">
+                        <span>✅</span><span id="successText">تم إضافة الدواء بنجاح!</span>
+                    </div>
+                    <div class="alert alert-error" id="errorMsg" style="margin-top:12px;">
+                        <span>❌</span><span id="errorText"></span>
+                    </div>
                 </div>
-            </div>
 
-            <div id="noAccessMsg" style="display:none">
-                <div class="card"><div class="card-body"><div class="no-access">⛔ ليس لديك صلاحية إضافة الأدوية<br><small style="font-size:13px;color:var(--gray-500)">هذه الصفحة للمصنع والمدير فقط</small></div></div></div>
-            </div>
+                <!-- ── Right: Side Panel ── -->
+                <div class="side-panel">
 
-            <div id="formContent">
-                <div class="form-layout">
-
-                    <!-- ── Left: Form ── -->
-                    <div>
-                        <div class="security-strip">
-                            <div class="security-strip-icon">🔐</div>
-                            <div class="security-strip-text">
-                                <strong>الحماية الأمنية مفعّلة</strong>
-                                رقم الدفعة يُشفَّر بـ SHA-256 · الـ Checksum يُحسب تلقائياً · كل عملية مسجلة في Audit Log
+                    <!-- Progress tracker -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <div class="card-icon ci-blue">📋</div>
+                                <div><div class="card-title">تقدم الإدخال</div><div class="card-subtitle">الحقول المطلوبة</div></div>
                             </div>
                         </div>
-
-                        <!-- Basic info -->
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="card-header-left">
-                                    <div class="card-icon ci-blue">💊</div>
-                                    <div>
-                                        <div class="card-title">معلومات الدواء الأساسية</div>
-                                        <div class="card-subtitle">الاسم التجاري والتصنيف</div>
-                                    </div>
-                                </div>
+                        <div class="card-body" style="padding:12px 20px;">
+                            <div class="step" id="step-name">
+                                <div class="step-dot pending" id="dot-name">1</div>
+                                <div><div class="step-title">اسم الدواء</div><div class="step-desc" id="desc-name">لم يُدخل بعد</div></div>
                             </div>
-                            <div class="card-body">
-                                <div class="section-label">تصنيف الدواء</div>
-                                <div class="category-grid" id="categoryGrid">
-                                    <span class="cat-pill" onclick="selectCategory(this,'مضاد حيوي')">💊 مضاد حيوي</span>
-                                    <span class="cat-pill" onclick="selectCategory(this,'مسكن ألم')">🩹 مسكن ألم</span>
-                                    <span class="cat-pill" onclick="selectCategory(this,'خافض حرارة')">🌡️ خافض حرارة</span>
-                                    <span class="cat-pill" onclick="selectCategory(this,'فيتامينات')">🍊 فيتامينات</span>
-                                    <span class="cat-pill" onclick="selectCategory(this,'أمراض مزمنة')">❤️ أمراض مزمنة</span>
-                                    <span class="cat-pill" onclick="selectCategory(this,'أدوية قلب')">🫀 أدوية قلب</span>
-                                    <span class="cat-pill" onclick="selectCategory(this,'جهاز هضمي')">🫁 جهاز هضمي</span>
-                                    <span class="cat-pill" onclick="selectCategory(this,'أخرى')">📦 أخرى</span>
-                                </div>
-                                <div class="section-divider"></div>
-                                <div class="form-grid">
-                                    <div class="form-group full">
-                                        <label>اسم الدواء <span class="req">*</span> <span class="field-badge">يظهر في Blockchain</span></label>
-                                        <input type="text" id="name" placeholder="مثال: Panadol Extra 500mg" oninput="onNameInput()" maxlength="100">
-                                        <div class="field-err" id="nameError">⚠️ اسم الدواء مطلوب</div>
-                                    </div>
-                                    <div class="form-group full">
-                                        <label>الاسم العلمي (المادة الفعالة) <span class="field-badge">اختياري</span></label>
-                                        <input type="text" id="scientificName" placeholder="مثال: Paracetamol + Caffeine">
-                                        <div class="field-hint">المادة الفعالة — للمرجعية الطبية</div>
-                                    </div>
-                                </div>
+                            <div class="step" id="step-batch">
+                                <div class="step-dot pending" id="dot-batch">2</div>
+                                <div><div class="step-title">رقم الدفعة</div><div class="step-desc" id="desc-batch">لم يُدخل بعد</div></div>
                             </div>
-                        </div>
-
-                        <!-- Production info -->
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="card-header-left">
-                                    <div class="card-icon ci-emerald">🏭</div>
-                                    <div>
-                                        <div class="card-title">بيانات الإنتاج والتتبع</div>
-                                        <div class="card-subtitle">رقم الدفعة والشركة المصنعة</div>
-                                    </div>
-                                </div>
+                            <div class="step" id="step-expiry">
+                                <div class="step-dot pending" id="dot-expiry">3</div>
+                                <div><div class="step-title">تاريخ الانتهاء</div><div class="step-desc" id="desc-expiry">لم يُحدد بعد</div></div>
                             </div>
-                            <div class="card-body">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label>رقم الدفعة <span class="req">*</span></label>
-                                        <input type="text" id="batchNumber" placeholder="مثال: A-2024-001" oninput="onBatchInput()" style="font-family:'Consolas',monospace;">
-                                        <div class="field-err" id="batchNumberError">⚠️ رقم الدفعة مطلوب</div>
-                                        <div class="field-hint">سيُشفَّر بـ SHA-256 قبل الحفظ</div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>الشركة المصنعة <span class="req">*</span></label>
-                                        <input type="text" id="manufacturer" placeholder="مثال: GSK Jordan" oninput="clearErr('manufacturer')">
-                                        <div class="field-err" id="manufacturerError">⚠️ الشركة المصنعة مطلوبة</div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>بلد المنشأ <span class="field-badge">اختياري</span></label>
-                                        <select id="country">
-                                            <option value="">اختر البلد</option>
-                                            <option>الأردن</option>
-                                            <option>مصر</option>
-                                            <option>السعودية</option>
-                                            <option>الإمارات</option>
-                                            <option>ألمانيا</option>
-                                            <option>المملكة المتحدة</option>
-                                            <option>الولايات المتحدة</option>
-                                            <option>فرنسا</option>
-                                            <option>سويسرا</option>
-                                            <option>الهند</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>شكل الدواء <span class="field-badge">اختياري</span></label>
-                                        <select id="drugForm">
-                                            <option value="">اختر الشكل</option>
-                                            <option>أقراص (Tablets)</option>
-                                            <option>كبسولات (Capsules)</option>
-                                            <option>شراب (Syrup)</option>
-                                            <option>حقن (Injection)</option>
-                                            <option>كريم (Cream)</option>
-                                            <option>قطرات (Drops)</option>
-                                            <option>بخاخ (Spray)</option>
-                                            <option>مسحوق (Powder)</option>
-                                        </select>
-                                    </div>
-                                </div>
+                            <div class="step" id="step-mfr">
+                                <div class="step-dot pending" id="dot-mfr">4</div>
+                                <div><div class="step-title">الشركة المصنعة</div><div class="step-desc" id="desc-mfr">لم تُدخل بعد</div></div>
                             </div>
-                        </div>
-
-                        <!-- Dates & Quantity -->
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="card-header-left">
-                                    <div class="card-icon ci-amber">📦</div>
-                                    <div>
-                                        <div class="card-title">الصلاحية والكمية</div>
-                                        <div class="card-subtitle">تواريخ الإنتاج والانتهاء وعدد الوحدات</div>
-                                    </div>
-                                </div>
+                            <div class="step" id="step-qty">
+                                <div class="step-dot pending" id="dot-qty">5</div>
+                                <div><div class="step-title">الكمية</div><div class="step-desc" id="desc-qty">لم تُدخل بعد</div></div>
                             </div>
-                            <div class="card-body">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label>تاريخ الإنتاج <span class="field-badge">اختياري</span></label>
-                                        <input type="date" id="productionDate">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>تاريخ انتهاء الصلاحية <span class="req">*</span></label>
-                                        <input type="date" id="expiryDate" oninput="onExpiryInput()">
-                                        <div class="field-err" id="expiryDateError">⚠️ تاريخ الانتهاء مطلوب</div>
-                                        <div class="expiry-preview" id="expiryPreview"></div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>الكمية (وحدة) <span class="req">*</span></label>
-                                        <input type="number" id="quantity" placeholder="مثال: 500" min="1" oninput="onQtyInput()">
-                                        <div class="field-err" id="quantityError">⚠️ الكمية يجب أن تكون أكبر من صفر</div>
-                                        <div class="qty-meter" id="qtyMeter">
-                                            <div class="qty-bar-bg"><div class="qty-bar" id="qtyBar"></div></div>
-                                            <div class="qty-label" id="qtyLabel"></div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>سعر الوحدة (JD) <span class="field-badge">اختياري</span></label>
-                                        <input type="number" id="price" placeholder="مثال: 2.500" min="0" step="0.001">
-                                    </div>
-                                </div>
-                                <div class="section-divider"></div>
-                                <div class="form-group" style="margin-bottom:0">
-                                    <label>ملاحظات إضافية <span class="field-badge">اختياري</span></label>
-                                    <textarea id="notes" placeholder="أي معلومات إضافية عن الدواء، شروط التخزين، تحذيرات..."></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Submit -->
-                        <button class="btn btn-primary btn-full" id="submitBtn" onclick="submitDrug()" style="font-size:15px;padding:14px;border-radius:12px;box-shadow:0 6px 20px rgba(37,99,235,0.35);">
-                            <span id="submitIcon">➕</span>
-                            <span id="submitText">إضافة الدواء وتسجيله في النظام</span>
-                        </button>
-                        <button class="btn btn-outline btn-full" onclick="resetForm()" style="margin-top:8px;">🔄 مسح الحقول</button>
-
-                        <div class="alert alert-success" id="successMsg" style="margin-top:12px;">
-                            <span>✅</span><span id="successText">تم إضافة الدواء بنجاح!</span>
-                        </div>
-                        <div class="alert alert-error" id="errorMsg" style="margin-top:12px;">
-                            <span>❌</span><span id="errorText"></span>
                         </div>
                     </div>
 
-                    <!-- ── Right: Side Panel ── -->
-                    <div class="side-panel">
-
-                        <!-- Progress tracker -->
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="card-header-left">
-                                    <div class="card-icon ci-blue">📋</div>
-                                    <div><div class="card-title">تقدم الإدخال</div><div class="card-subtitle">الحقول المطلوبة</div></div>
-                                </div>
-                            </div>
-                            <div class="card-body" style="padding:12px 20px;">
-                                <div class="step" id="step-name">
-                                    <div class="step-dot pending" id="dot-name">1</div>
-                                    <div><div class="step-title">اسم الدواء</div><div class="step-desc" id="desc-name">لم يُدخل بعد</div></div>
-                                </div>
-                                <div class="step" id="step-batch">
-                                    <div class="step-dot pending" id="dot-batch">2</div>
-                                    <div><div class="step-title">رقم الدفعة</div><div class="step-desc" id="desc-batch">لم يُدخل بعد</div></div>
-                                </div>
-                                <div class="step" id="step-expiry">
-                                    <div class="step-dot pending" id="dot-expiry">3</div>
-                                    <div><div class="step-title">تاريخ الانتهاء</div><div class="step-desc" id="desc-expiry">لم يُحدد بعد</div></div>
-                                </div>
-                                <div class="step" id="step-mfr">
-                                    <div class="step-dot pending" id="dot-mfr">4</div>
-                                    <div><div class="step-title">الشركة المصنعة</div><div class="step-desc" id="desc-mfr">لم تُدخل بعد</div></div>
-                                </div>
-                                <div class="step" id="step-qty">
-                                    <div class="step-dot pending" id="dot-qty">5</div>
-                                    <div><div class="step-title">الكمية</div><div class="step-desc" id="desc-qty">لم تُدخل بعد</div></div>
-                                </div>
+                    <!-- Hash preview -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <div class="card-icon ci-dark">🔒</div>
+                                <div><div class="card-title">SHA-256 Preview</div><div class="card-subtitle">هاش رقم الدفعة</div></div>
                             </div>
                         </div>
-
-                        <!-- Hash preview -->
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="card-header-left">
-                                    <div class="card-icon ci-dark">🔒</div>
-                                    <div><div class="card-title">SHA-256 Preview</div><div class="card-subtitle">هاش رقم الدفعة</div></div>
-                                </div>
+                        <div class="card-body">
+                            <div class="hash-preview-box" id="hashPreview">
+                                <span class="hash-placeholder">أدخل رقم الدفعة لرؤية الـ Hash...</span>
                             </div>
-                            <div class="card-body">
-                                <div class="hash-preview-box" id="hashPreview">
-                                    <span class="hash-placeholder">أدخل رقم الدفعة لرؤية الـ Hash...</span>
-                                </div>
-                                <div class="field-hint" style="margin-top:8px;">هذا هو الـ Hash الفعلي الذي سيُحفظ في قاعدة البيانات</div>
-                            </div>
+                            <div class="field-hint" style="margin-top:8px;">هذا هو الـ Hash الفعلي الذي سيُحفظ في قاعدة البيانات</div>
                         </div>
-
-                        <!-- Tips -->
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="card-header-left">
-                                    <div class="card-icon ci-amber">💡</div>
-                                    <div><div class="card-title">نصائح مهمة</div></div>
-                                </div>
-                            </div>
-                            <div class="card-body" style="padding:12px 20px;">
-                                <div class="tip-item"><span class="tip-icon">📝</span><span>تأكد من صحة رقم الدفعة — لا يمكن تعديله لاحقاً</span></div>
-                                <div class="tip-item"><span class="tip-icon">📅</span><span>تاريخ الانتهاء يجب أن يكون في المستقبل</span></div>
-                                <div class="tip-item"><span class="tip-icon">⚠️</span><span>الكمية أقل من 10 تعتبر مخزوناً منخفضاً</span></div>
-                                <div class="tip-item"><span class="tip-icon">🔗</span><span>بعد الإضافة يمكن نقل الدواء للموزع مباشرة</span></div>
-                            </div>
-                        </div>
-
                     </div>
+
+                    <!-- Tips -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <div class="card-icon ci-amber">💡</div>
+                                <div><div class="card-title">نصائح مهمة</div></div>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding:12px 20px;">
+                            <div class="tip-item"><span class="tip-icon">📝</span><span>تأكد من صحة رقم الدفعة — لا يمكن تعديله لاحقاً</span></div>
+                            <div class="tip-item"><span class="tip-icon">📅</span><span>تاريخ الانتهاء يجب أن يكون في المستقبل</span></div>
+                            <div class="tip-item"><span class="tip-icon">⚠️</span><span>الكمية أقل من 10 تعتبر مخزوناً منخفضاً</span></div>
+                            <div class="tip-item"><span class="tip-icon">🔗</span><span>بعد الإضافة يمكن نقل الدواء للموزع مباشرة</span></div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        var API = 'http://localhost:7036';
-        var token = localStorage.getItem('token');
-        var role = localStorage.getItem('role');
-        var selectedCategory = '';
+<script>
+    var API = 'http://localhost:7036';
+    var token = localStorage.getItem('token');
+    var role = localStorage.getItem('role');
+    var selectedCategory = '';
 
-        if (!token) { window.location.replace(API + '/login.html'); }
+    if (!token) { window.location.replace(API + '/login.html'); }
 
-        window.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
-            document.getElementById('sidebarRole').textContent = role || '';
+    window.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
+        document.getElementById('sidebarRole').textContent = role || '';
 
-            if (role === 'Admin') {
-                document.getElementById('navAudit').style.display = 'flex';
-                document.getElementById('navRisk').style.display = 'flex';
-                document.getElementById('navAdvisor').style.display = 'flex';
-                document.getElementById('navAISection').style.display = 'block';
-            }
+        if (role === 'Admin') {
+            document.getElementById('navAudit').style.display = 'flex';
+            document.getElementById('navRisk').style.display = 'flex';
+            document.getElementById('navAdvisor').style.display = 'flex';
+            document.getElementById('navAISection').style.display = 'block';
+        }
 
-            if (role !== 'Factory' && role !== 'Admin') {
-                document.getElementById('noAccessMsg').style.display = 'block';
-                document.getElementById('formContent').style.display = 'none';
-                return;
-            }
+        if (role !== 'Factory' && role !== 'Admin') {
+            document.getElementById('noAccessMsg').style.display = 'block';
+            document.getElementById('formContent').style.display = 'none';
+            return;
+        }
 
-            var today = new Date().toISOString().split('T')[0];
-            document.getElementById('expiryDate').min = today;
-            document.getElementById('productionDate').max = today;
+        var today = new Date().toISOString().split('T')[0];
+        document.getElementById('expiryDate').min = today;
+        document.getElementById('productionDate').max = today;
 
-            document.getElementById('manufacturer').addEventListener('input', function () {
-                clearErr('manufacturer');
-                updateStep('mfr', this.value.trim());
-            });
+        document.getElementById('manufacturer').addEventListener('input', function () {
+            clearErr('manufacturer');
+            updateStep('mfr', this.value.trim());
         });
+    });
 
-        function goTo(page) { window.location.replace(API + '/' + page); }
-        function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+    function goTo(page) { window.location.replace(API + '/' + page); }
+    function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
 
-        function selectCategory(el, cat) {
-            document.querySelectorAll('.cat-pill').forEach(function (p) { p.classList.remove('selected'); });
-            el.classList.add('selected');
-            selectedCategory = cat;
-        }
+    function selectCategory(el, cat) {
+        document.querySelectorAll('.cat-pill').forEach(function (p) { p.classList.remove('selected'); });
+        el.classList.add('selected');
+        selectedCategory = cat;
+    }
 
-        function clearErr(id) {
-            var inp = document.getElementById(id);
-            if (inp) inp.classList.remove('err-field');
-            var err = document.getElementById(id + 'Error');
-            if (err) err.classList.remove('show');
-            updateStep(id);
-        }
+    function clearErr(id) {
+        var inp = document.getElementById(id);
+        if (inp) inp.classList.remove('err-field');
+        var err = document.getElementById(id + 'Error');
+        if (err) err.classList.remove('show');
+        updateStep(id);
+    }
 
-        function onNameInput() { clearErr('name'); updateStep('name', document.getElementById('name').value.trim()); }
-        function onBatchInput() {
-            clearErr('batchNumber');
-            var val = document.getElementById('batchNumber').value.trim();
-            updateStep('batch', val);
-            updateHashPreview(val);
-        }
-        function onExpiryInput() {
-            clearErr('expiryDate');
-            var val = document.getElementById('expiryDate').value;
-            updateExpiryPreview(val);
-            updateStep('expiry', val);
-        }
-        function onQtyInput() {
-            clearErr('quantity');
-            var qty = parseInt(document.getElementById('quantity').value);
-            updateQtyMeter(qty);
-            updateStep('qty', qty);
-        }
+    function onNameInput() { clearErr('name'); updateStep('name', document.getElementById('name').value.trim()); }
+    function onBatchInput() {
+        clearErr('batchNumber');
+        var val = document.getElementById('batchNumber').value.trim();
+        updateStep('batch', val);
+        updateHashPreview(val);
+    }
+    function onExpiryInput() {
+        clearErr('expiryDate');
+        var val = document.getElementById('expiryDate').value;
+        updateExpiryPreview(val);
+        updateStep('expiry', val);
+    }
+    function onQtyInput() {
+        clearErr('quantity');
+        var qty = parseInt(document.getElementById('quantity').value);
+        updateQtyMeter(qty);
+        updateStep('qty', qty);
+    }
 
-        function updateExpiryPreview(val) {
-            var prev = document.getElementById('expiryPreview');
-            if (!val) { prev.className = 'expiry-preview'; return; }
-            var expiry = new Date(val);
-            var n = new Date();
-            var s = new Date(); s.setDate(s.getDate() + 90);
-            var diffDays = Math.round((expiry - n) / 86400000);
-            if (expiry <= n) {
-                prev.className = 'expiry-preview show expired';
-                prev.innerHTML = '❌ منتهي الصلاحية — لا يمكن إضافته';
-            } else if (expiry <= s) {
-                prev.className = 'expiry-preview show soon';
-                prev.innerHTML = '⚠️ ينتهي خلال ' + diffDays + ' يوم — مخزون قصير الأمد';
+    function updateExpiryPreview(val) {
+        var prev = document.getElementById('expiryPreview');
+        if (!val) { prev.className = 'expiry-preview'; return; }
+        var expiry = new Date(val);
+        var n = new Date();
+        var s = new Date(); s.setDate(s.getDate() + 90);
+        var diffDays = Math.round((expiry - n) / 86400000);
+        if (expiry <= n) {
+            prev.className = 'expiry-preview show expired';
+            prev.innerHTML = '❌ منتهي الصلاحية — لا يمكن إضافته';
+        } else if (expiry <= s) {
+            prev.className = 'expiry-preview show soon';
+            prev.innerHTML = '⚠️ ينتهي خلال ' + diffDays + ' يوم — مخزون قصير الأمد';
+        } else {
+            prev.className = 'expiry-preview show ok';
+            prev.innerHTML = '✅ صالح لـ ' + diffDays + ' يوم (' + Math.round(diffDays / 30) + ' شهر تقريباً)';
+        }
+    }
+
+    function updateQtyMeter(qty) {
+        var meter = document.getElementById('qtyMeter');
+        var bar = document.getElementById('qtyBar');
+        var label = document.getElementById('qtyLabel');
+        if (!qty || qty <= 0) { meter.classList.remove('show'); return; }
+        meter.classList.add('show');
+        var pct = Math.min(qty / 1000 * 100, 100);
+        bar.style.width = pct + '%';
+        if (qty <= 10) { bar.style.background = '#f43f5e'; label.style.color = '#9f1239'; label.textContent = '⚠️ كمية منخفضة جداً — يُنصح بإضافة أكثر'; }
+        else if (qty <= 50) { bar.style.background = '#f59e0b'; label.style.color = '#78350f'; label.textContent = 'كمية منخفضة — ' + qty + ' وحدة'; }
+        else { bar.style.background = '#10b981'; label.style.color = '#065f46'; label.textContent = '✓ كمية جيدة — ' + qty + ' وحدة'; }
+    }
+
+    function updateHashPreview(val) {
+        var prev = document.getElementById('hashPreview');
+        if (!val) { prev.innerHTML = '<span class="hash-placeholder">أدخل رقم الدفعة لرؤية الـ Hash...</span>'; return; }
+        var hash = simpleHash(val);
+        prev.innerHTML = '<span style="color:#4ade80">' + hash.substring(0,8) + '</span>' +
+            '<span style="color:#60a5fa">' + hash.substring(8,16) + '</span>' +
+            '<span style="color:#fbbf24">' + hash.substring(16,24) + '</span>' +
+            '<span style="color:#f87171">' + hash.substring(24,32) + '</span>' +
+            '<span style="color:#c084fc">' + hash.substring(32) + '</span>';
+    }
+
+    function simpleHash(str) {
+        var chars = '0123456789ABCDEF', result = '', seed = 0;
+        for (var i = 0; i < str.length; i++) seed = (seed * 31 + str.charCodeAt(i)) & 0xFFFFFFFF;
+        for (var j = 0; j < 64; j++) { seed = (seed * 1664525 + 1013904223) & 0xFFFFFFFF; result += chars[(seed >>> (j % 28)) & 15]; }
+        return result;
+    }
+
+    function updateStep(field, val) {
+        var map = { name:'name', batchNumber:'batch', batch:'batch', expiryDate:'expiry', expiry:'expiry', manufacturer:'mfr', quantity:'qty', qty:'qty' };
+        var key = map[field] || field;
+        var dot = document.getElementById('dot-' + key);
+        var desc = document.getElementById('desc-' + key);
+        if (!dot || !desc) return;
+        var hasVal = val && (typeof val === 'string' ? val.trim().length > 0 : val > 0);
+        if (hasVal) {
+            dot.className = 'step-dot done'; dot.textContent = '✓';
+            if (key === 'name') desc.textContent = val.substring(0,22) + (val.length > 22 ? '...' : '');
+            else if (key === 'batch') desc.textContent = 'تم الإدخال ← سيُشفَّر';
+            else if (key === 'expiry') desc.textContent = new Date(val).toLocaleDateString('ar-JO');
+            else if (key === 'mfr') desc.textContent = val.substring(0,20);
+            else if (key === 'qty') desc.textContent = val + ' وحدة';
+        } else {
+            dot.className = 'step-dot pending'; dot.textContent = {name:'1',batch:'2',expiry:'3',mfr:'4',qty:'5'}[key] || '?';
+            desc.textContent = 'لم يُدخل بعد';
+        }
+    }
+
+    function showErr(id) {
+        var inp = document.getElementById(id);
+        var err = document.getElementById(id + 'Error');
+        if (inp) inp.classList.add('err-field');
+        if (err) err.classList.add('show');
+    }
+
+    function validateAll() {
+        var valid = true;
+        if (!document.getElementById('name').value.trim()) { showErr('name'); valid = false; }
+        if (!document.getElementById('batchNumber').value.trim()) { showErr('batchNumber'); valid = false; }
+        var expiry = document.getElementById('expiryDate').value;
+        if (!expiry || new Date(expiry) <= new Date()) { showErr('expiryDate'); valid = false; }
+        if (!document.getElementById('manufacturer').value.trim()) { showErr('manufacturer'); valid = false; }
+        var qty = parseInt(document.getElementById('quantity').value);
+        if (!qty || qty <= 0) { showErr('quantity'); valid = false; }
+        return valid;
+    }
+
+    function submitDrug() {
+        if (!validateAll()) return;
+        var btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        document.getElementById('submitIcon').textContent = '⏳';
+        document.getElementById('submitText').textContent = 'جاري الإضافة والتسجيل...';
+        document.getElementById('errorMsg').classList.remove('show');
+
+        var payload = {
+            name: document.getElementById('name').value.trim(),
+            batchNumber: document.getElementById('batchNumber').value.trim(),
+            expiryDate: document.getElementById('expiryDate').value,
+            manufacturer: document.getElementById('manufacturer').value.trim(),
+            addedByRole: role,
+            quantity: parseInt(document.getElementById('quantity').value)
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', API + '/api/drugs', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function () {
+            btn.disabled = false;
+            document.getElementById('submitIcon').textContent = '➕';
+            document.getElementById('submitText').textContent = 'إضافة الدواء وتسجيله في النظام';
+            if (xhr.status === 200 || xhr.status === 201) {
+                document.getElementById('successMsg').classList.add('show');
+                document.getElementById('successText').textContent = 'تم إضافة "' + payload.name + '" بنجاح! جاري التحويل للوحة التحكم...';
+                setTimeout(function () { goTo('dashboard.html'); }, 2000);
+            } else if (xhr.status === 401) {
+                localStorage.clear(); window.location.replace(API + '/login.html');
             } else {
-                prev.className = 'expiry-preview show ok';
-                prev.innerHTML = '✅ صالح لـ ' + diffDays + ' يوم (' + Math.round(diffDays / 30) + ' شهر تقريباً)';
-            }
-        }
-
-        function updateQtyMeter(qty) {
-            var meter = document.getElementById('qtyMeter');
-            var bar = document.getElementById('qtyBar');
-            var label = document.getElementById('qtyLabel');
-            if (!qty || qty <= 0) { meter.classList.remove('show'); return; }
-            meter.classList.add('show');
-            var pct = Math.min(qty / 1000 * 100, 100);
-            bar.style.width = pct + '%';
-            if (qty <= 10) { bar.style.background = '#f43f5e'; label.style.color = '#9f1239'; label.textContent = '⚠️ كمية منخفضة جداً — يُنصح بإضافة أكثر'; }
-            else if (qty <= 50) { bar.style.background = '#f59e0b'; label.style.color = '#78350f'; label.textContent = 'كمية منخفضة — ' + qty + ' وحدة'; }
-            else { bar.style.background = '#10b981'; label.style.color = '#065f46'; label.textContent = '✓ كمية جيدة — ' + qty + ' وحدة'; }
-        }
-
-        function updateHashPreview(val) {
-            var prev = document.getElementById('hashPreview');
-            if (!val) { prev.innerHTML = '<span class="hash-placeholder">أدخل رقم الدفعة لرؤية الـ Hash...</span>'; return; }
-            var hash = simpleHash(val);
-            prev.innerHTML = '<span style="color:#4ade80">' + hash.substring(0, 8) + '</span>' +
-                '<span style="color:#60a5fa">' + hash.substring(8, 16) + '</span>' +
-                '<span style="color:#fbbf24">' + hash.substring(16, 24) + '</span>' +
-                '<span style="color:#f87171">' + hash.substring(24, 32) + '</span>' +
-                '<span style="color:#c084fc">' + hash.substring(32) + '</span>';
-        }
-
-        function simpleHash(str) {
-            var chars = '0123456789ABCDEF', result = '', seed = 0;
-            for (var i = 0; i < str.length; i++) seed = (seed * 31 + str.charCodeAt(i)) & 0xFFFFFFFF;
-            for (var j = 0; j < 64; j++) { seed = (seed * 1664525 + 1013904223) & 0xFFFFFFFF; result += chars[(seed >>> (j % 28)) & 15]; }
-            return result;
-        }
-
-        function updateStep(field, val) {
-            var map = { name: 'name', batchNumber: 'batch', batch: 'batch', expiryDate: 'expiry', expiry: 'expiry', manufacturer: 'mfr', quantity: 'qty', qty: 'qty' };
-            var key = map[field] || field;
-            var dot = document.getElementById('dot-' + key);
-            var desc = document.getElementById('desc-' + key);
-            if (!dot || !desc) return;
-            var hasVal = val && (typeof val === 'string' ? val.trim().length > 0 : val > 0);
-            if (hasVal) {
-                dot.className = 'step-dot done'; dot.textContent = '✓';
-                if (key === 'name') desc.textContent = val.substring(0, 22) + (val.length > 22 ? '...' : '');
-                else if (key === 'batch') desc.textContent = 'تم الإدخال ← سيُشفَّر';
-                else if (key === 'expiry') desc.textContent = new Date(val).toLocaleDateString('ar-JO');
-                else if (key === 'mfr') desc.textContent = val.substring(0, 20);
-                else if (key === 'qty') desc.textContent = val + ' وحدة';
-            } else {
-                dot.className = 'step-dot pending'; dot.textContent = { name: '1', batch: '2', expiry: '3', mfr: '4', qty: '5' }[key] || '?';
-                desc.textContent = 'لم يُدخل بعد';
-            }
-        }
-
-        function showErr(id) {
-            var inp = document.getElementById(id);
-            var err = document.getElementById(id + 'Error');
-            if (inp) inp.classList.add('err-field');
-            if (err) err.classList.add('show');
-        }
-
-        function validateAll() {
-            var valid = true;
-            if (!document.getElementById('name').value.trim()) { showErr('name'); valid = false; }
-            if (!document.getElementById('batchNumber').value.trim()) { showErr('batchNumber'); valid = false; }
-            var expiry = document.getElementById('expiryDate').value;
-            if (!expiry || new Date(expiry) <= new Date()) { showErr('expiryDate'); valid = false; }
-            if (!document.getElementById('manufacturer').value.trim()) { showErr('manufacturer'); valid = false; }
-            var qty = parseInt(document.getElementById('quantity').value);
-            if (!qty || qty <= 0) { showErr('quantity'); valid = false; }
-            return valid;
-        }
-
-        function submitDrug() {
-            if (!validateAll()) return;
-            var btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            document.getElementById('submitIcon').textContent = '⏳';
-            document.getElementById('submitText').textContent = 'جاري الإضافة والتسجيل...';
-            document.getElementById('errorMsg').classList.remove('show');
-
-            var payload = {
-                name: document.getElementById('name').value.trim(),
-                batchNumber: document.getElementById('batchNumber').value.trim(),
-                expiryDate: document.getElementById('expiryDate').value,
-                manufacturer: document.getElementById('manufacturer').value.trim(),
-                addedByRole: role,
-                quantity: parseInt(document.getElementById('quantity').value)
-            };
-
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', API + '/api/drugs', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-            xhr.onload = function () {
-                btn.disabled = false;
-                document.getElementById('submitIcon').textContent = '➕';
-                document.getElementById('submitText').textContent = 'إضافة الدواء وتسجيله في النظام';
-                if (xhr.status === 200 || xhr.status === 201) {
-                    document.getElementById('successMsg').classList.add('show');
-                    document.getElementById('successText').textContent = 'تم إضافة "' + payload.name + '" بنجاح! جاري التحويل للوحة التحكم...';
-                    setTimeout(function () { goTo('dashboard.html'); }, 2000);
-                } else if (xhr.status === 401) {
-                    localStorage.clear(); window.location.replace(API + '/login.html');
-                } else {
-                    document.getElementById('errorText').textContent = xhr.responseText || 'حدث خطأ غير متوقع';
-                    document.getElementById('errorMsg').classList.add('show');
-                }
-            };
-            xhr.onerror = function () {
-                btn.disabled = false;
-                document.getElementById('submitIcon').textContent = '➕';
-                document.getElementById('submitText').textContent = 'إضافة الدواء وتسجيله في النظام';
-                document.getElementById('errorText').textContent = 'تعذر الاتصال بالسيرفر';
+                document.getElementById('errorText').textContent = xhr.responseText || 'حدث خطأ غير متوقع';
                 document.getElementById('errorMsg').classList.add('show');
-            };
-            xhr.send(JSON.stringify(payload));
-        }
+            }
+        };
+        xhr.onerror = function () {
+            btn.disabled = false;
+            document.getElementById('submitIcon').textContent = '➕';
+            document.getElementById('submitText').textContent = 'إضافة الدواء وتسجيله في النظام';
+            document.getElementById('errorText').textContent = 'تعذر الاتصال بالسيرفر';
+            document.getElementById('errorMsg').classList.add('show');
+        };
+        xhr.send(JSON.stringify(payload));
+    }
 
-        function resetForm() {
-            if (!confirm('هل تريد مسح جميع الحقول؟')) return;
-            ['name', 'scientificName', 'batchNumber', 'manufacturer', 'country', 'drugForm', 'productionDate', 'expiryDate', 'quantity', 'price', 'notes'].forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ''; });
-            document.querySelectorAll('.cat-pill').forEach(function (p) { p.classList.remove('selected'); });
-            selectedCategory = '';
-            document.getElementById('expiryPreview').className = 'expiry-preview';
-            document.getElementById('qtyMeter').classList.remove('show');
-            document.getElementById('hashPreview').innerHTML = '<span class="hash-placeholder">أدخل رقم الدفعة لرؤية الـ Hash...</span>';
-            document.getElementById('successMsg').classList.remove('show');
-            document.getElementById('errorMsg').classList.remove('show');
-            ['name', 'batch', 'expiry', 'mfr', 'qty'].forEach(function (k) {
-                var dot = document.getElementById('dot-' + k); var desc = document.getElementById('desc-' + k);
-                if (dot) { dot.className = 'step-dot pending'; dot.textContent = { name: '1', batch: '2', expiry: '3', mfr: '4', qty: '5' }[k]; }
-                if (desc) desc.textContent = 'لم يُدخل بعد';
-            });
-        }
-    </script>
+    function resetForm() {
+        if (!confirm('هل تريد مسح جميع الحقول؟')) return;
+        ['name','scientificName','batchNumber','manufacturer','country','drugForm','productionDate','expiryDate','quantity','price','notes'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+        document.querySelectorAll('.cat-pill').forEach(function(p){p.classList.remove('selected');});
+        selectedCategory = '';
+        document.getElementById('expiryPreview').className = 'expiry-preview';
+        document.getElementById('qtyMeter').classList.remove('show');
+        document.getElementById('hashPreview').innerHTML = '<span class="hash-placeholder">أدخل رقم الدفعة لرؤية الـ Hash...</span>';
+        document.getElementById('successMsg').classList.remove('show');
+        document.getElementById('errorMsg').classList.remove('show');
+        ['name','batch','expiry','mfr','qty'].forEach(function(k){
+            var dot=document.getElementById('dot-'+k); var desc=document.getElementById('desc-'+k);
+            if(dot){dot.className='step-dot pending'; dot.textContent={name:'1',batch:'2',expiry:'3',mfr:'4',qty:'5'}[k];}
+            if(desc) desc.textContent='لم يُدخل بعد';
+        });
+    }
+</script>
 </body>
 </html>

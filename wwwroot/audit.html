@@ -7,217 +7,185 @@
     <link rel="stylesheet" href="/pharma-styles.css">
     <style>
         .mini-stats {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
         }
-
         .mini-stat-card {
-            background: white;
-            border: 1px solid var(--gray-100);
-            border-radius: var(--radius-lg);
-            padding: 14px 18px;
-            box-shadow: var(--shadow-sm);
-            flex: 1;
-            min-width: 140px;
+            background: white; border: 1px solid var(--gray-100);
+            border-radius: var(--radius-lg); padding: 14px 18px;
+            box-shadow: var(--shadow-sm); flex: 1; min-width: 140px;
         }
+        .mini-stat-val   { font-size: 24px; font-weight: 800; color: var(--gray-900); }
+        .mini-stat-label { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; }
 
-        .mini-stat-val {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--gray-900);
-        }
+        .ip-mono { font-family:'Consolas',monospace; font-size:11px; color:var(--gray-500); background:var(--gray-100); padding:2px 7px; border-radius:4px; }
 
-        .mini-stat-label {
-            font-size: 11.5px;
-            color: var(--gray-500);
-            margin-top: 2px;
-        }
+        .log-tamper td { background: var(--rose-50) !important; }
 
-        .ip-mono {
-            font-family: 'Consolas',monospace;
-            font-size: 11px;
-            color: var(--gray-500);
-            background: var(--gray-100);
-            padding: 2px 7px;
-            border-radius: 4px;
-        }
-
-        .log-tamper td {
-            background: var(--rose-50) !important;
-        }
-
-        .no-access {
-            text-align: center;
-            padding: 60px;
-            color: #881337;
-            font-size: 15px;
-        }
+        .no-access { text-align:center; padding:60px; color:#881337; font-size:15px; }
     </style>
 </head>
 <body>
-    <div class="layout">
+<div class="layout">
 
-        <!-- ══ SIDEBAR ══ -->
-        <div class="sidebar">
-            <div class="sidebar-logo"><h2>PharmaChain</h2><p>نظام تتبع الأدوية</p></div>
-            <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> لوحة التحكم</a>
-            <a class="nav-item" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> إضافة دواء</a>
-            <a class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> نقل دواء</a>
-            <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> Blockchain</a>
-            <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> التحقق من دواء</a>
-            <a class="nav-item active"><span class="nav-icon">📋</span> سجل العمليات</a>
-            <div class="nav-section-hdr">الذكاء الاصطناعي</div>
-            <a class="nav-item" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> محلل المخاطر AI</a>
-            <a class="nav-item" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> تحليلات الأداء AI</a>
-            <div class="user-info-bar">
-                <div class="user-row">
-                    <div class="user-avatar">👤</div>
-                    <div>
-                        <div class="user-name" id="sidebarUsername">...</div>
-                        <div class="user-role" id="sidebarRole">...</div>
-                    </div>
-                </div>
-                <button class="logout-btn" onclick="logout()">🚪 تسجيل خروج</button>
-            </div>
-        </div>
-
-        <!-- ══ MAIN ══ -->
-        <div class="main">
-            <div class="page-header">
+    <!-- ══ SIDEBAR ══ -->
+    <div class="sidebar">
+        <div class="sidebar-logo"><h2>PharmaChain</h2><p>نظام تتبع الأدوية</p></div>
+        <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> لوحة التحكم</a>
+        <a class="nav-item" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> إضافة دواء</a>
+        <a class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> نقل دواء</a>
+        <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> Blockchain</a>
+        <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> التحقق من دواء</a>
+        <a class="nav-item active"><span class="nav-icon">📋</span> سجل العمليات</a>
+        <div class="nav-section-hdr">الذكاء الاصطناعي</div>
+        <a class="nav-item" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> محلل المخاطر AI</a>
+        <a class="nav-item" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> تحليلات الأداء AI</a>
+        <div class="user-info-bar">
+            <div class="user-row">
+                <div class="user-avatar">👤</div>
                 <div>
-                    <div class="page-title">سجل العمليات</div>
-                    <div class="page-subtitle">Audit Log — جميع العمليات الأمنية والإدارية مسجلة هنا</div>
-                </div>
-                <div class="header-actions">
-                    <button class="btn btn-outline" onclick="loadLogs()">🔄 تحديث</button>
+                    <div class="user-name" id="sidebarUsername">...</div>
+                    <div class="user-role" id="sidebarRole">...</div>
                 </div>
             </div>
-
-            <div class="mini-stats" id="statsRow"></div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-header-left">
-                        <div class="card-icon ci-purple">📋</div>
-                        <div>
-                            <div class="card-title">جميع العمليات <span class="count-badge" id="logCount">0</span></div>
-                            <div class="card-subtitle">مرتبة من الأحدث للأقدم</div>
-                        </div>
-                    </div>
-                    <select id="filterAction" onchange="filterLogs()" class="filter-select">
-                        <option value="">كل العمليات</option>
-                        <option value="Login">دخول ناجح</option>
-                        <option value="FailedLogin">دخول فاشل</option>
-                        <option value="Register">تسجيل حساب</option>
-                        <option value="AddDrug">إضافة دواء</option>
-                        <option value="DeleteDrug">حذف دواء</option>
-                        <option value="TransferDrug">نقل دواء</option>
-                        <option value="TamperDetected">تلاعب مكتشف 🚨</option>
-                    </select>
-                </div>
-                <div class="table-wrap" id="logsTable">
-                    <div class="loading-state"><div class="spinner"></div>جاري تحميل السجل...</div>
-                </div>
-            </div>
+            <button class="logout-btn" onclick="logout()">🚪 تسجيل خروج</button>
         </div>
     </div>
 
-    <script>
-        var API = 'http://localhost:7036';
-        var token = localStorage.getItem('token');
-        var role = localStorage.getItem('role');
+    <!-- ══ MAIN ══ -->
+    <div class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">سجل العمليات</div>
+                <div class="page-subtitle">Audit Log — جميع العمليات الأمنية والإدارية مسجلة هنا</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline" onclick="loadLogs()">🔄 تحديث</button>
+            </div>
+        </div>
 
-        if (!token) { window.location.replace(API + '/login.html'); }
+        <div class="mini-stats" id="statsRow"></div>
 
-        document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
-        document.getElementById('sidebarRole').textContent = role || '';
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <div class="card-icon ci-purple">📋</div>
+                    <div>
+                        <div class="card-title">جميع العمليات <span class="count-badge" id="logCount">0</span></div>
+                        <div class="card-subtitle">مرتبة من الأحدث للأقدم</div>
+                    </div>
+                </div>
+                <select id="filterAction" onchange="filterLogs()" class="filter-select">
+                    <option value="">كل العمليات</option>
+                    <option value="Login">دخول ناجح</option>
+                    <option value="FailedLogin">دخول فاشل</option>
+                    <option value="Register">تسجيل حساب</option>
+                    <option value="AddDrug">إضافة دواء</option>
+                    <option value="DeleteDrug">حذف دواء</option>
+                    <option value="TransferDrug">نقل دواء</option>
+                    <option value="TamperDetected">تلاعب مكتشف 🚨</option>
+                </select>
+            </div>
+            <div class="table-wrap" id="logsTable">
+                <div class="loading-state"><div class="spinner"></div>جاري تحميل السجل...</div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        var allLogs = [];
+<script>
+    var API = 'http://localhost:7036';
+    var token = localStorage.getItem('token');
+    var role  = localStorage.getItem('role');
 
-        function goTo(page) { window.location.replace(API + '/' + page); }
-        function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+    if (!token) { window.location.replace(API + '/login.html'); }
 
-        function loadLogs() {
-            if (role !== 'Admin') {
-                document.getElementById('logsTable').innerHTML = '<div class="no-access" style="text-align:center;padding:60px;color:#881337;font-size:15px;">⛔ سجل العمليات متاح للمدير فقط</div>';
-                return;
-            }
-            document.getElementById('logsTable').innerHTML = '<div class="loading-state"><div class="spinner"></div>جاري تحميل السجل...</div>';
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', API + '/api/audit', true);
-            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-            xhr.onload = function () {
-                if (xhr.status === 401) { window.location.replace(API + '/login.html'); return; }
-                allLogs = JSON.parse(xhr.responseText);
+    document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
+    document.getElementById('sidebarRole').textContent = role || '';
 
-                var logins = allLogs.filter(function (l) { return l.action === 'Login'; }).length;
-                var failed = allLogs.filter(function (l) { return l.action === 'FailedLogin'; }).length;
-                var tamper = allLogs.filter(function (l) { return l.action === 'TamperDetected'; }).length;
-                var adds = allLogs.filter(function (l) { return l.action === 'AddDrug'; }).length;
-                var transfers = allLogs.filter(function (l) { return l.action === 'TransferDrug'; }).length;
+    var allLogs = [];
 
-                document.getElementById('statsRow').innerHTML =
-                    '<div class="mini-stat-card"><div class="mini-stat-val">' + allLogs.length + '</div><div class="mini-stat-label">إجمالي العمليات</div></div>' +
-                    '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#065f46">' + logins + '</div><div class="mini-stat-label">دخول ناجح</div></div>' +
-                    '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#9f1239">' + failed + '</div><div class="mini-stat-label">دخول فاشل</div></div>' +
-                    '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#9f1239">' + tamper + '</div><div class="mini-stat-label">تلاعب مكتشف</div></div>' +
-                    '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#1e40af">' + adds + '</div><div class="mini-stat-label">أدوية مضافة</div></div>' +
-                    '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#4c1d95">' + transfers + '</div><div class="mini-stat-label">عمليات نقل</div></div>';
+    function goTo(page) { window.location.replace(API + '/' + page); }
+    function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
 
-                renderLogs(allLogs);
-            };
-            xhr.onerror = function () { document.getElementById('logsTable').innerHTML = '<div class="loading-state">⚠️ تعذر تحميل السجل</div>'; };
-            xhr.send();
+    function loadLogs() {
+        if (role !== 'Admin') {
+            document.getElementById('logsTable').innerHTML = '<div class="no-access" style="text-align:center;padding:60px;color:#881337;font-size:15px;">⛔ سجل العمليات متاح للمدير فقط</div>';
+            return;
         }
+        document.getElementById('logsTable').innerHTML = '<div class="loading-state"><div class="spinner"></div>جاري تحميل السجل...</div>';
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', API + '/api/audit', true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function () {
+            if (xhr.status === 401) { window.location.replace(API + '/login.html'); return; }
+            allLogs = JSON.parse(xhr.responseText);
 
-        var pillMap = {
-            'Login': 'badge-green',
-            'FailedLogin': 'badge-red',
-            'Register': 'badge-amber',
-            'AddDrug': 'badge-blue',
-            'DeleteDrug': 'badge-red',
-            'TransferDrug': 'badge-purple',
-            'TamperDetected': 'badge-red'
+            var logins = allLogs.filter(function(l){return l.action==='Login';}).length;
+            var failed = allLogs.filter(function(l){return l.action==='FailedLogin';}).length;
+            var tamper = allLogs.filter(function(l){return l.action==='TamperDetected';}).length;
+            var adds   = allLogs.filter(function(l){return l.action==='AddDrug';}).length;
+            var transfers = allLogs.filter(function(l){return l.action==='TransferDrug';}).length;
+
+            document.getElementById('statsRow').innerHTML =
+                '<div class="mini-stat-card"><div class="mini-stat-val">' + allLogs.length + '</div><div class="mini-stat-label">إجمالي العمليات</div></div>' +
+                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#065f46">' + logins + '</div><div class="mini-stat-label">دخول ناجح</div></div>' +
+                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#9f1239">' + failed + '</div><div class="mini-stat-label">دخول فاشل</div></div>' +
+                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#9f1239">' + tamper + '</div><div class="mini-stat-label">تلاعب مكتشف</div></div>' +
+                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#1e40af">' + adds + '</div><div class="mini-stat-label">أدوية مضافة</div></div>' +
+                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#4c1d95">' + transfers + '</div><div class="mini-stat-label">عمليات نقل</div></div>';
+
+            renderLogs(allLogs);
         };
-        var labelMap = {
-            'Login': 'دخول ناجح', 'FailedLogin': 'دخول فاشل', 'Register': 'تسجيل',
-            'AddDrug': 'إضافة دواء', 'DeleteDrug': 'حذف دواء', 'TransferDrug': 'نقل دواء',
-            'TamperDetected': '🚨 تلاعب'
-        };
+        xhr.onerror = function () { document.getElementById('logsTable').innerHTML = '<div class="loading-state">⚠️ تعذر تحميل السجل</div>'; };
+        xhr.send();
+    }
 
-        function renderLogs(logs) {
-            document.getElementById('logCount').textContent = logs.length;
-            if (logs.length === 0) {
-                document.getElementById('logsTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">لا توجد عمليات مسجلة</div></div>';
-                return;
-            }
-            var html = '<table><thead><tr><th>#</th><th>المستخدم</th><th>العملية</th><th>التفاصيل</th><th>التاريخ والوقت</th><th>IP</th></tr></thead><tbody>';
-            logs.forEach(function (log, i) {
-                var date = new Date(log.timestamp).toLocaleString('ar-JO');
-                var cls = pillMap[log.action] || 'badge-gray';
-                var lbl = labelMap[log.action] || log.action;
-                var rowCls = log.action === 'TamperDetected' ? 'log-tamper' : '';
-                html += '<tr class="' + rowCls + '">'
-                    + '<td style="color:var(--gray-400);font-size:12px;">' + (i + 1) + '</td>'
-                    + '<td><strong>' + log.username + '</strong></td>'
-                    + '<td><span class="badge ' + cls + '">' + lbl + '</span></td>'
-                    + '<td style="font-size:12.5px;color:var(--gray-600);max-width:320px;">' + log.details + '</td>'
-                    + '<td style="font-size:12px;white-space:nowrap;">' + date + '</td>'
-                    + '<td><span class="ip-mono">' + log.ipAddress + '</span></td>'
-                    + '</tr>';
-            });
-            html += '</tbody></table>';
-            document.getElementById('logsTable').innerHTML = html;
+    var pillMap = {
+        'Login':          'badge-green',
+        'FailedLogin':    'badge-red',
+        'Register':       'badge-amber',
+        'AddDrug':        'badge-blue',
+        'DeleteDrug':     'badge-red',
+        'TransferDrug':   'badge-purple',
+        'TamperDetected': 'badge-red'
+    };
+    var labelMap = {
+        'Login':'دخول ناجح', 'FailedLogin':'دخول فاشل', 'Register':'تسجيل',
+        'AddDrug':'إضافة دواء', 'DeleteDrug':'حذف دواء', 'TransferDrug':'نقل دواء',
+        'TamperDetected':'🚨 تلاعب'
+    };
+
+    function renderLogs(logs) {
+        document.getElementById('logCount').textContent = logs.length;
+        if (logs.length === 0) {
+            document.getElementById('logsTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">لا توجد عمليات مسجلة</div></div>';
+            return;
         }
+        var html = '<table><thead><tr><th>#</th><th>المستخدم</th><th>العملية</th><th>التفاصيل</th><th>التاريخ والوقت</th><th>IP</th></tr></thead><tbody>';
+        logs.forEach(function (log, i) {
+            var date = new Date(log.timestamp).toLocaleString('ar-JO');
+            var cls  = pillMap[log.action]  || 'badge-gray';
+            var lbl  = labelMap[log.action] || log.action;
+            var rowCls = log.action === 'TamperDetected' ? 'log-tamper' : '';
+            html += '<tr class="' + rowCls + '">'
+                + '<td style="color:var(--gray-400);font-size:12px;">' + (i+1) + '</td>'
+                + '<td><strong>' + log.username + '</strong></td>'
+                + '<td><span class="badge ' + cls + '">' + lbl + '</span></td>'
+                + '<td style="font-size:12.5px;color:var(--gray-600);max-width:320px;">' + log.details + '</td>'
+                + '<td style="font-size:12px;white-space:nowrap;">' + date + '</td>'
+                + '<td><span class="ip-mono">' + log.ipAddress + '</span></td>'
+                + '</tr>';
+        });
+        html += '</tbody></table>';
+        document.getElementById('logsTable').innerHTML = html;
+    }
 
-        function filterLogs() {
-            var action = document.getElementById('filterAction').value;
-            renderLogs(action ? allLogs.filter(function (l) { return l.action === action; }) : allLogs);
-        }
+    function filterLogs() {
+        var action = document.getElementById('filterAction').value;
+        renderLogs(action ? allLogs.filter(function(l){ return l.action === action; }) : allLogs);
+    }
 
-        loadLogs();
-    </script>
+    loadLogs();
+</script>
 </body>
 </html>

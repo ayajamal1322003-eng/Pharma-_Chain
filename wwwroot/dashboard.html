@@ -12,27 +12,11 @@
             border-radius: var(--radius-lg);
             padding: 16px 20px;
             margin-bottom: 18px;
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
+            display: flex; align-items: flex-start; gap: 14px;
         }
-
-        .ledger-banner-icon {
-            font-size: 22px;
-            flex-shrink: 0;
-        }
-
-        .ledger-banner-text {
-            font-size: 13px;
-            color: #78350f;
-            line-height: 1.65;
-        }
-
-            .ledger-banner-text strong {
-                display: block;
-                font-size: 14px;
-                margin-bottom: 3px;
-            }
+        .ledger-banner-icon { font-size: 22px; flex-shrink: 0; }
+        .ledger-banner-text { font-size: 13px; color: #78350f; line-height: 1.65; }
+        .ledger-banner-text strong { display: block; font-size: 14px; margin-bottom: 3px; }
 
         .tamper-alert {
             background: var(--rose-50);
@@ -43,13 +27,9 @@
             color: #881337;
             font-size: 13.5px;
             display: none;
-            align-items: center;
-            gap: 10px;
+            align-items: center; gap: 10px;
         }
-
-            .tamper-alert.show {
-                display: flex;
-            }
+        .tamper-alert.show { display: flex; }
 
         .alert-warn-bar {
             background: var(--amber-50);
@@ -61,10 +41,7 @@
             color: #78350f;
             display: none;
         }
-
-            .alert-warn-bar.show {
-                display: block;
-            }
+        .alert-warn-bar.show { display: block; }
 
         .role-info-bar {
             background: white;
@@ -74,469 +51,455 @@
             font-size: 13px;
             color: var(--gray-600);
             margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            display: flex; align-items: center; gap: 8px;
             box-shadow: var(--shadow-sm);
         }
 
-        .qty-low {
-            color: #9f1239;
-            font-weight: 700;
-        }
+        .qty-low  { color: #9f1239; font-weight: 700; }
+        .qty-ok   { color: #065f46; font-weight: 700; }
 
-        .qty-ok {
-            color: #065f46;
-            font-weight: 700;
-        }
+        .drug-name { font-weight: 600; color: var(--gray-800); }
 
-        .drug-name {
-            font-weight: 600;
-            color: var(--gray-800);
-        }
-
-        td strong {
-            color: var(--gray-900);
-        }
+        td strong { color: var(--gray-900); }
     </style>
 </head>
 <body>
-    <div class="layout">
+<div class="layout">
 
-        <!-- ══ SIDEBAR ══ -->
-        <div class="sidebar">
-            <div class="sidebar-logo">
-                <h2>PharmaChain</h2>
-                <p>نظام تتبع الأدوية</p>
-            </div>
-            <div class="role-badge-sidebar" id="roleBadge"></div>
-
-            <a class="nav-item active" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> لوحة التحكم</a>
-            <a class="nav-item" id="navAddDrug" style="display:none" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> إضافة دواء</a>
-            <a class="nav-item" id="navTransfer" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> نقل دواء</a>
-            <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> Blockchain</a>
-            <a class="nav-item" id="navVerify" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> التحقق من دواء</a>
-            <a class="nav-item" id="navAttack" style="display:none" onclick="goTo('attack-demo.html')"><span class="nav-icon">🛡️</span> كشف التلاعب</a>
-            <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> سجل العمليات</a>
-            <div class="nav-section-hdr" id="navAISection" style="display:none">الذكاء الاصطناعي</div>
-            <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> محلل المخاطر AI</a>
-            <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> تحليلات الأداء AI</a>
-
-            <div class="user-info-bar">
-                <div class="user-row">
-                    <div class="user-avatar">👤</div>
-                    <div>
-                        <div class="user-name" id="sidebarUsername">...</div>
-                        <div class="user-role" id="sidebarRole">...</div>
-                    </div>
-                </div>
-                <button class="logout-btn" onclick="logout()">🚪 تسجيل خروج</button>
-            </div>
+    <!-- ══ SIDEBAR ══ -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h2>PharmaChain</h2>
+            <p>نظام تتبع الأدوية</p>
         </div>
+        <div class="role-badge-sidebar" id="roleBadge"></div>
 
-        <!-- ══ MAIN ══ -->
-        <div class="main">
-            <div class="page-header">
+        <a class="nav-item active" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> لوحة التحكم</a>
+        <a class="nav-item" id="navAddDrug" style="display:none" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> إضافة دواء</a>
+        <a class="nav-item" id="navTransfer" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> نقل دواء</a>
+        <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> Blockchain</a>
+        <a class="nav-item" id="navVerify" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> التحقق من دواء</a>
+        <a class="nav-item" id="navAttack" style="display:none" onclick="goTo('attack-demo.html')"><span class="nav-icon">🛡️</span> كشف التلاعب</a>
+        <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> سجل العمليات</a>
+        <div class="nav-section-hdr" id="navAISection" style="display:none">الذكاء الاصطناعي</div>
+        <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> محلل المخاطر AI</a>
+        <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> تحليلات الأداء AI</a>
+
+        <div class="user-info-bar">
+            <div class="user-row">
+                <div class="user-avatar">👤</div>
                 <div>
-                    <div class="page-title">لوحة التحكم</div>
-                    <div class="page-subtitle">نظرة عامة على المخزون وحالة الأدوية</div>
-                </div>
-                <div class="header-actions">
-                    <button class="btn btn-outline" id="exportBtn" onclick="exportCSV()">⬇ تصدير CSV</button>
-                    <button class="btn btn-primary" id="headerAddBtn" style="display:none" onclick="goTo('add-drug.html')">+ إضافة دواء</button>
+                    <div class="user-name" id="sidebarUsername">...</div>
+                    <div class="user-role" id="sidebarRole">...</div>
                 </div>
             </div>
-
-            <div class="role-info-bar" id="roleInfo"></div>
-
-            <div class="ledger-banner" id="ledgerBanner" style="display:none">
-                <div class="ledger-banner-icon">⚖️</div>
-                <div class="ledger-banner-text">
-                    <strong>وضع Ledger Admin — محايد تقنياً</strong>
-                    صلاحياتك مقتصرة على مراقبة سلسلة Blockchain والتحقق من سلامتها. لا تملك صلاحية إضافة أدوية أو نقلها أو حذفها.
-                </div>
-            </div>
-
-            <div class="tamper-alert" id="tamperAlert"><span>🚨</span><span id="tamperText"></span></div>
-            <div class="alert-warn-bar" id="alertBox"></div>
-
-            <!-- Stats -->
-            <div class="stats-grid" id="statsSection">
-                <div class="stat-card stat-card-blue" onclick="filterByStatus('')">
-                    <div class="stat-card-icon">💊</div>
-                    <div class="stat-card-value" id="totalDrugs">0</div>
-                    <div class="stat-card-label">إجمالي الأدوية</div>
-                    <div class="stat-card-hint">اضغط للعرض الكامل</div>
-                </div>
-                <div class="stat-card stat-card-rose" onclick="filterByStatus('expired')">
-                    <div class="stat-card-icon">❌</div>
-                    <div class="stat-card-value" id="expiredDrugs">0</div>
-                    <div class="stat-card-label">منتهية الصلاحية</div>
-                    <div class="stat-card-hint">اضغط للفلترة</div>
-                </div>
-                <div class="stat-card stat-card-amber" onclick="filterByStatus('soon')">
-                    <div class="stat-card-icon">⚠️</div>
-                    <div class="stat-card-value" id="soonDrugs">0</div>
-                    <div class="stat-card-label">تنتهي خلال 30 يوم</div>
-                    <div class="stat-card-hint">اضغط للفلترة</div>
-                </div>
-                <div class="stat-card stat-card-teal" onclick="filterByStatus('low')">
-                    <div class="stat-card-icon">📦</div>
-                    <div class="stat-card-value" id="lowStockDrugs">0</div>
-                    <div class="stat-card-label">كمية منخفضة</div>
-                    <div class="stat-card-hint">أقل من 10 وحدات</div>
-                </div>
-            </div>
-
-            <!-- Drugs Table Card -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-header-left">
-                        <div class="card-icon ci-blue">💊</div>
-                        <div>
-                            <div class="card-title">الأدوية المسجلة <span class="count-badge" id="tableCount">0</span></div>
-                            <div class="card-subtitle">قاعدة بيانات المخزون الدوائي</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                        <span class="filter-chip" id="filterBadge" onclick="clearAllFilters()">
-                            <span id="filterBadgeText"></span> ✕
-                        </span>
-                        <button class="btn btn-outline" onclick="loadDrugs()" style="padding:7px 12px;font-size:12px;">🔄 تحديث</button>
-                    </div>
-                </div>
-
-                <div class="filter-bar">
-                    <div class="search-wrap">
-                        <span class="search-icon">🔍</span>
-                        <input type="text" class="search-input" id="searchInput" placeholder="ابحث بالاسم أو الشركة أو الرقم..." oninput="applyFilters()">
-                    </div>
-                    <select class="filter-select" id="statusFilter" onchange="applyFilters()">
-                        <option value="">كل الحالات</option>
-                        <option value="valid">صالح ✅</option>
-                        <option value="soon">ينتهي قريباً ⚠️</option>
-                        <option value="expired">منتهي ❌</option>
-                    </select>
-                    <select class="filter-select" id="manufacturerFilter" onchange="applyFilters()">
-                        <option value="">كل الشركات</option>
-                    </select>
-                    <select class="filter-select" id="qtyFilter" onchange="applyFilters()">
-                        <option value="">كل الكميات</option>
-                        <option value="low">كمية منخفضة ≤10</option>
-                        <option value="ok">كمية كافية &gt;10</option>
-                    </select>
-                </div>
-
-                <div class="table-wrap" id="drugsTable">
-                    <div class="loading-state"><div class="spinner"></div>جاري تحميل البيانات...</div>
-                </div>
-
-                <div class="pagination-wrap" id="paginationWrap" style="display:none;">
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <span id="pageInfo"></span>
-                        <select class="page-size-select" id="pageSizeSelect" onchange="changePageSize()">
-                            <option value="10">10 لكل صفحة</option>
-                            <option value="25" selected>25 لكل صفحة</option>
-                            <option value="50">50 لكل صفحة</option>
-                            <option value="100">100 لكل صفحة</option>
-                        </select>
-                    </div>
-                    <div class="pagination" id="pagination"></div>
-                </div>
-            </div>
+            <button class="logout-btn" onclick="logout()">🚪 تسجيل خروج</button>
         </div>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <!-- ══ MAIN ══ -->
+    <div class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">لوحة التحكم</div>
+                <div class="page-subtitle">نظرة عامة على المخزون وحالة الأدوية</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline" id="exportBtn" onclick="exportCSV()">⬇ تصدير CSV</button>
+                <button class="btn btn-primary" id="headerAddBtn" style="display:none" onclick="goTo('add-drug.html')">+ إضافة دواء</button>
+            </div>
+        </div>
 
-    <script>
-        var API = 'http://localhost:7036';
-        var token = localStorage.getItem('token');
-        var username = localStorage.getItem('username');
-        var role = localStorage.getItem('role');
+        <div class="role-info-bar" id="roleInfo"></div>
 
-        if (!token) { window.location.replace(API + '/login.html'); }
+        <div class="ledger-banner" id="ledgerBanner" style="display:none">
+            <div class="ledger-banner-icon">⚖️</div>
+            <div class="ledger-banner-text">
+                <strong>وضع Ledger Admin — محايد تقنياً</strong>
+                صلاحياتك مقتصرة على مراقبة سلسلة Blockchain والتحقق من سلامتها. لا تملك صلاحية إضافة أدوية أو نقلها أو حذفها.
+            </div>
+        </div>
 
-        document.getElementById('sidebarUsername').textContent = username || '';
-        document.getElementById('sidebarRole').textContent = role || '';
+        <div class="tamper-alert" id="tamperAlert"><span>🚨</span><span id="tamperText"></span></div>
+        <div class="alert-warn-bar" id="alertBox"></div>
 
-        var roleLabels = {
-            Factory: '🏭 مصنع — يمكنك إضافة الأدوية ونقلها للموزع',
-            Distributor: '🚚 موزع — يمكنك نقل الأدوية للصيدليات',
-            Pharmacy: '🏥 صيدلية — يمكنك استلام الأدوية والتحقق منها',
-            Admin: '👨‍💼 مدير — صلاحيات كاملة على النظام',
-            LedgerAdmin: '⚖️ مدير السجل — مراقبة Blockchain فقط'
-        };
+        <!-- Stats -->
+        <div class="stats-grid" id="statsSection">
+            <div class="stat-card stat-card-blue" onclick="filterByStatus('')">
+                <div class="stat-card-icon">💊</div>
+                <div class="stat-card-value" id="totalDrugs">0</div>
+                <div class="stat-card-label">إجمالي الأدوية</div>
+                <div class="stat-card-hint">اضغط للعرض الكامل</div>
+            </div>
+            <div class="stat-card stat-card-rose" onclick="filterByStatus('expired')">
+                <div class="stat-card-icon">❌</div>
+                <div class="stat-card-value" id="expiredDrugs">0</div>
+                <div class="stat-card-label">منتهية الصلاحية</div>
+                <div class="stat-card-hint">اضغط للفلترة</div>
+            </div>
+            <div class="stat-card stat-card-amber" onclick="filterByStatus('soon')">
+                <div class="stat-card-icon">⚠️</div>
+                <div class="stat-card-value" id="soonDrugs">0</div>
+                <div class="stat-card-label">تنتهي خلال 30 يوم</div>
+                <div class="stat-card-hint">اضغط للفلترة</div>
+            </div>
+            <div class="stat-card stat-card-teal" onclick="filterByStatus('low')">
+                <div class="stat-card-icon">📦</div>
+                <div class="stat-card-value" id="lowStockDrugs">0</div>
+                <div class="stat-card-label">كمية منخفضة</div>
+                <div class="stat-card-hint">أقل من 10 وحدات</div>
+            </div>
+        </div>
 
-        document.getElementById('roleBadge').textContent = role;
-        document.getElementById('roleBadge').className = 'role-badge-sidebar role-' + role;
-        document.getElementById('roleInfo').innerHTML = '<span>' + (roleLabels[role] || role) + '</span>';
+        <!-- Drugs Table Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <div class="card-icon ci-blue">💊</div>
+                    <div>
+                        <div class="card-title">الأدوية المسجلة <span class="count-badge" id="tableCount">0</span></div>
+                        <div class="card-subtitle">قاعدة بيانات المخزون الدوائي</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                    <span class="filter-chip" id="filterBadge" onclick="clearAllFilters()">
+                        <span id="filterBadgeText"></span> ✕
+                    </span>
+                    <button class="btn btn-outline" onclick="loadDrugs()" style="padding:7px 12px;font-size:12px;">🔄 تحديث</button>
+                </div>
+            </div>
 
-        var isLedger = role === 'LedgerAdmin';
-        var isAdmin = role === 'Admin';
+            <div class="filter-bar">
+                <div class="search-wrap">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="searchInput" placeholder="ابحث بالاسم أو الشركة أو الرقم..." oninput="applyFilters()">
+                </div>
+                <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                    <option value="">كل الحالات</option>
+                    <option value="valid">صالح ✅</option>
+                    <option value="soon">ينتهي قريباً ⚠️</option>
+                    <option value="expired">منتهي ❌</option>
+                </select>
+                <select class="filter-select" id="manufacturerFilter" onchange="applyFilters()">
+                    <option value="">كل الشركات</option>
+                </select>
+                <select class="filter-select" id="qtyFilter" onchange="applyFilters()">
+                    <option value="">كل الكميات</option>
+                    <option value="low">كمية منخفضة ≤10</option>
+                    <option value="ok">كمية كافية &gt;10</option>
+                </select>
+            </div>
 
-        if (role === 'Factory' || isAdmin) {
-            document.getElementById('navAddDrug').style.display = 'flex';
-            document.getElementById('headerAddBtn').style.display = 'inline-flex';
-        }
-        if (isLedger) {
-            document.getElementById('navTransfer').style.display = 'none';
-            document.getElementById('navVerify').style.display = 'none';
-            document.getElementById('navAttack').style.display = 'flex';
-            document.getElementById('ledgerBanner').style.display = 'flex';
-            document.getElementById('exportBtn').style.display = 'none';
-            document.getElementById('statsSection').style.display = 'none';
-        } else {
-            document.getElementById('navAttack').style.display = 'flex';
-        }
-        if (isAdmin) {
-            document.getElementById('navAudit').style.display = 'flex';
-            document.getElementById('navRisk').style.display = 'flex';
-            document.getElementById('navAdvisor').style.display = 'flex';
-            document.getElementById('navAISection').style.display = 'block';
-        }
+            <div class="table-wrap" id="drugsTable">
+                <div class="loading-state"><div class="spinner"></div>جاري تحميل البيانات...</div>
+            </div>
 
-        function goTo(page) { window.location.replace(API + '/' + page); }
-        function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+            <div class="pagination-wrap" id="paginationWrap" style="display:none;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span id="pageInfo"></span>
+                    <select class="page-size-select" id="pageSizeSelect" onchange="changePageSize()">
+                        <option value="10">10 لكل صفحة</option>
+                        <option value="25" selected>25 لكل صفحة</option>
+                        <option value="50">50 لكل صفحة</option>
+                        <option value="100">100 لكل صفحة</option>
+                    </select>
+                </div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        var allDrugs = [], filteredDrugs = [], currentPage = 1, pageSize = 25, sortCol = '', sortDir = 1;
-        var now = new Date();
-        var soon = new Date(); soon.setDate(soon.getDate() + 30);
+<div class="toast" id="toast"></div>
 
-        function loadDrugs() {
-            document.getElementById('drugsTable').innerHTML = '<div class="loading-state"><div class="spinner"></div>جاري تحميل البيانات...</div>';
-            document.getElementById('paginationWrap').style.display = 'none';
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', API + '/api/drugs', true);
-            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-            xhr.onload = function () {
-                if (xhr.status === 401) { window.location.replace(API + '/login.html'); return; }
-                if (xhr.status !== 200) { document.getElementById('drugsTable').innerHTML = '<div class="loading-state">⚠️ تعذر تحميل البيانات</div>'; return; }
-                var response = JSON.parse(xhr.responseText);
-                allDrugs = Array.isArray(response) ? response : (response.drugs || []);
-                if (response.securityAlert) {
-                    var ta = document.getElementById('tamperAlert');
-                    ta.classList.add('show');
-                    document.getElementById('tamperText').textContent = 'تحذير أمني: ' + response.securityAlert;
-                }
-                updateStats();
-                populateManufacturerFilter();
-                applyFilters();
-            };
-            xhr.onerror = function () { document.getElementById('drugsTable').innerHTML = '<div class="loading-state">⚠️ تعذر الاتصال بالسيرفر</div>'; };
-            xhr.send();
-        }
+<script>
+    var API = 'http://localhost:7036';
+    var token = localStorage.getItem('token');
+    var username = localStorage.getItem('username');
+    var role = localStorage.getItem('role');
 
-        function updateStats() {
-            var expired = allDrugs.filter(function (d) { return new Date(d.expiryDate) < now; });
-            var expSoon = allDrugs.filter(function (d) { var e = new Date(d.expiryDate); return e >= now && e <= soon; });
-            var lowStock = allDrugs.filter(function (d) { return d.quantity <= 10 && d.quantity > 0; });
-            document.getElementById('totalDrugs').textContent = allDrugs.length;
-            document.getElementById('expiredDrugs').textContent = expired.length;
-            document.getElementById('soonDrugs').textContent = expSoon.length;
-            document.getElementById('lowStockDrugs').textContent = lowStock.length;
-            var alerts = [];
-            if (expired.length > 0) alerts.push(expired.length + ' دواء منتهي الصلاحية');
-            if (lowStock.length > 0) alerts.push(lowStock.length + ' دواء كميته منخفضة');
-            if (expSoon.length > 0) alerts.push(expSoon.length + ' دواء ينتهي خلال 30 يوم');
-            if (alerts.length > 0) {
-                var ab = document.getElementById('alertBox');
-                ab.classList.add('show');
-                ab.textContent = '⚠️ تنبيه: ' + alerts.join(' | ');
+    if (!token) { window.location.replace(API + '/login.html'); }
+
+    document.getElementById('sidebarUsername').textContent = username || '';
+    document.getElementById('sidebarRole').textContent = role || '';
+
+    var roleLabels = {
+        Factory: '🏭 مصنع — يمكنك إضافة الأدوية ونقلها للموزع',
+        Distributor: '🚚 موزع — يمكنك نقل الأدوية للصيدليات',
+        Pharmacy: '🏥 صيدلية — يمكنك استلام الأدوية والتحقق منها',
+        Admin: '👨‍💼 مدير — صلاحيات كاملة على النظام',
+        LedgerAdmin: '⚖️ مدير السجل — مراقبة Blockchain فقط'
+    };
+
+    document.getElementById('roleBadge').textContent = role;
+    document.getElementById('roleBadge').className = 'role-badge-sidebar role-' + role;
+    document.getElementById('roleInfo').innerHTML = '<span>' + (roleLabels[role] || role) + '</span>';
+
+    var isLedger = role === 'LedgerAdmin';
+    var isAdmin  = role === 'Admin';
+
+    if (role === 'Factory' || isAdmin) {
+        document.getElementById('navAddDrug').style.display = 'flex';
+        document.getElementById('headerAddBtn').style.display = 'inline-flex';
+    }
+    if (isLedger) {
+        document.getElementById('navTransfer').style.display = 'none';
+        document.getElementById('navVerify').style.display = 'none';
+        document.getElementById('navAttack').style.display = 'flex';
+        document.getElementById('ledgerBanner').style.display = 'flex';
+        document.getElementById('exportBtn').style.display = 'none';
+        document.getElementById('statsSection').style.display = 'none';
+    } else {
+        document.getElementById('navAttack').style.display = 'flex';
+    }
+    if (isAdmin) {
+        document.getElementById('navAudit').style.display = 'flex';
+        document.getElementById('navRisk').style.display = 'flex';
+        document.getElementById('navAdvisor').style.display = 'flex';
+        document.getElementById('navAISection').style.display = 'block';
+    }
+
+    function goTo(page) { window.location.replace(API + '/' + page); }
+    function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+
+    var allDrugs = [], filteredDrugs = [], currentPage = 1, pageSize = 25, sortCol = '', sortDir = 1;
+    var now = new Date();
+    var soon = new Date(); soon.setDate(soon.getDate() + 30);
+
+    function loadDrugs() {
+        document.getElementById('drugsTable').innerHTML = '<div class="loading-state"><div class="spinner"></div>جاري تحميل البيانات...</div>';
+        document.getElementById('paginationWrap').style.display = 'none';
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', API + '/api/drugs', true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function () {
+            if (xhr.status === 401) { window.location.replace(API + '/login.html'); return; }
+            if (xhr.status !== 200) { document.getElementById('drugsTable').innerHTML = '<div class="loading-state">⚠️ تعذر تحميل البيانات</div>'; return; }
+            var response = JSON.parse(xhr.responseText);
+            allDrugs = Array.isArray(response) ? response : (response.drugs || []);
+            if (response.securityAlert) {
+                var ta = document.getElementById('tamperAlert');
+                ta.classList.add('show');
+                document.getElementById('tamperText').textContent = 'تحذير أمني: ' + response.securityAlert;
             }
-        }
-
-        function populateManufacturerFilter() {
-            var mfrs = [];
-            allDrugs.forEach(function (d) { if (d.manufacturer && mfrs.indexOf(d.manufacturer) === -1) mfrs.push(d.manufacturer); });
-            mfrs.sort();
-            var sel = document.getElementById('manufacturerFilter');
-            sel.innerHTML = '<option value="">كل الشركات</option>';
-            mfrs.forEach(function (m) { sel.innerHTML += '<option value="' + m + '">' + m + '</option>'; });
-        }
-
-        function filterByStatus(status) {
-            document.getElementById('statusFilter').value = (status === 'expired' || status === 'soon' || status === 'valid') ? status : '';
-            document.getElementById('qtyFilter').value = status === 'low' ? 'low' : '';
-            currentPage = 1; applyFilters();
-        }
-
-        function clearAllFilters() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('statusFilter').value = '';
-            document.getElementById('manufacturerFilter').value = '';
-            document.getElementById('qtyFilter').value = '';
-            document.getElementById('filterBadge').classList.remove('show');
-            currentPage = 1; applyFilters();
-        }
-
-        function applyFilters() {
-            var search = document.getElementById('searchInput').value.trim().toLowerCase();
-            var status = document.getElementById('statusFilter').value;
-            var manufacturer = document.getElementById('manufacturerFilter').value;
-            var qty = document.getElementById('qtyFilter').value;
-
-            filteredDrugs = allDrugs.filter(function (d) {
-                var expiry = new Date(d.expiryDate);
-                var isExpired = expiry < now;
-                var isSoon = expiry >= now && expiry <= soon;
-                if (search && !(d.name.toLowerCase().includes(search) || (d.manufacturer || '').toLowerCase().includes(search) || String(d.id).includes(search))) return false;
-                if (status === 'expired' && !isExpired) return false;
-                if (status === 'soon' && !isSoon) return false;
-                if (status === 'valid' && (isExpired || isSoon)) return false;
-                if (manufacturer && d.manufacturer !== manufacturer) return false;
-                if (qty === 'low' && !(d.quantity <= 10 && d.quantity > 0)) return false;
-                if (qty === 'ok' && d.quantity <= 10) return false;
-                return true;
-            });
-
-            if (sortCol) {
-                filteredDrugs.sort(function (a, b) {
-                    var va = a[sortCol], vb = b[sortCol];
-                    if (sortCol === 'expiryDate') { va = new Date(va); vb = new Date(vb); }
-                    return va < vb ? -sortDir : va > vb ? sortDir : 0;
-                });
-            }
-
-            var hasFilter = search || status || manufacturer || qty;
-            var badge = document.getElementById('filterBadge');
-            if (hasFilter) {
-                badge.classList.add('show');
-                var parts = [];
-                if (search) parts.push('بحث: "' + search + '"');
-                if (status) parts.push({ expired: 'منتهي', soon: 'ينتهي قريباً', valid: 'صالح' }[status] || '');
-                if (manufacturer) parts.push(manufacturer);
-                if (qty) parts.push(qty === 'low' ? 'كمية منخفضة' : 'كمية كافية');
-                document.getElementById('filterBadgeText').textContent = parts.filter(Boolean).join(' | ');
-            } else { badge.classList.remove('show'); }
-
-            currentPage = 1;
-            document.getElementById('tableCount').textContent = filteredDrugs.length;
-            renderTable();
-        }
-
-        function sortBy(col) {
-            if (sortCol === col) sortDir = -sortDir; else { sortCol = col; sortDir = 1; }
-            document.querySelectorAll('th[data-col]').forEach(function (th) { th.classList.remove('sort-asc', 'sort-desc'); th.querySelector('.sort-icon').textContent = '⇅'; });
-            var th = document.querySelector('th[data-col="' + col + '"]');
-            if (th) { th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc'); th.querySelector('.sort-icon').textContent = sortDir === 1 ? '↑' : '↓'; }
+            updateStats();
+            populateManufacturerFilter();
             applyFilters();
+        };
+        xhr.onerror = function () { document.getElementById('drugsTable').innerHTML = '<div class="loading-state">⚠️ تعذر الاتصال بالسيرفر</div>'; };
+        xhr.send();
+    }
+
+    function updateStats() {
+        var expired = allDrugs.filter(function (d) { return new Date(d.expiryDate) < now; });
+        var expSoon = allDrugs.filter(function (d) { var e = new Date(d.expiryDate); return e >= now && e <= soon; });
+        var lowStock = allDrugs.filter(function (d) { return d.quantity <= 10 && d.quantity > 0; });
+        document.getElementById('totalDrugs').textContent = allDrugs.length;
+        document.getElementById('expiredDrugs').textContent = expired.length;
+        document.getElementById('soonDrugs').textContent = expSoon.length;
+        document.getElementById('lowStockDrugs').textContent = lowStock.length;
+        var alerts = [];
+        if (expired.length > 0) alerts.push(expired.length + ' دواء منتهي الصلاحية');
+        if (lowStock.length > 0) alerts.push(lowStock.length + ' دواء كميته منخفضة');
+        if (expSoon.length > 0) alerts.push(expSoon.length + ' دواء ينتهي خلال 30 يوم');
+        if (alerts.length > 0) {
+            var ab = document.getElementById('alertBox');
+            ab.classList.add('show');
+            ab.textContent = '⚠️ تنبيه: ' + alerts.join(' | ');
+        }
+    }
+
+    function populateManufacturerFilter() {
+        var mfrs = [];
+        allDrugs.forEach(function (d) { if (d.manufacturer && mfrs.indexOf(d.manufacturer) === -1) mfrs.push(d.manufacturer); });
+        mfrs.sort();
+        var sel = document.getElementById('manufacturerFilter');
+        sel.innerHTML = '<option value="">كل الشركات</option>';
+        mfrs.forEach(function (m) { sel.innerHTML += '<option value="' + m + '">' + m + '</option>'; });
+    }
+
+    function filterByStatus(status) {
+        document.getElementById('statusFilter').value = (status === 'expired' || status === 'soon' || status === 'valid') ? status : '';
+        document.getElementById('qtyFilter').value = status === 'low' ? 'low' : '';
+        currentPage = 1; applyFilters();
+    }
+
+    function clearAllFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('manufacturerFilter').value = '';
+        document.getElementById('qtyFilter').value = '';
+        document.getElementById('filterBadge').classList.remove('show');
+        currentPage = 1; applyFilters();
+    }
+
+    function applyFilters() {
+        var search = document.getElementById('searchInput').value.trim().toLowerCase();
+        var status = document.getElementById('statusFilter').value;
+        var manufacturer = document.getElementById('manufacturerFilter').value;
+        var qty = document.getElementById('qtyFilter').value;
+
+        filteredDrugs = allDrugs.filter(function (d) {
+            var expiry = new Date(d.expiryDate);
+            var isExpired = expiry < now;
+            var isSoon = expiry >= now && expiry <= soon;
+            if (search && !(d.name.toLowerCase().includes(search) || (d.manufacturer || '').toLowerCase().includes(search) || String(d.id).includes(search))) return false;
+            if (status === 'expired' && !isExpired) return false;
+            if (status === 'soon' && !isSoon) return false;
+            if (status === 'valid' && (isExpired || isSoon)) return false;
+            if (manufacturer && d.manufacturer !== manufacturer) return false;
+            if (qty === 'low' && !(d.quantity <= 10 && d.quantity > 0)) return false;
+            if (qty === 'ok' && d.quantity <= 10) return false;
+            return true;
+        });
+
+        if (sortCol) {
+            filteredDrugs.sort(function (a, b) {
+                var va = a[sortCol], vb = b[sortCol];
+                if (sortCol === 'expiryDate') { va = new Date(va); vb = new Date(vb); }
+                return va < vb ? -sortDir : va > vb ? sortDir : 0;
+            });
         }
 
-        function renderTable() {
-            if (filteredDrugs.length === 0) {
-                document.getElementById('drugsTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-title">لا توجد نتائج مطابقة</div><div class="empty-state-sub">جرب تعديل معايير البحث</div></div>';
-                document.getElementById('paginationWrap').style.display = 'none';
-                return;
+        var hasFilter = search || status || manufacturer || qty;
+        var badge = document.getElementById('filterBadge');
+        if (hasFilter) {
+            badge.classList.add('show');
+            var parts = [];
+            if (search) parts.push('بحث: "' + search + '"');
+            if (status) parts.push({ expired: 'منتهي', soon: 'ينتهي قريباً', valid: 'صالح' }[status] || '');
+            if (manufacturer) parts.push(manufacturer);
+            if (qty) parts.push(qty === 'low' ? 'كمية منخفضة' : 'كمية كافية');
+            document.getElementById('filterBadgeText').textContent = parts.filter(Boolean).join(' | ');
+        } else { badge.classList.remove('show'); }
+
+        currentPage = 1;
+        document.getElementById('tableCount').textContent = filteredDrugs.length;
+        renderTable();
+    }
+
+    function sortBy(col) {
+        if (sortCol === col) sortDir = -sortDir; else { sortCol = col; sortDir = 1; }
+        document.querySelectorAll('th[data-col]').forEach(function (th) { th.classList.remove('sort-asc', 'sort-desc'); th.querySelector('.sort-icon').textContent = '⇅'; });
+        var th = document.querySelector('th[data-col="' + col + '"]');
+        if (th) { th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc'); th.querySelector('.sort-icon').textContent = sortDir === 1 ? '↑' : '↓'; }
+        applyFilters();
+    }
+
+    function renderTable() {
+        if (filteredDrugs.length === 0) {
+            document.getElementById('drugsTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-title">لا توجد نتائج مطابقة</div><div class="empty-state-sub">جرب تعديل معايير البحث</div></div>';
+            document.getElementById('paginationWrap').style.display = 'none';
+            return;
+        }
+        var start = (currentPage - 1) * pageSize;
+        var end = Math.min(start + pageSize, filteredDrugs.length);
+        var pageDrugs = filteredDrugs.slice(start, end);
+        var showDelete = isAdmin;
+
+        var html = '<table><thead><tr>'
+            + '<th data-col="id"           onclick="sortBy(\'id\')"><span class="sort-icon">⇅</span>#</th>'
+            + '<th data-col="name"         onclick="sortBy(\'name\')"><span class="sort-icon">⇅</span>اسم الدواء</th>'
+            + '<th>Hash الدفعة</th>'
+            + '<th data-col="expiryDate"   onclick="sortBy(\'expiryDate\')"><span class="sort-icon">⇅</span>تاريخ الانتهاء</th>'
+            + '<th data-col="manufacturer" onclick="sortBy(\'manufacturer\')"><span class="sort-icon">⇅</span>الشركة المصنعة</th>'
+            + '<th data-col="quantity"     onclick="sortBy(\'quantity\')"><span class="sort-icon">⇅</span>الكمية</th>'
+            + '<th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>';
+
+        pageDrugs.forEach(function (d) {
+            var expiry = new Date(d.expiryDate);
+            var isExpired = expiry < now, isSoon = expiry >= now && expiry <= soon;
+            var sc = isExpired ? 'badge-red' : isSoon ? 'badge-amber' : 'badge-green';
+            var st = isExpired ? 'منتهي ❌' : isSoon ? 'ينتهي قريباً ⚠️' : 'صالح ✅';
+            var qc = d.quantity <= 10 ? 'qty-low' : 'qty-ok';
+            var qt = d.quantity <= 10 ? d.quantity + ' ⚠' : d.quantity;
+
+            var actions = '';
+            if (!isLedger) {
+                actions += '<a class="action-btn action-verify" href="' + API + '/verify.html?id=' + d.id + '">تحقق</a>';
+                actions += '<a class="action-btn action-qr"     href="' + API + '/api/qr/' + d.id + '?token=' + token + '" target="_blank">QR</a>';
             }
-            var start = (currentPage - 1) * pageSize;
-            var end = Math.min(start + pageSize, filteredDrugs.length);
-            var pageDrugs = filteredDrugs.slice(start, end);
-            var showDelete = isAdmin;
-
-            var html = '<table><thead><tr>'
-                + '<th data-col="id"           onclick="sortBy(\'id\')"><span class="sort-icon">⇅</span>#</th>'
-                + '<th data-col="name"         onclick="sortBy(\'name\')"><span class="sort-icon">⇅</span>اسم الدواء</th>'
-                + '<th>Hash الدفعة</th>'
-                + '<th data-col="expiryDate"   onclick="sortBy(\'expiryDate\')"><span class="sort-icon">⇅</span>تاريخ الانتهاء</th>'
-                + '<th data-col="manufacturer" onclick="sortBy(\'manufacturer\')"><span class="sort-icon">⇅</span>الشركة المصنعة</th>'
-                + '<th data-col="quantity"     onclick="sortBy(\'quantity\')"><span class="sort-icon">⇅</span>الكمية</th>'
-                + '<th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>';
-
-            pageDrugs.forEach(function (d) {
-                var expiry = new Date(d.expiryDate);
-                var isExpired = expiry < now, isSoon = expiry >= now && expiry <= soon;
-                var sc = isExpired ? 'badge-red' : isSoon ? 'badge-amber' : 'badge-green';
-                var st = isExpired ? 'منتهي ❌' : isSoon ? 'ينتهي قريباً ⚠️' : 'صالح ✅';
-                var qc = d.quantity <= 10 ? 'qty-low' : 'qty-ok';
-                var qt = d.quantity <= 10 ? d.quantity + ' ⚠' : d.quantity;
-
-                var actions = '';
-                if (!isLedger) {
-                    actions += '<a class="action-btn action-verify" href="' + API + '/verify.html?id=' + d.id + '">تحقق</a>';
-                    actions += '<a class="action-btn action-qr"     href="' + API + '/api/qr/' + d.id + '?token=' + token + '" target="_blank">QR</a>';
-                }
-                actions += '<a class="action-btn action-chain"  href="' + API + '/blockchain.html?drug=' + d.id + '">Chain</a>';
-                if (!isLedger) {
-                    actions += '<a class="action-btn action-attack" href="' + API + '/attack-demo.html?drug=' + d.id + '">فحص</a>';
-                }
-                if (showDelete) {
-                    actions += '<button class="action-btn action-delete" onclick="deleteDrug(' + d.id + ',\'' + d.name.replace(/'/g, '') + '\')">حذف</button>';
-                }
-
-                html += '<tr>'
-                    + '<td style="color:var(--gray-500);font-size:12px;">' + d.id + '</td>'
-                    + '<td><strong>' + d.name + '</strong></td>'
-                    + '<td><span class="hash-mono">' + d.batchNumber + '</span></td>'
-                    + '<td>' + expiry.toLocaleDateString('ar-JO') + '</td>'
-                    + '<td>' + (d.manufacturer || '—') + '</td>'
-                    + '<td><span class="' + qc + '">' + qt + '</span></td>'
-                    + '<td><span class="badge ' + sc + '">' + st + '</span></td>'
-                    + '<td><div class="action-links">' + actions + '</div></td></tr>';
-            });
-
-            html += '</tbody></table>';
-            document.getElementById('drugsTable').innerHTML = html;
-            renderPagination(start, end);
-        }
-
-        function renderPagination(start, end) {
-            var total = filteredDrugs.length;
-            var totalPages = Math.ceil(total / pageSize);
-            document.getElementById('pageInfo').textContent = 'عرض ' + (start + 1) + '–' + end + ' من ' + total;
-            var pag = document.getElementById('pagination'); pag.innerHTML = '';
-            var prev = document.createElement('button'); prev.className = 'page-btn'; prev.textContent = '→'; prev.disabled = currentPage === 1;
-            prev.onclick = function () { currentPage--; renderTable(); }; pag.appendChild(prev);
-            var pages = [];
-            if (totalPages <= 7) { for (var i = 1; i <= totalPages; i++) pages.push(i); }
-            else {
-                pages = [1];
-                if (currentPage > 3) pages.push('...');
-                for (var j = Math.max(2, currentPage - 1); j <= Math.min(totalPages - 1, currentPage + 1); j++) pages.push(j);
-                if (currentPage < totalPages - 2) pages.push('...');
-                pages.push(totalPages);
+            actions += '<a class="action-btn action-chain"  href="' + API + '/blockchain.html?drug=' + d.id + '">Chain</a>';
+            if (!isLedger) {
+                actions += '<a class="action-btn action-attack" href="' + API + '/attack-demo.html?drug=' + d.id + '">فحص</a>';
             }
-            pages.forEach(function (p) {
-                var btn = document.createElement('button'); btn.className = 'page-btn' + (p === currentPage ? ' active' : ''); btn.textContent = p;
-                if (p === '...') btn.disabled = true;
-                else btn.onclick = (function (pg) { return function () { currentPage = pg; renderTable(); }; })(p);
-                pag.appendChild(btn);
-            });
-            var next = document.createElement('button'); next.className = 'page-btn'; next.textContent = '←'; next.disabled = currentPage === totalPages;
-            next.onclick = function () { currentPage++; renderTable(); }; pag.appendChild(next);
-            document.getElementById('paginationWrap').style.display = total > pageSize ? 'flex' : 'none';
+            if (showDelete) {
+                actions += '<button class="action-btn action-delete" onclick="deleteDrug(' + d.id + ',\'' + d.name.replace(/'/g, '') + '\')">حذف</button>';
+            }
+
+            html += '<tr>'
+                + '<td style="color:var(--gray-500);font-size:12px;">' + d.id + '</td>'
+                + '<td><strong>' + d.name + '</strong></td>'
+                + '<td><span class="hash-mono">' + d.batchNumber + '</span></td>'
+                + '<td>' + expiry.toLocaleDateString('ar-JO') + '</td>'
+                + '<td>' + (d.manufacturer || '—') + '</td>'
+                + '<td><span class="' + qc + '">' + qt + '</span></td>'
+                + '<td><span class="badge ' + sc + '">' + st + '</span></td>'
+                + '<td><div class="action-links">' + actions + '</div></td></tr>';
+        });
+
+        html += '</tbody></table>';
+        document.getElementById('drugsTable').innerHTML = html;
+        renderPagination(start, end);
+    }
+
+    function renderPagination(start, end) {
+        var total = filteredDrugs.length;
+        var totalPages = Math.ceil(total / pageSize);
+        document.getElementById('pageInfo').textContent = 'عرض ' + (start + 1) + '–' + end + ' من ' + total;
+        var pag = document.getElementById('pagination'); pag.innerHTML = '';
+        var prev = document.createElement('button'); prev.className = 'page-btn'; prev.textContent = '→'; prev.disabled = currentPage === 1;
+        prev.onclick = function () { currentPage--; renderTable(); }; pag.appendChild(prev);
+        var pages = [];
+        if (totalPages <= 7) { for (var i = 1; i <= totalPages; i++) pages.push(i); }
+        else {
+            pages = [1];
+            if (currentPage > 3) pages.push('...');
+            for (var j = Math.max(2, currentPage - 1); j <= Math.min(totalPages - 1, currentPage + 1); j++) pages.push(j);
+            if (currentPage < totalPages - 2) pages.push('...');
+            pages.push(totalPages);
         }
+        pages.forEach(function (p) {
+            var btn = document.createElement('button'); btn.className = 'page-btn' + (p === currentPage ? ' active' : ''); btn.textContent = p;
+            if (p === '...') btn.disabled = true;
+            else btn.onclick = (function (pg) { return function () { currentPage = pg; renderTable(); }; })(p);
+            pag.appendChild(btn);
+        });
+        var next = document.createElement('button'); next.className = 'page-btn'; next.textContent = '←'; next.disabled = currentPage === totalPages;
+        next.onclick = function () { currentPage++; renderTable(); }; pag.appendChild(next);
+        document.getElementById('paginationWrap').style.display = total > pageSize ? 'flex' : 'none';
+    }
 
-        function changePageSize() { pageSize = parseInt(document.getElementById('pageSizeSelect').value); currentPage = 1; renderTable(); }
+    function changePageSize() { pageSize = parseInt(document.getElementById('pageSizeSelect').value); currentPage = 1; renderTable(); }
 
-        function deleteDrug(id, name) {
-            if (!confirm('هل أنت متأكد من حذف "' + name + '"؟')) return;
-            var xhr = new XMLHttpRequest(); xhr.open('DELETE', API + '/api/drugs/' + id, true);
-            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-            xhr.onload = function () { if (xhr.status === 200) { showToast('✅ تم حذف ' + name); loadDrugs(); } else showToast('❌ تعذر الحذف'); };
-            xhr.send();
-        }
+    function deleteDrug(id, name) {
+        if (!confirm('هل أنت متأكد من حذف "' + name + '"؟')) return;
+        var xhr = new XMLHttpRequest(); xhr.open('DELETE', API + '/api/drugs/' + id, true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function () { if (xhr.status === 200) { showToast('✅ تم حذف ' + name); loadDrugs(); } else showToast('❌ تعذر الحذف'); };
+        xhr.send();
+    }
 
-        function exportCSV() {
-            if (filteredDrugs.length === 0) { showToast('لا توجد بيانات للتصدير'); return; }
-            var headers = ['#', 'اسم الدواء', 'Hash الدفعة', 'تاريخ الانتهاء', 'الشركة المصنعة', 'الكمية', 'الحالة'];
-            var rows = filteredDrugs.map(function (d) {
-                var expiry = new Date(d.expiryDate); var isExpired = expiry < now, isSoon = expiry >= now && expiry <= soon;
-                var st = isExpired ? 'منتهي' : isSoon ? 'ينتهي قريباً' : 'صالح';
-                return [d.id, '"' + d.name + '"', d.batchNumber, expiry.toLocaleDateString('ar-JO'), '"' + (d.manufacturer || '') + '"', d.quantity, st].join(',');
-            });
-            var csv = '﻿' + headers.join(',') + '\n' + rows.join('\n');
-            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a'); a.href = url;
-            a.download = 'PharmaChain_' + new Date().toLocaleDateString('ar-JO').replace(/\//g, '-') + '.csv';
-            a.click(); URL.revokeObjectURL(url);
-            showToast('✅ تم تصدير ' + filteredDrugs.length + ' دواء');
-        }
+    function exportCSV() {
+        if (filteredDrugs.length === 0) { showToast('لا توجد بيانات للتصدير'); return; }
+        var headers = ['#', 'اسم الدواء', 'Hash الدفعة', 'تاريخ الانتهاء', 'الشركة المصنعة', 'الكمية', 'الحالة'];
+        var rows = filteredDrugs.map(function (d) {
+            var expiry = new Date(d.expiryDate); var isExpired = expiry < now, isSoon = expiry >= now && expiry <= soon;
+            var st = isExpired ? 'منتهي' : isSoon ? 'ينتهي قريباً' : 'صالح';
+            return [d.id, '"' + d.name + '"', d.batchNumber, expiry.toLocaleDateString('ar-JO'), '"' + (d.manufacturer || '') + '"', d.quantity, st].join(',');
+        });
+        var csv = '﻿' + headers.join(',') + '\n' + rows.join('\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a'); a.href = url;
+        a.download = 'PharmaChain_' + new Date().toLocaleDateString('ar-JO').replace(/\//g, '-') + '.csv';
+        a.click(); URL.revokeObjectURL(url);
+        showToast('✅ تم تصدير ' + filteredDrugs.length + ' دواء');
+    }
 
-        function showToast(msg) { var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(function () { t.classList.remove('show'); }, 2800); }
+    function showToast(msg) { var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(function () { t.classList.remove('show'); }, 2800); }
 
-        loadDrugs();
-    </script>
+    loadDrugs();
+</script>
 </body>
 </html>
