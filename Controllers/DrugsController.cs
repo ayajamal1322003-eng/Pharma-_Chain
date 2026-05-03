@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using PharmaChain.Data;
 using PharmaChain.Models;
+using PharmaChain.Services;
 
 namespace PharmaChain.Controllers
 {
@@ -14,10 +15,14 @@ namespace PharmaChain.Controllers
     public class DrugsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly AiTokenService _aiTokenService;
+        private readonly IConfiguration _config;
 
-        public DrugsController(AppDbContext context)
+        public DrugsController(AppDbContext context, AiTokenService aiTokenService, IConfiguration config)
         {
             _context = context;
+            _aiTokenService = aiTokenService;
+            _config = config;
         }
 
         [HttpGet]
@@ -51,9 +56,9 @@ namespace PharmaChain.Controllers
 
                     return Ok(new
                     {
-                        drugs = drugs,
+                        drugs,
                         securityAlert = "تم اكتشاف تلاعب في بيانات " + tamperedDrugs.Count + " دواء",
-                        tamperedDrugs = tamperedDrugs
+                        tamperedDrugs
                     });
                 }
 
@@ -67,11 +72,11 @@ namespace PharmaChain.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Factory,Admin")]
-        public IActionResult AddDrug([FromBody] Drug drug)
+        public async Task<IActionResult> AddDrug([FromBody] Drug drug)
         {
             try
             {
-                // Input Validation
+                // ── Validation ──
                 if (string.IsNullOrWhiteSpace(drug.Name) ||
                     string.IsNullOrWhiteSpace(drug.BatchNumber) ||
                     string.IsNullOrWhiteSpace(drug.Manufacturer))
@@ -84,39 +89,66 @@ namespace PharmaChain.Controllers
                     return BadRequest("الكمية يجب أن تكون أكبر من صفر");
 
                 if (drug.ExpiryDate <= DateTime.UtcNow)
-                    return BadRequest("لا يمكن إضافة دواء منتهي الصلاحية — تاريخ الانتهاء يجب أن يكون في المستقبل");
+                    return BadRequest("لا يمكن إضافة دواء منتهي الصلاحية");
 
-                // منع XSS
-                drug.Name = System.Net.WebUtility.HtmlEncode(drug.Name.Trim());
+                // ── Sanitize ──
+                drug.Name         = System.Net.WebUtility.HtmlEncode(drug.Name.Trim());
                 drug.Manufacturer = System.Net.WebUtility.HtmlEncode(drug.Manufacturer.Trim());
 
                 var username = User.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown";
-                var role = User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
+                var role     = User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
 
+                var rawBatch    = drug.BatchNumber;
                 drug.BatchNumber = HashBatchNumber(drug.BatchNumber);
                 drug.AddedByRole = role;
-                drug.CreatedAt = DateTime.UtcNow;
-                drug.Checksum = string.Empty;
+                drug.CreatedAt   = DateTime.UtcNow;
+                drug.Checksum    = string.Empty;
+                drug.AiToken     = string.Empty;
 
+                // ── Save first to get ID ──
                 _context.Drugs.Add(drug);
                 _context.SaveChanges();
 
-                // نحسب الـ Checksum بعد الحفظ عشان يكون عندنا الـ ID
+                // ── Generate AI Token (async — بعد ما عندنا الـ ID) ──
+                drug.AiToken = await _aiTokenService.GenerateUniqueTokenAsync(
+                    drug.Name,
+                    drug.Manufacturer,
+                    drug.BatchNumber,
+                    drug.ExpiryDate,
+                    drug.Quantity
+                );
+
+                // ── Compute Checksum (بعد ما عندنا كل البيانات) ──
                 drug.Checksum = ComputeChecksum(drug);
                 _context.SaveChanges();
 
+                // ── Audit Log ──
                 _context.AuditLogs.Add(new AuditLog
                 {
-                    UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0"),
-                    Username = username,
-                    Action = "AddDrug",
-                    Details = "تم إضافة دواء: " + drug.Name + " | الكمية: " + drug.Quantity,
+                    UserId    = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0"),
+                    Username  = username,
+                    Action    = "AddDrug",
+                    Details   = $"تم إضافة دواء: {drug.Name} | الكمية: {drug.Quantity} | AI Token: {drug.AiToken[..8]}...",
                     Timestamp = DateTime.UtcNow,
                     IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown"
                 });
                 _context.SaveChanges();
 
-                return Ok(new { message = "تم إضافة الدواء بنجاح", id = drug.Id });
+                // ── Build QR URL to return ──
+                var prodDate  = drug.CreatedAt.ToString("yyyy-MM-dd");
+                var ts        = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+                var baseUrl   = _config["App:BaseUrl"] ?? "http://localhost:7036";
+                var qrUrl     = $"{baseUrl}/verify.html?id={drug.Id}&prod={Uri.EscapeDataString(prodDate)}&ts={ts}";
+
+                return Ok(new
+                {
+                    message  = "تم إضافة الدواء بنجاح",
+                    id       = drug.Id,
+                    name     = drug.Name,
+                    aiToken  = drug.AiToken,
+                    aiMethod = IsAiKeyConfigured() ? "Claude AI (claude-haiku-4-5)" : "Crypto Fallback (SHA-256 + GUID)",
+                    qrBaseUrl = qrUrl
+                });
             }
             catch (Exception ex)
             {
@@ -136,18 +168,17 @@ namespace PharmaChain.Controllers
                 var username = User.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown";
 
                 _context.Drugs.Remove(drug);
-
                 _context.AuditLogs.Add(new AuditLog
                 {
-                    UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0"),
-                    Username = username,
-                    Action = "DeleteDrug",
-                    Details = "تم حذف دواء: " + drug.Name,
+                    UserId    = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0"),
+                    Username  = username,
+                    Action    = "DeleteDrug",
+                    Details   = "تم حذف دواء: " + drug.Name,
                     Timestamp = DateTime.UtcNow,
                     IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown"
                 });
-
                 _context.SaveChanges();
+
                 return Ok(new { message = "تم الحذف بنجاح" });
             }
             catch (Exception ex)
@@ -156,18 +187,24 @@ namespace PharmaChain.Controllers
             }
         }
 
-        private string HashBatchNumber(string batchNumber)
+        private bool IsAiKeyConfigured()
+        {
+            var key = _config["Anthropic:ApiKey"] ?? "";
+            return !string.IsNullOrWhiteSpace(key) && !key.StartsWith("YOUR_");
+        }
+
+        private static string HashBatchNumber(string batchNumber)
         {
             using var sha256 = SHA256.Create();
             var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(batchNumber));
             return Convert.ToHexString(bytes)[..16];
         }
 
-        private string ComputeChecksum(Drug drug)
+        private static string ComputeChecksum(Drug drug)
         {
             var data = drug.Id + drug.Name + drug.BatchNumber +
-                      drug.ExpiryDate.ToString("yyyy-MM-dd") +
-                      drug.Manufacturer + drug.Quantity;
+                       drug.ExpiryDate.ToString("yyyy-MM-dd") +
+                       drug.Manufacturer + drug.Quantity + drug.AiToken;
             using var sha256 = SHA256.Create();
             var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(data));
             return Convert.ToHexString(bytes)[..16];

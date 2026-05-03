@@ -35,13 +35,23 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader());
 });
 builder.Services.AddSingleton<PharmaChain.Services.SecurityService>();
-builder.Services.AddSingleton<PharmaChain.Services.NodeSyncService>(); // ← جديد
+builder.Services.AddSingleton<PharmaChain.Services.NodeSyncService>();
+builder.Services.AddHttpClient();                                         // للـ AiTokenService
+builder.Services.AddScoped<PharmaChain.Services.AiTokenService>();       // AI Token Generator
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+    // إضافة عمود AiToken إذا لم يكن موجوداً (للقواعد الموجودة مسبقاً)
+    try
+    {
+        db.Database.ExecuteSqlRaw(
+            "IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'Drugs') AND name = N'AiToken') " +
+            "ALTER TABLE Drugs ADD AiToken NVARCHAR(MAX) NOT NULL DEFAULT ''");
+    }
+    catch { /* يُهمَل إذا DB غير موجودة بعد */ }
 }
 app.UseDefaultFiles();
 app.UseStaticFiles();

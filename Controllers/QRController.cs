@@ -60,10 +60,10 @@ namespace PharmaChain.Controllers
             var drug = _context.Drugs.Find(drugId);
             if (drug == null) return NotFound("الدواء غير موجود");
 
-            // ── 3. Build signed payload ──
+            // ── 3. Build signed payload (AI Token included for stronger security) ──
             var productionDate = drug.CreatedAt.ToString("yyyy-MM-dd");
             var generatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
-            var signature = ComputeHmac(drugId, productionDate, generatedAt);
+            var signature = ComputeHmac(drugId, productionDate, generatedAt, drug.AiToken);
 
             var baseUrl = _config["App:BaseUrl"] ?? "http://localhost:7036";
             var verifyUrl =
@@ -124,8 +124,8 @@ namespace PharmaChain.Controllers
                 });
             }
 
-            // ── Signature مش صح ──
-            var expectedSig = ComputeHmac(id, prod, ts);
+            // ── Signature مش صح (نستخدم AiToken من DB لإعادة الحساب) ──
+            var expectedSig = ComputeHmac(id, prod, ts, drug.AiToken);
             if (!CryptographicEquals(expectedSig, sig))
             {
                 SaveLog(id, prod, ts, false, "SIGNATURE_MISMATCH",
@@ -191,7 +191,9 @@ namespace PharmaChain.Controllers
                 productionDate = prod,
                 generatedAt = DateTimeOffset.FromUnixTimeSeconds(long.Parse(ts))
                                                .ToString("yyyy-MM-dd HH:mm:ss UTC"),
-                expiryDate = drug.ExpiryDate.ToString("yyyy-MM-dd")
+                expiryDate = drug.ExpiryDate.ToString("yyyy-MM-dd"),
+                aiToken = string.IsNullOrEmpty(drug.AiToken) ? null : drug.AiToken[..8] + "...",
+                aiSecured = !string.IsNullOrEmpty(drug.AiToken)
             });
         }
 
@@ -263,10 +265,13 @@ namespace PharmaChain.Controllers
         // ══════════════════════════════════════════════════
         // HMAC-SHA256 Signature
         // ══════════════════════════════════════════════════
-        private string ComputeHmac(int drugId, string productionDate, string timestamp)
+        private string ComputeHmac(int drugId, string productionDate, string timestamp, string aiToken = "")
         {
             var secret = _config["Jwt:Key"] ?? "PharmaChainSecretKey";
-            var payload = $"{drugId}|{productionDate}|{timestamp}";
+            // إذا في AI Token → يدخل في الـ payload لأمان أعلى
+            var payload = string.IsNullOrEmpty(aiToken)
+                ? $"{drugId}|{productionDate}|{timestamp}"
+                : $"{drugId}|{productionDate}|{timestamp}|{aiToken}";
             using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
             var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(payload));
             return Convert.ToHexString(hash)[..32];

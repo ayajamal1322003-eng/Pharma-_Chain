@@ -4,78 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PharmaChain — التحقق من الدواء</title>
+    <link rel="stylesheet" href="/pharma-styles.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f0f4f8;
+            background: linear-gradient(135deg, #0f1f3d 0%, #1a365d 40%, #1e3a5f 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 40px 16px 60px;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        .header {
+        .verify-header {
             text-align: center;
             margin-bottom: 28px;
         }
 
-        .header-logo {
+        .verify-logo {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 8px;
         }
 
-        .header-logo-icon {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, #1a365d, #2b6cb0);
-            border-radius: 10px;
+        .verify-logo-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--blue-500), var(--blue-700));
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            color: white;
-        }
-
-        .header h1 {
             font-size: 24px;
-            color: #1a365d;
-            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(59,130,246,0.4);
         }
 
-        .header p {
-            font-size: 13px;
-            color: #718096;
+        .verify-logo h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+
+        .verify-header p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.65);
             margin-top: 4px;
         }
 
-        .security-badge {
+        .verify-security-badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: #f0fff4;
-            border: 1px solid #9ae6b4;
-            color: #276749;
-            font-size: 11px;
-            padding: 4px 12px;
+            background: rgba(16,185,129,0.15);
+            border: 1px solid rgba(16,185,129,0.4);
+            color: #6ee7b7;
+            font-size: 12px;
+            padding: 5px 14px;
             border-radius: 20px;
             margin-top: 10px;
         }
 
-        .container {
+            .verify-security-badge::before {
+                content: '🔒';
+                font-size: 11px;
+            }
+
+        .verify-container {
             width: 100%;
-            max-width: 620px;
+            max-width: 640px;
         }
 
-        /* ── QR Alert Banner ── */
+        /* QR Alert */
         .qr-alert {
             border-radius: 12px;
             padding: 14px 18px;
@@ -91,27 +92,27 @@
             }
 
             .qr-alert.checking {
-                background: #ebf4ff;
-                border-color: #90cdf4;
-                color: #1a365d;
+                background: #dbeafe;
+                border-color: #93c5fd;
+                color: #1e3a8a;
             }
 
             .qr-alert.valid {
-                background: #f0fff4;
-                border-color: #9ae6b4;
-                color: #22543d;
+                background: #d1fae5;
+                border-color: #6ee7b7;
+                color: #064e3b;
             }
 
             .qr-alert.invalid {
-                background: #fff5f5;
-                border-color: #fc8181;
-                color: #742a2a;
+                background: #fee2e2;
+                border-color: #fca5a5;
+                color: #7f1d1d;
             }
 
             .qr-alert.warning {
-                background: #fffbeb;
-                border-color: #f6e05e;
-                color: #744210;
+                background: #fef3c7;
+                border-color: #fcd34d;
+                color: #78350f;
             }
 
         .qr-alert-title {
@@ -130,55 +131,56 @@
             margin-top: 4px;
         }
 
+        /* Search Card */
         .search-card {
             background: white;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            border: 1px solid var(--gray-100);
+            box-shadow: var(--shadow-xl);
             overflow: hidden;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
-        .search-card-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid #e2e8f0;
-            background: linear-gradient(135deg, #1a365d, #2b6cb0);
+        .search-card-head {
+            padding: 18px 22px;
+            background: linear-gradient(135deg, #1e2d5e, #1e3a8a);
             color: white;
         }
 
-        .search-card-title {
-            font-size: 15px;
-            font-weight: 600;
+        .search-card-head-title {
+            font-size: 16px;
+            font-weight: 700;
         }
 
-        .search-card-sub {
+        .search-card-head-sub {
             font-size: 12px;
-            opacity: 0.8;
-            margin-top: 2px;
+            opacity: 0.75;
+            margin-top: 3px;
         }
 
         .search-card-body {
-            padding: 20px;
+            padding: 22px;
         }
 
+        /* Tabs */
         .search-tabs {
             display: flex;
             gap: 4px;
-            background: #f7fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-100);
+            border-radius: 12px;
             padding: 4px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .search-tab {
             flex: 1;
-            padding: 8px;
-            border-radius: 7px;
+            padding: 9px;
+            border-radius: 9px;
             border: none;
             background: transparent;
             font-size: 13px;
-            color: #718096;
+            color: var(--gray-500);
             cursor: pointer;
             font-family: 'Segoe UI', sans-serif;
             transition: all 0.2s;
@@ -186,75 +188,78 @@
 
             .search-tab.active {
                 background: white;
-                color: #2b6cb0;
+                color: var(--blue-600);
                 font-weight: 600;
-                box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+                box-shadow: var(--shadow-sm);
             }
 
+        /* Search input */
         .name-search-wrap {
             position: relative;
         }
 
-        .search-input {
+        .v-search-input {
             width: 100%;
-            padding: 11px 16px 11px 110px;
-            border: 1px solid #e2e8f0;
+            padding: 12px 16px 12px 110px;
+            border: 1.5px solid var(--gray-200);
             border-radius: 10px;
             font-size: 14px;
-            color: #2d3748;
+            color: var(--gray-800);
             outline: none;
             font-family: 'Segoe UI', sans-serif;
             transition: border-color 0.2s, box-shadow 0.2s;
+            background: var(--gray-50);
         }
 
-            .search-input:focus {
-                border-color: #3182ce;
-                box-shadow: 0 0 0 3px rgba(49,130,206,0.1);
+            .v-search-input:focus {
+                border-color: var(--blue-400);
+                background: white;
+                box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
             }
 
-        .search-btn {
+        .v-search-btn {
             position: absolute;
             left: 6px;
             top: 6px;
             bottom: 6px;
             padding: 0 16px;
-            background: #2b6cb0;
+            background: linear-gradient(135deg, var(--blue-600), var(--blue-700));
             color: white;
             border: none;
             border-radius: 7px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            font-family: 'Segoe UI', sans-serif;
             white-space: nowrap;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-            .search-btn:hover {
-                background: #2c5282;
+            .v-search-btn:hover {
+                background: linear-gradient(135deg, var(--blue-700), var(--blue-800));
             }
 
-        .drug-select {
+        .v-drug-select {
             width: 100%;
-            padding: 11px 14px;
-            border: 1px solid #e2e8f0;
+            padding: 12px 14px;
+            border: 1.5px solid var(--gray-200);
             border-radius: 10px;
             font-size: 14px;
-            color: #2d3748;
+            color: var(--gray-800);
             outline: none;
-            background: white;
+            background: var(--gray-50);
             font-family: 'Segoe UI', sans-serif;
             cursor: pointer;
         }
 
-            .drug-select:focus {
-                border-color: #3182ce;
+            .v-drug-select:focus {
+                border-color: var(--blue-400);
             }
 
-        .select-verify-btn {
+        .v-select-verify-btn {
             width: 100%;
             margin-top: 10px;
-            padding: 11px;
-            background: #2b6cb0;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--blue-600), var(--blue-700));
             color: white;
             border: none;
             border-radius: 10px;
@@ -264,25 +269,26 @@
             font-family: 'Segoe UI', sans-serif;
         }
 
-            .select-verify-btn:hover {
-                background: #2c5282;
+            .v-select-verify-btn:hover {
+                background: linear-gradient(135deg, var(--blue-700), var(--blue-800));
             }
 
         .search-hint {
             font-size: 11px;
-            color: #a0aec0;
+            color: var(--gray-400);
             margin-top: 8px;
         }
 
+        /* Autocomplete */
         .autocomplete {
             position: absolute;
             top: calc(100% + 4px);
             right: 0;
             left: 0;
             background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            border: 1px solid var(--gray-100);
+            border-radius: 12px;
+            box-shadow: var(--shadow-xl);
             z-index: 100;
             max-height: 200px;
             overflow-y: auto;
@@ -297,8 +303,8 @@
             padding: 10px 14px;
             cursor: pointer;
             font-size: 13px;
-            color: #2d3748;
-            border-bottom: 1px solid #f0f4f8;
+            color: var(--gray-700);
+            border-bottom: 1px solid var(--gray-50);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -309,7 +315,7 @@
             }
 
             .autocomplete-item:hover {
-                background: #ebf4ff;
+                background: #eff6ff;
             }
 
         .autocomplete-name {
@@ -318,28 +324,28 @@
 
         .autocomplete-meta {
             font-size: 11px;
-            color: #a0aec0;
+            color: var(--gray-400);
         }
 
-        .loading {
+        /* Loading */
+        .v-loading {
             text-align: center;
-            padding: 32px;
-            color: #718096;
+            padding: 36px;
             display: none;
         }
 
-            .loading.show {
+            .v-loading.show {
                 display: block;
             }
 
-        .spinner {
-            width: 36px;
-            height: 36px;
-            border: 3px solid #e2e8f0;
-            border-top-color: #2b6cb0;
+        .v-loading-icon {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--gray-100);
+            border-top-color: var(--blue-500);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
+            margin: 0 auto 14px;
         }
 
         @keyframes spin {
@@ -348,24 +354,30 @@
             }
         }
 
+        .v-loading-text {
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+
+        /* Result Card */
         .result-card {
             background: white;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            border: 1px solid var(--gray-100);
+            box-shadow: var(--shadow-xl);
             overflow: hidden;
             display: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            animation: fadeIn 0.3s ease;
+            animation: fadeUp 0.3s ease;
         }
 
             .result-card.show {
                 display: block;
             }
 
-        @keyframes fadeIn {
+        @keyframes fadeUp {
             from {
                 opacity: 0;
-                transform: translateY(8px);
+                transform: translateY(10px);
             }
 
             to {
@@ -374,52 +386,54 @@
             }
         }
 
+        /* Result Hero */
         .result-hero {
-            padding: 24px;
+            padding: 28px;
             text-align: center;
         }
 
             .result-hero.authentic {
-                background: linear-gradient(135deg, #f0fff4, #c6f6d5);
+                background: linear-gradient(135deg, #d1fae5, #a7f3d0);
             }
 
             .result-hero.fake {
-                background: linear-gradient(135deg, #fff5f5, #fed7d7);
+                background: linear-gradient(135deg, #fee2e2, #fecaca);
             }
 
             .result-hero.expired {
-                background: linear-gradient(135deg, #fffbeb, #fefcbf);
+                background: linear-gradient(135deg, #fef3c7, #fde68a);
             }
 
         .result-icon {
-            font-size: 48px;
-            margin-bottom: 10px;
+            font-size: 52px;
+            margin-bottom: 12px;
+            display: block;
         }
 
         .result-title {
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
         }
 
         .result-hero.authentic .result-title {
-            color: #276749;
+            color: #064e3b;
         }
 
         .result-hero.fake .result-title {
-            color: #822727;
+            color: #7f1d1d;
         }
 
         .result-hero.expired .result-title {
-            color: #744210;
+            color: #78350f;
         }
 
         .result-sub {
             font-size: 13px;
-            opacity: 0.8;
-            margin-top: 4px;
+            opacity: 0.75;
+            margin-top: 5px;
         }
 
-        /* ── QR Security Badge inside result ── */
+        /* QR Security Strip */
         .qr-security-strip {
             margin: 0 20px 16px;
             padding: 12px 16px;
@@ -430,27 +444,27 @@
         }
 
             .qr-security-strip.sig-ok {
-                background: #f0fff4;
-                border-color: #9ae6b4;
-                color: #22543d;
+                background: #d1fae5;
+                border-color: #6ee7b7;
+                color: #064e3b;
             }
 
             .qr-security-strip.sig-bad {
-                background: #fff5f5;
-                border-color: #fc8181;
-                color: #742a2a;
+                background: #fee2e2;
+                border-color: #fca5a5;
+                color: #7f1d1d;
             }
 
             .qr-security-strip.sig-warn {
-                background: #fffbeb;
-                border-color: #f6e05e;
-                color: #744210;
+                background: #fef3c7;
+                border-color: #fcd34d;
+                color: #78350f;
             }
 
             .qr-security-strip.sig-none {
-                background: #f7fafc;
-                border-color: #e2e8f0;
-                color: #718096;
+                background: var(--gray-50);
+                border-color: var(--gray-200);
+                color: var(--gray-500);
             }
 
         .sig-title {
@@ -459,28 +473,29 @@
             margin-bottom: 2px;
         }
 
+        /* Result Body */
         .result-body {
-            padding: 20px;
+            padding: 20px 22px;
         }
 
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 20px;
         }
 
         .info-item {
-            background: #f7fafc;
+            background: var(--gray-50);
             border-radius: 10px;
             padding: 12px 14px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--gray-100);
         }
 
         .info-label {
             font-size: 10px;
-            color: #a0aec0;
-            font-weight: 600;
+            color: var(--gray-400);
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 4px;
@@ -488,29 +503,26 @@
 
         .info-value {
             font-size: 14px;
-            color: #2d3748;
+            color: var(--gray-800);
             font-weight: 600;
         }
 
-        .timeline-section {
-            margin-top: 4px;
-        }
-
+        /* Timeline */
         .timeline-header {
             font-size: 13px;
             font-weight: 700;
-            color: #2d3748;
+            color: var(--gray-800);
             margin-bottom: 14px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid var(--gray-100);
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .timeline-count {
-            background: #ebf4ff;
-            color: #2b6cb0;
+            background: #dbeafe;
+            color: var(--blue-700);
             font-size: 11px;
             padding: 2px 8px;
             border-radius: 20px;
@@ -518,17 +530,17 @@
 
         .timeline-items {
             position: relative;
-            padding-right: 20px;
+            padding-right: 22px;
         }
 
             .timeline-items::before {
                 content: '';
                 position: absolute;
-                right: 4px;
+                right: 5px;
                 top: 8px;
                 bottom: 8px;
                 width: 2px;
-                background: linear-gradient(to bottom, #3182ce, #48bb78);
+                background: linear-gradient(to bottom, var(--blue-400), #34d399);
                 border-radius: 1px;
             }
 
@@ -543,50 +555,51 @@
 
         .timeline-dot {
             position: absolute;
-            right: -16px;
+            right: -17px;
             top: 4px;
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: #3182ce;
+            background: var(--blue-500);
             border: 2px solid white;
-            box-shadow: 0 0 0 2px #3182ce;
+            box-shadow: 0 0 0 2px var(--blue-500);
         }
 
         .timeline-item:last-child .timeline-dot {
-            background: #48bb78;
-            box-shadow: 0 0 0 2px #48bb78;
+            background: #10b981;
+            box-shadow: 0 0 0 2px #10b981;
         }
 
         .timeline-step {
             font-size: 13px;
             font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 3px;
+            color: var(--gray-700);
+            margin-bottom: 2px;
         }
 
         .timeline-date {
             font-size: 11px;
-            color: #718096;
+            color: var(--gray-400);
         }
 
         .timeline-hash {
             font-family: monospace;
             font-size: 10px;
-            color: #a0aec0;
+            color: var(--gray-400);
             margin-top: 3px;
             word-break: break-all;
         }
 
+        /* AI Section */
         .ai-section {
-            padding: 16px 20px;
-            border-top: 1px solid #e2e8f0;
-            background: #fafbfc;
+            padding: 16px 22px;
+            border-top: 1px solid var(--gray-100);
+            background: var(--gray-50);
         }
 
         .ai-section-title {
             font-size: 12px;
-            color: #718096;
+            color: var(--gray-500);
             margin-bottom: 10px;
             text-align: center;
         }
@@ -599,10 +612,10 @@
         }
 
         .ai-btn {
-            padding: 9px 18px;
-            border-radius: 8px;
+            padding: 10px 20px;
+            border-radius: 9px;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -611,72 +624,76 @@
         }
 
         .ai-btn-primary {
-            background: #2b6cb0;
+            background: linear-gradient(135deg, var(--blue-600), var(--blue-700));
             color: white;
         }
 
             .ai-btn-primary:hover {
-                background: #2c5282;
+                background: linear-gradient(135deg, var(--blue-700), var(--blue-800));
             }
 
         .ai-btn-outline {
             background: white;
-            color: #2b6cb0;
-            border: 1px solid #2b6cb0;
+            color: var(--blue-600);
+            border: 1.5px solid var(--blue-500);
         }
 
             .ai-btn-outline:hover {
-                background: #ebf4ff;
+                background: #eff6ff;
             }
 
         .new-search-btn {
-            padding: 11px;
-            background: white;
-            color: #4a5568;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            display: block;
+            width: calc(100% - 44px);
+            margin: 16px 22px 22px;
+            padding: 12px;
+            background: var(--gray-50);
+            color: var(--gray-600);
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
             font-size: 13px;
             cursor: pointer;
             font-family: 'Segoe UI', sans-serif;
-            margin: 16px 20px 20px;
-            width: calc(100% - 40px);
-            display: block;
+            transition: all 0.2s;
         }
 
             .new-search-btn:hover {
-                background: #f7fafc;
+                background: var(--gray-100);
             }
 
         .back-link {
             text-align: center;
-            margin-top: 16px;
+            margin-top: 20px;
             font-size: 13px;
-            color: #3182ce;
+            color: rgba(255,255,255,0.6);
             cursor: pointer;
         }
+
+            .back-link:hover {
+                color: white;
+            }
     </style>
 </head>
 <body>
-    <div class="header" id="pageHeader">
-        <div class="header-logo">
-            <div class="header-logo-icon">⛓️</div>
+    <div class="verify-header" id="pageHeader">
+        <div class="verify-logo">
+            <div class="verify-logo-icon">⛓️</div>
             <h1>PharmaChain</h1>
         </div>
         <p>تحقق من أصالة دوائك في ثوانٍ</p>
-        <div class="security-badge">🔒 مؤمّن بتقنية Blockchain</div>
+        <div class="verify-security-badge">مؤمّن بتقنية Blockchain</div>
     </div>
 
-    <div class="container">
-        <!-- QR Alert: يظهر فقط إذا جاء الطلب من QR Code -->
+    <div class="verify-container">
         <div class="qr-alert checking" id="qrAlert">
             <div class="qr-alert-title">🔍 جارٍ التحقق من توقيع QR Code...</div>
             <div>يتم التحقق من صحة الـ Signature والتاريخ قبل عرض النتيجة</div>
         </div>
 
         <div class="search-card" id="searchCard">
-            <div class="search-card-header">
-                <div class="search-card-title">🔍 التحقق من الدواء</div>
-                <div class="search-card-sub">ابحث باسم الدواء أو اختره من القائمة أو أدخل رقمه</div>
+            <div class="search-card-head">
+                <div class="search-card-head-title">🔍 التحقق من الدواء</div>
+                <div class="search-card-head-sub">ابحث باسم الدواء أو اختره من القائمة أو أدخل رقمه</div>
             </div>
             <div class="search-card-body">
                 <div class="search-tabs">
@@ -686,37 +703,45 @@
                 </div>
                 <div id="tabName">
                     <div class="name-search-wrap">
-                        <input type="text" class="search-input" id="nameInput" placeholder="اكتب اسم الدواء... مثال: Panadol" oninput="onNameSearch()" onkeydown="if(event.key==='Enter') searchByName()" autocomplete="off">
-                        <button class="search-btn" onclick="searchByName()">تحقق</button>
+                        <input type="text" class="v-search-input" id="nameInput"
+                               placeholder="اكتب اسم الدواء... مثال: Panadol"
+                               oninput="onNameSearch()"
+                               onkeydown="if(event.key==='Enter') searchByName()"
+                               autocomplete="off">
+                        <button class="v-search-btn" onclick="searchByName()">تحقق</button>
                         <div class="autocomplete" id="autocomplete"></div>
                     </div>
                     <div class="search-hint">اكتب اسم الدواء وستظهر اقتراحات تلقائية</div>
                 </div>
                 <div id="tabList" style="display:none">
-                    <select class="drug-select" id="drugSelect"><option value="">⏳ جاري تحميل الأدوية...</option></select>
-                    <button class="select-verify-btn" onclick="verifyFromSelect()">✅ تحقق من الدواء المحدد</button>
+                    <select class="v-drug-select" id="drugSelect">
+                        <option value="">⏳ جاري تحميل الأدوية...</option>
+                    </select>
+                    <button class="v-select-verify-btn" onclick="verifyFromSelect()">✅ تحقق من الدواء المحدد</button>
                 </div>
                 <div id="tabId" style="display:none">
                     <div class="name-search-wrap">
-                        <input type="number" class="search-input" id="idInput" placeholder="أدخل رقم الدواء (ID)" min="1" onkeydown="if(event.key==='Enter') verifyById()">
-                        <button class="search-btn" onclick="verifyById()">تحقق</button>
+                        <input type="number" class="v-search-input" id="idInput"
+                               placeholder="أدخل رقم الدواء (ID)" min="1"
+                               onkeydown="if(event.key==='Enter') verifyById()">
+                        <button class="v-search-btn" onclick="verifyById()">تحقق</button>
                     </div>
                     <div class="search-hint">رقم الدواء موجود على الملصق أو الـ QR Code</div>
                 </div>
             </div>
         </div>
 
-        <div class="loading" id="loading"><div class="spinner"></div><div>جاري التحقق من قاعدة بيانات Blockchain...</div></div>
+        <div class="v-loading" id="loading">
+            <div class="v-loading-icon"></div>
+            <div class="v-loading-text">جاري التحقق من قاعدة بيانات Blockchain...</div>
+        </div>
 
         <div class="result-card" id="resultCard">
             <div class="result-hero" id="resultHero"></div>
-
-            <!-- شريط نتيجة الـ QR Signature — يظهر فقط إذا جاء من QR -->
             <div class="qr-security-strip sig-none" id="qrSecurityStrip" style="display:none">
                 <div class="sig-title" id="qrSigTitle"></div>
                 <div id="qrSigDetail"></div>
             </div>
-
             <div class="result-body" id="resultBody"></div>
             <div class="ai-section" id="aiSection" style="display:none">
                 <div class="ai-section-title">هل تريد معرفة أكثر عن دوائك؟</div>
@@ -735,12 +760,8 @@
         var API = 'http://localhost:7036';
         var allDrugs = [];
         var activeTab = 'name';
-        var qrSigResult = null; // نتيجة التحقق من الـ Signature
+        var qrSigResult = null;
 
-        // ────────────────────────────────────────────
-        // QR SIGNATURE VERIFICATION
-        // يُشغَّل أولاً إذا جاءت المعاملات في الـ URL
-        // ────────────────────────────────────────────
         function verifyQrSignature(id, prod, ts, sig) {
             var alert = document.getElementById('qrAlert');
             alert.className = 'qr-alert checking show';
@@ -767,7 +788,6 @@
                     qrSigResult = { isValid: false, attackType: 'SERVER_ERROR', message: 'تعذر الاتصال بالسيرفر للتحقق من الـ Signature' };
                 }
                 renderQrAlert(qrSigResult);
-                // بعد التحقق من الـ Signature — نجلب بيانات الدواء
                 verifyDrug(parseInt(id));
             };
 
@@ -780,7 +800,6 @@
             xhr.send();
         }
 
-        // خريطة رموز الهجوم → نص عربي
         var attackLabels = {
             'SIGNATURE_MISMATCH': '⚠️ تبديل ملصق — هذا الـ QR ينتمي لدواء مختلف',
             'DATE_MISMATCH': '⚠️ تلاعب بالتاريخ — تاريخ الإنتاج لا يطابق السجل',
@@ -829,9 +848,6 @@
             }
         }
 
-        // ────────────────────────────────────────────
-        // باقي الدوال (كما هي + دعم الـ token)
-        // ────────────────────────────────────────────
         function goBack() {
             var token = localStorage.getItem('token');
             if (token) { window.location.replace(API + '/dashboard.html'); }
@@ -945,17 +961,17 @@
 
             if (!data.authentic) {
                 hero.className = 'result-hero fake';
-                hero.innerHTML = '<div class="result-icon">✗</div><div class="result-title">دواء غير موثق</div><div class="result-sub">هذا الدواء غير مسجل في نظام PharmaChain</div>';
-                body.innerHTML = '<div style="text-align:center;padding:20px;color:#718096;font-size:13px;">تحقق من رقم الدواء أو تواصل مع الصيدلاني</div>';
+                hero.innerHTML = '<span class="result-icon">✗</span><div class="result-title">دواء غير موثق</div><div class="result-sub">هذا الدواء غير مسجل في نظام PharmaChain</div>';
+                body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-400);font-size:13px;">تحقق من رقم الدواء أو تواصل مع الصيدلاني</div>';
                 document.getElementById('aiSection').style.display = 'none';
             } else {
                 var expiry = new Date(data.expiryDate);
                 if (data.isExpired) {
                     hero.className = 'result-hero expired';
-                    hero.innerHTML = '<div class="result-icon">⚠️</div><div class="result-title">دواء منتهي الصلاحية</div><div class="result-sub">الدواء مسجل لكن تجاوز تاريخ الانتهاء</div>';
+                    hero.innerHTML = '<span class="result-icon">⚠️</span><div class="result-title">دواء منتهي الصلاحية</div><div class="result-sub">الدواء مسجل لكن تجاوز تاريخ الانتهاء</div>';
                 } else {
                     hero.className = 'result-hero authentic';
-                    hero.innerHTML = '<div class="result-icon">✓</div><div class="result-title">دواء أصلي موثق</div><div class="result-sub">تم التحقق من الأصالة عبر Blockchain</div>';
+                    hero.innerHTML = '<span class="result-icon">✓</span><div class="result-title">دواء أصلي موثق</div><div class="result-sub">تم التحقق من الأصالة عبر Blockchain</div>';
                 }
 
                 var html = '<div class="info-grid">'
@@ -966,7 +982,7 @@
                     + '</div>';
 
                 if (data.trackingHistory && data.trackingHistory.length > 0) {
-                    html += '<div class="timeline-section"><div class="timeline-header">⛓️ مسار الدواء عبر Blockchain <span class="timeline-count">' + data.trackingHistory.length + ' نقلة</span></div><div class="timeline-items">';
+                    html += '<div class="timeline-header">⛓️ مسار الدواء عبر Blockchain <span class="timeline-count">' + data.trackingHistory.length + ' نقلة</span></div><div class="timeline-items">';
                     data.trackingHistory.forEach(function (t) {
                         html += '<div class="timeline-item"><div class="timeline-dot"></div><div>'
                             + '<div class="timeline-step">' + (roleMap[t.fromRole] || t.fromRole) + ' ← ' + (roleMap[t.toRole] || t.toRole) + '</div>'
@@ -974,9 +990,9 @@
                             + '<div class="timeline-hash">Block Hash: ' + t.blockHash + '</div>'
                             + '</div></div>';
                     });
-                    html += '</div></div>';
+                    html += '</div>';
                 } else {
-                    html += '<div style="text-align:center;color:#718096;font-size:13px;padding:16px 0;">لا توجد عمليات نقل مسجلة بعد</div>';
+                    html += '<div style="text-align:center;color:var(--gray-400);font-size:13px;padding:16px 0;">لا توجد عمليات نقل مسجلة بعد</div>';
                 }
 
                 body.innerHTML = html;
@@ -984,7 +1000,6 @@
                 document.getElementById('aiSection').style.display = 'block';
             }
 
-            // إذا كان فيه نتيجة QR Signature — اعرضها داخل الكارد
             if (qrSigResult !== null) {
                 renderQrSecurityStrip(qrSigResult);
             }
@@ -996,7 +1011,7 @@
 
         function showNotFound(msg) {
             document.getElementById('resultHero').className = 'result-hero fake';
-            document.getElementById('resultHero').innerHTML = '<div class="result-icon">🔍</div><div class="result-title">لم يتم العثور</div><div class="result-sub">' + msg + '</div>';
+            document.getElementById('resultHero').innerHTML = '<span class="result-icon">🔍</span><div class="result-title">لم يتم العثور</div><div class="result-sub">' + msg + '</div>';
             document.getElementById('resultBody').innerHTML = '';
             document.getElementById('aiSection').style.display = 'none';
             document.getElementById('resultCard').classList.add('show');
@@ -1021,9 +1036,6 @@
                 document.getElementById('autocomplete').classList.remove('show');
         });
 
-        // ────────────────────────────────────────────
-        // INIT — تحقق من الـ URL Parameters
-        // ────────────────────────────────────────────
         loadAllDrugs();
 
         var params = new URLSearchParams(window.location.search);
@@ -1036,13 +1048,11 @@
             switchTab('id');
             document.getElementById('idInput').value = idFromUrl;
 
-            // إذا في sig → جاء من QR Code → تحقق من الـ Signature أولاً
             if (sigFromUrl && prodFromUrl && tsFromUrl) {
                 setTimeout(function () {
                     verifyQrSignature(idFromUrl, prodFromUrl, tsFromUrl, sigFromUrl);
                 }, 200);
             } else {
-                // بحث عادي بالـ id بدون Signature
                 document.getElementById('qrAlert').classList.remove('show');
                 setTimeout(function () { verifyDrug(parseInt(idFromUrl)); }, 300);
             }
