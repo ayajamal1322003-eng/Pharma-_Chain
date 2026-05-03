@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PharmaChain — معلومات الدواء</title>
+    <link rel="stylesheet" href="/pharma-styles.css">
+    <script src="/pharma-lang.js"></script>
     <style>
         * {
             margin: 0;
@@ -395,46 +397,48 @@
     </style>
 </head>
 <body>
+    <button class="lang-toggle-float" onclick="PharmaLang.toggle()">🇬🇧 EN</button>
     <div class="container">
 
         <div class="header">
-            <h1>💊 معلومات الدواء</h1>
-            <p>اعرف أكثر عن دوائك — بلغة سهلة وواضحة</p>
+            <h1 data-i18n="di_title">💊 معلومات الدواء</h1>
+            <p data-i18n="di_sub">اعرف أكثر عن دوائك — بلغة سهلة وواضحة</p>
             <div class="ai-tag">
                 <div class="ai-dot"></div>
-                مدعوم بالذكاء الاصطناعي
+                <span data-i18n="di_ai_tag">مدعوم بالذكاء الاصطناعي</span>
             </div>
         </div>
 
         <!-- Search card -->
         <div class="card" id="searchCard">
-            <div class="card-header">🔍 ابحث عن دواء</div>
+            <div class="card-header" data-i18n="di_search_hdr">🔍 ابحث عن دواء</div>
             <div class="card-body">
 
                 <div class="form-group">
-                    <label class="form-label">اسم الدواء (عربي أو إنجليزي)</label>
+                    <label class="form-label" data-i18n="di_name_label">اسم الدواء (عربي أو إنجليزي)</label>
                     <input type="text" id="drugInput"
                            placeholder="مثال: Paracetamol / باراسيتامول / Amoxicillin"
+                           data-i18n-ph="di_name_ph"
                            onkeydown="if(event.key==='Enter') search()">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">مستوى المعلومات</label>
+                    <label class="form-label" data-i18n="di_level_label">مستوى المعلومات</label>
                     <div class="level-btns">
-                        <button class="level-btn selected" onclick="selectLevel('patient', this)">
+                        <button class="level-btn selected" onclick="selectLevel('patient', this)" data-i18n="di_lvl_patient">
                             👤 للمريض
                         </button>
-                        <button class="level-btn" onclick="selectLevel('pharmacist', this)">
+                        <button class="level-btn" onclick="selectLevel('pharmacist', this)" data-i18n="di_lvl_pharmacist">
                             🏥 للصيدلاني
                         </button>
-                        <button class="level-btn" onclick="selectLevel('medical', this)">
+                        <button class="level-btn" onclick="selectLevel('medical', this)" data-i18n="di_lvl_medical">
                             🩺 طبي تفصيلي
                         </button>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">أدوية شائعة — اضغط للبحث مباشرة</label>
+                    <label class="form-label" data-i18n="di_popular">أدوية شائعة — اضغط للبحث مباشرة</label>
                     <div class="popular-chips">
                         <span class="chip" onclick="quickSearch('Paracetamol')">Paracetamol</span>
                         <span class="chip" onclick="quickSearch('Amoxicillin')">Amoxicillin</span>
@@ -446,7 +450,7 @@
                 </div>
 
                 <button class="btn" id="searchBtn" onclick="search()">
-                    🔬 ابحث عن الدواء
+                    <span data-i18n="di_btn">🔬 ابحث عن الدواء</span>
                 </button>
 
                 <div class="error-msg" id="errorMsg"></div>
@@ -456,22 +460,22 @@
         <!-- Loading -->
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <div class="loading-text">جاري البحث عن معلومات الدواء...</div>
+            <div class="loading-text" data-i18n="di_loading">جاري البحث عن معلومات الدواء...</div>
         </div>
 
         <!-- Result -->
         <div class="result-card" id="resultCard">
             <div class="drug-hero" id="drugHero"></div>
             <div class="drug-sections" id="drugSections"></div>
-            <div class="disclaimer">
+            <div class="disclaimer" data-i18n="di_disclaimer">
                 ⚠️ هذه المعلومات للتثقيف الصحي فقط — استشر طبيبك أو صيدلانيك دائماً قبل استخدام أي دواء
             </div>
             <div class="new-search">
-                <button class="btn-outline" onclick="newSearch()">🔍 البحث عن دواء آخر</button>
+                <button class="btn-outline" onclick="newSearch()" data-i18n="di_new_search">🔍 البحث عن دواء آخر</button>
             </div>
         </div>
 
-        <div class="back-link" onclick="goBack()">← العودة للخلف</div>
+        <div class="back-link" onclick="goBack()" data-i18n="di_back">← العودة للخلف</div>
 
     </div>
 

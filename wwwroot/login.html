@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PharmaChain — تسجيل الدخول</title>
     <link rel="stylesheet" href="/pharma-styles.css">
+    <script src="/pharma-lang.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #0f1635 0%, #1e2d5e 50%, #0f2460 100%);
@@ -204,6 +205,7 @@
     </style>
 </head>
 <body>
+    <button class="lang-toggle-float" onclick="PharmaLang.toggle()">🇬🇧 EN</button>
     <div class="bg-orb bg-orb-1"></div>
     <div class="bg-orb bg-orb-2"></div>
 
@@ -212,36 +214,36 @@
             <div class="login-logo">
                 <div class="logo-icon">⛓️</div>
                 <div class="logo-title">PharmaChain</div>
-                <div class="logo-sub">نظام تتبع الأدوية الآمن</div>
+                <div class="logo-sub" data-i18n="login_subtitle">نظام تتبع الأدوية الآمن</div>
             </div>
 
             <div class="form-group">
-                <label>اسم المستخدم</label>
+                <label data-i18n="login_username">اسم المستخدم</label>
                 <div class="input-wrap">
-                    <input type="text" id="username" placeholder="أدخل اسم المستخدم">
+                    <input type="text" id="username" placeholder="أدخل اسم المستخدم" data-i18n-ph="login_username_ph">
                 </div>
             </div>
 
             <div class="form-group">
-                <label>كلمة المرور</label>
+                <label data-i18n="login_password">كلمة المرور</label>
                 <div class="input-wrap">
-                    <input type="password" id="password" placeholder="أدخل كلمة المرور">
+                    <input type="password" id="password" placeholder="أدخل كلمة المرور" data-i18n-ph="login_password_ph">
                 </div>
-                <div class="pwd-hint">يجب أن تحتوي على 8 أحرف + رقم + حرف كبير</div>
+                <div class="pwd-hint" data-i18n="login_pwd_hint">يجب أن تحتوي على 8 أحرف + رقم + حرف كبير</div>
             </div>
 
             <div class="attempts-bar" id="attemptsBar">
                 <div class="attempts-fill" id="attemptsFill"></div>
             </div>
 
-            <button class="btn-login" id="loginBtn" onclick="login()">دخول إلى النظام</button>
+            <button class="btn-login" id="loginBtn" onclick="login()" data-i18n="login_btn">دخول إلى النظام</button>
 
             <div class="error-box" id="errorMsg"></div>
             <div class="warning-box" id="warningMsg"></div>
 
             <div class="security-strip">
                 <div class="sec-dot"></div>
-                <div class="sec-text">محمي بتشفير JWT + BCrypt · Blockchain Protection</div>
+                <div class="sec-text" data-i18n="login_security">محمي بتشفير JWT + BCrypt · Blockchain Protection</div>
             </div>
         </div>
     </div>

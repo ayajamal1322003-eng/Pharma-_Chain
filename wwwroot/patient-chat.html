@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PharmaChain — مساعد المريض</title>
+    <link rel="stylesheet" href="/pharma-styles.css">
+    <script src="/pharma-lang.js"></script>
     <style>
         * {
             margin: 0;
@@ -435,24 +437,25 @@
     </style>
 </head>
 <body>
+    <button class="lang-toggle-float" onclick="PharmaLang.toggle()">🇬🇧 EN</button>
     <div class="container">
 
         <div class="header">
-            <h1>🤖 مساعد المريض الذكي</h1>
-            <p>اسأل عن دوائك بالعربي — إجابات فورية وواضحة</p>
+            <h1 data-i18n="pc_title">🤖 مساعد المريض الذكي</h1>
+            <p data-i18n="pc_sub">اسأل عن دوائك بالعربي — إجابات فورية وواضحة</p>
             <div class="ai-tag">
                 <div class="ai-dot"></div>
-                متصل — مدعوم بالذكاء الاصطناعي
+                <span data-i18n="pc_ai_tag">متصل — مدعوم بالذكاء الاصطناعي</span>
             </div>
         </div>
 
         <!-- Drug lookup -->
         <div class="card">
-            <div class="card-header">🔍 ابحث عن دوائك أولاً (اختياري)</div>
+            <div class="card-header" data-i18n="pc_lookup_hdr">🔍 ابحث عن دوائك أولاً (اختياري)</div>
             <div class="card-body">
                 <div class="lookup-row">
-                    <input type="number" id="drugIdInput" placeholder="رقم الدواء (ID) من الملصق أو QR" min="1">
-                    <button class="btn btn-primary" onclick="lookupDrug()" id="lookupBtn">تحقق</button>
+                    <input type="number" id="drugIdInput" placeholder="رقم الدواء (ID) من الملصق أو QR" min="1" data-i18n-ph="pc_lookup_ph">
+                    <button class="btn btn-primary" onclick="lookupDrug()" id="lookupBtn" data-i18n="pc_lookup_btn">تحقق</button>
                 </div>
 
                 <div class="drug-strip" id="drugStrip">
@@ -474,8 +477,8 @@
             <div class="chat-header">
                 <div class="bot-avatar">🤖</div>
                 <div class="bot-info">
-                    <div class="bot-name">مساعد PharmaChain</div>
-                    <div class="bot-status">● متصل الآن</div>
+                    <div class="bot-name" data-i18n="pc_bot_name">مساعد PharmaChain</div>
+                    <div class="bot-status" data-i18n="pc_bot_status">● متصل الآن</div>
                 </div>
             </div>
 
@@ -501,12 +504,13 @@
             <div class="input-row">
                 <input type="text" id="msgInput"
                        placeholder="اكتب سؤالك هنا... (مثال: هل دوائي أصلي؟)"
+                       data-i18n-ph="pc_msg_ph"
                        onkeydown="if(event.key==='Enter' && !event.shiftKey) sendMsg()">
-                <button class="btn btn-primary" onclick="sendMsg()" id="sendBtn">إرسال</button>
+                <button class="btn btn-primary" onclick="sendMsg()" id="sendBtn" data-i18n="pc_send">إرسال</button>
             </div>
         </div>
 
-        <div class="back-link" onclick="goBack()">← العودة للخلف</div>
+        <div class="back-link" onclick="goBack()" data-i18n="pc_back">← العودة للخلف</div>
 
     </div>
 

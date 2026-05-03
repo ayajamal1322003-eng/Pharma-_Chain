@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PharmaChain — التحقق من الدواء</title>
     <link rel="stylesheet" href="/pharma-styles.css">
+    <script src="/pharma-lang.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #0f1f3d 0%, #1a365d 40%, #1e3a5f 100%);
@@ -353,12 +354,13 @@
     </style>
 </head>
 <body>
+    <button class="lang-toggle-float" onclick="PharmaLang.toggle()">🇬🇧 EN</button>
     <div class="verify-header" id="pageHeader">
         <div class="verify-logo">
             <div class="verify-logo-icon">⛓️</div>
-            <h1>PharmaChain</h1>
+            <h1 data-i18n="verify_title">PharmaChain</h1>
         </div>
-        <p>تحقق من أصالة دوائك في ثوانٍ</p>
+        <p data-i18n="verify_subtitle">تحقق من أصالة دوائك في ثوانٍ</p>
         <div class="verify-security-badge">مؤمّن بتقنية Blockchain</div>
     </div>
 

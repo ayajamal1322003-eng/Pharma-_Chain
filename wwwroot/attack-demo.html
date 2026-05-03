@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>PharmaChain — كشف التلاعب</title>
     <link rel="stylesheet" href="/pharma-styles.css">
+    <script src="/pharma-lang.js"></script>
     <style>
         /* ── Tabs ── */
         .page-tabs { display:flex; gap:4px; background:var(--gray-100); border-radius:12px; padding:4px; width:fit-content; margin-bottom:24px; }
@@ -146,17 +147,18 @@
 
     <!-- ══ SIDEBAR ══ -->
     <div class="sidebar">
-        <div class="sidebar-logo"><h2>PharmaChain</h2><p>نظام تتبع الأدوية</p></div>
-        <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> لوحة التحكم</a>
-        <a class="nav-item" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> إضافة دواء</a>
-        <a class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> نقل دواء</a>
-        <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> Blockchain</a>
-        <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> التحقق من دواء</a>
-        <a class="nav-item active"><span class="nav-icon">🛡️</span> كشف التلاعب</a>
-        <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> سجل العمليات</a>
-        <div class="nav-section-hdr" id="navAISection" style="display:none">الذكاء الاصطناعي</div>
-        <a class="nav-item" id="navRisk"    style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> محلل المخاطر AI</a>
-        <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> تحليلات الأداء AI</a>
+        <div class="sidebar-logo"><h2>PharmaChain</h2><p data-i18n="sidebar_sub">نظام تتبع الأدوية</p></div>
+        <button class="lang-toggle-btn" onclick="PharmaLang.toggle()">🇬🇧 EN</button>
+        <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> <span data-i18n="nav_dashboard">لوحة التحكم</span></a>
+        <a class="nav-item" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> <span data-i18n="nav_add_drug">إضافة دواء</span></a>
+        <a class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> <span data-i18n="nav_transfer">نقل دواء</span></a>
+        <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> <span data-i18n="nav_blockchain">Blockchain</span></a>
+        <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> <span data-i18n="nav_verify">التحقق من دواء</span></a>
+        <a class="nav-item active"><span class="nav-icon">🛡️</span> <span data-i18n="nav_tamper">كشف التلاعب</span></a>
+        <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> <span data-i18n="nav_audit">سجل العمليات</span></a>
+        <div class="nav-section-hdr" id="navAISection" style="display:none" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
+        <a class="nav-item" id="navRisk"    style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
+        <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
         <div class="user-info-bar">
             <div class="user-row">
                 <div class="user-avatar">👤</div>
@@ -165,7 +167,7 @@
                     <div class="user-role" id="sidebarRole">...</div>
                 </div>
             </div>
-            <button class="logout-btn" onclick="logout()">🚪 تسجيل خروج</button>
+            <button class="logout-btn" onclick="logout()" data-i18n="btn_logout">🚪 تسجيل خروج</button>
         </div>
     </div>
 
@@ -173,8 +175,8 @@
     <div class="main">
         <div class="page-header">
             <div>
-                <div class="page-title">كشف التلاعب والهجمات الأمنية</div>
-                <div class="page-subtitle">محاكاة حقيقية لكيف يحدث الهجوم — وكيف يكتشفه النظام فوراً</div>
+                <div class="page-title" data-i18n="attack_title">كشف التلاعب والهجمات الأمنية</div>
+                <div class="page-subtitle" data-i18n="attack_subtitle">محاكاة حقيقية لكيف يحدث الهجوم — وكيف يكتشفه النظام فوراً</div>
             </div>
         </div>
 
