@@ -13,7 +13,11 @@ namespace PharmaChain.Data
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<DrugTransaction> DrugTransactions { get; set; }
 
-        // ── جدول جديد: سجل كل عملية مسح QR ──
+        // ── سجل كل عملية مسح QR ──
         public DbSet<QrScanLog> QrScanLogs { get; set; }
+
+        // ── QR Issuance Control ──
+        public DbSet<QrQuota>    QrQuotas    { get; set; }
+        public DbSet<QrIssuance> QrIssuances { get; set; }
     }
 }
