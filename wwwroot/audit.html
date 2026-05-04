@@ -72,23 +72,23 @@
                 <div class="card-header-left">
                     <div class="card-icon ci-purple">📋</div>
                     <div>
-                        <div class="card-title">جميع العمليات <span class="count-badge" id="logCount">0</span></div>
-                        <div class="card-subtitle">مرتبة من الأحدث للأقدم</div>
+                        <div class="card-title"><span data-i18n="audit_card_title">جميع العمليات</span> <span class="count-badge" id="logCount">0</span></div>
+                        <div class="card-subtitle" data-i18n="audit_card_sub">مرتبة من الأحدث للأقدم</div>
                     </div>
                 </div>
                 <select id="filterAction" onchange="filterLogs()" class="filter-select">
-                    <option value="">كل العمليات</option>
-                    <option value="Login">دخول ناجح</option>
-                    <option value="FailedLogin">دخول فاشل</option>
-                    <option value="Register">تسجيل حساب</option>
-                    <option value="AddDrug">إضافة دواء</option>
-                    <option value="DeleteDrug">حذف دواء</option>
-                    <option value="TransferDrug">نقل دواء</option>
-                    <option value="TamperDetected">تلاعب مكتشف 🚨</option>
+                    <option value="" data-i18n="audit_filter_all">كل العمليات</option>
+                    <option value="Login" data-i18n="audit_login">دخول ناجح</option>
+                    <option value="FailedLogin" data-i18n="audit_fail_login">دخول فاشل</option>
+                    <option value="Register" data-i18n="audit_register">تسجيل حساب</option>
+                    <option value="AddDrug" data-i18n="audit_add_drug">إضافة دواء</option>
+                    <option value="DeleteDrug" data-i18n="audit_del_drug">حذف دواء</option>
+                    <option value="TransferDrug" data-i18n="audit_transfer">نقل دواء</option>
+                    <option value="TamperDetected" data-i18n="audit_tamper_f">تلاعب مكتشف 🚨</option>
                 </select>
             </div>
             <div class="table-wrap" id="logsTable">
-                <div class="loading-state"><div class="spinner"></div>جاري تحميل السجل...</div>
+                <div class="loading-state"><div class="spinner"></div><span data-i18n="loading_log">جاري تحميل السجل...</span></div>
             </div>
         </div>
     </div>
@@ -114,7 +114,7 @@
             document.getElementById('logsTable').innerHTML = '<div class="no-access" style="text-align:center;padding:60px;color:#881337;font-size:15px;">⛔ سجل العمليات متاح للمدير فقط</div>';
             return;
         }
-        document.getElementById('logsTable').innerHTML = '<div class="loading-state"><div class="spinner"></div>جاري تحميل السجل...</div>';
+        document.getElementById('logsTable').innerHTML = '<div class="loading-state"><div class="spinner"></div><span>' + PharmaLang.t('loading_log') + '</span></div>';
         var xhr = new XMLHttpRequest();
         xhr.open('GET', API + '/api/audit', true);
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
@@ -129,12 +129,12 @@
             var transfers = allLogs.filter(function(l){return l.action==='TransferDrug';}).length;
 
             document.getElementById('statsRow').innerHTML =
-                '<div class="mini-stat-card"><div class="mini-stat-val">' + allLogs.length + '</div><div class="mini-stat-label">إجمالي العمليات</div></div>' +
-                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#065f46">' + logins + '</div><div class="mini-stat-label">دخول ناجح</div></div>' +
-                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#9f1239">' + failed + '</div><div class="mini-stat-label">دخول فاشل</div></div>' +
-                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#9f1239">' + tamper + '</div><div class="mini-stat-label">تلاعب مكتشف</div></div>' +
-                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#1e40af">' + adds + '</div><div class="mini-stat-label">أدوية مضافة</div></div>' +
-                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#4c1d95">' + transfers + '</div><div class="mini-stat-label">عمليات نقل</div></div>';
+                '<div class="mini-stat-card"><div class="mini-stat-val">' + allLogs.length + '</div><div class="mini-stat-label">' + PharmaLang.t('audit_total') + '</div></div>' +
+                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#065f46">' + logins + '</div><div class="mini-stat-label">' + PharmaLang.t('audit_logins') + '</div></div>' +
+                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#9f1239">' + failed + '</div><div class="mini-stat-label">' + PharmaLang.t('audit_failed') + '</div></div>' +
+                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#9f1239">' + tamper + '</div><div class="mini-stat-label">' + PharmaLang.t('audit_tamper') + '</div></div>' +
+                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#1e40af">' + adds + '</div><div class="mini-stat-label">' + PharmaLang.t('audit_added') + '</div></div>' +
+                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#4c1d95">' + transfers + '</div><div class="mini-stat-label">' + PharmaLang.t('audit_transfers') + '</div></div>';
 
             renderLogs(allLogs);
         };
@@ -151,11 +151,14 @@
         'TransferDrug':   'badge-purple',
         'TamperDetected': 'badge-red'
     };
-    var labelMap = {
-        'Login':'دخول ناجح', 'FailedLogin':'دخول فاشل', 'Register':'تسجيل',
-        'AddDrug':'إضافة دواء', 'DeleteDrug':'حذف دواء', 'TransferDrug':'نقل دواء',
-        'TamperDetected':'🚨 تلاعب'
-    };
+    function getLabelMap() {
+        return {
+            'Login': PharmaLang.t('audit_login'), 'FailedLogin': PharmaLang.t('audit_fail_login'),
+            'Register': PharmaLang.t('audit_register'), 'AddDrug': PharmaLang.t('audit_add_drug'),
+            'DeleteDrug': PharmaLang.t('audit_del_drug'), 'TransferDrug': PharmaLang.t('audit_transfer'),
+            'TamperDetected': PharmaLang.t('audit_tamper_f')
+        };
+    }
 
     function renderLogs(logs) {
         document.getElementById('logCount').textContent = logs.length;
@@ -163,9 +166,17 @@
             document.getElementById('logsTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">لا توجد عمليات مسجلة</div></div>';
             return;
         }
-        var html = '<table><thead><tr><th>#</th><th>المستخدم</th><th>العملية</th><th>التفاصيل</th><th>التاريخ والوقت</th><th>IP</th></tr></thead><tbody>';
+        var labelMap = getLabelMap();
+        var html = '<table><thead><tr>'
+            + '<th>' + PharmaLang.t('th_id') + '</th>'
+            + '<th>' + PharmaLang.t('th_username') + '</th>'
+            + '<th>' + PharmaLang.t('th_action') + '</th>'
+            + '<th>' + PharmaLang.t('th_details') + '</th>'
+            + '<th>' + PharmaLang.t('th_datetime') + '</th>'
+            + '<th>' + PharmaLang.t('th_ip') + '</th>'
+            + '</tr></thead><tbody>';
         logs.forEach(function (log, i) {
-            var date = new Date(log.timestamp).toLocaleString('ar-JO');
+            var date = new Date(log.timestamp).toLocaleString(PharmaLang.get() === 'ar' ? 'ar-JO' : 'en-US');
             var cls  = pillMap[log.action]  || 'badge-gray';
             var lbl  = labelMap[log.action] || log.action;
             var rowCls = log.action === 'TamperDetected' ? 'log-tamper' : '';

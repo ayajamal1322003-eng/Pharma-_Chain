@@ -1,6 +1,7 @@
 /* =========================================================
    PharmaChain Design System — pharma-styles.css
    ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -66,7 +67,7 @@
 
 /* ── Body ── */
 body {
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Cairo', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
   background: #f1f5f9;
   color: var(--gray-800);
   line-height: 1.5;
@@ -84,9 +85,16 @@ body {
   display: flex;
   flex-direction: column;
   position: fixed;
+  top: 0; bottom: 0;
+  right: 0;       /* RTL default */
   height: 100vh;
   overflow-y: auto;
   z-index: 100;
+  box-shadow: -2px 0 20px rgba(0,0,0,0.25);
+}
+[dir="ltr"] .sidebar {
+  right: auto;
+  left: 0;
   box-shadow: 2px 0 20px rgba(0,0,0,0.25);
 }
 
@@ -185,6 +193,11 @@ body {
   background: linear-gradient(180deg, var(--blue-400), var(--cyan-500));
   border-radius: 3px 0 0 3px;
 }
+[dir="ltr"] .nav-item.active::before {
+  right: auto;
+  left: 0;
+  border-radius: 0 3px 3px 0;
+}
 
 .nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
 
@@ -233,9 +246,14 @@ body {
    MAIN CONTENT
    ============================================================ */
 .main {
-  margin-right: var(--sidebar-width);
+  margin-right: var(--sidebar-width);   /* RTL */
+  margin-left: 0;
   flex: 1;
   padding: 28px 30px;
+}
+[dir="ltr"] .main {
+  margin-right: 0;
+  margin-left: var(--sidebar-width);    /* LTR */
 }
 
 /* ── Page Header ── */
@@ -773,6 +791,83 @@ textarea { resize: vertical; min-height: 82px; }
 [dir="rtl"] .lang-toggle-float {
   left: auto;
   right: 18px;
+}
+
+/* ============================================================
+   SMOOTH LANGUAGE TRANSITIONS
+   ============================================================ */
+html { transition: none; }
+.sidebar, .main, .card, .stat-card { transition: var(--t); }
+
+/* ============================================================
+   LTR TABLE ALIGNMENT
+   ============================================================ */
+[dir="ltr"] th { text-align: left; }
+[dir="ltr"] th .sort-icon { margin-right: 0; margin-left: 4px; }
+
+/* ============================================================
+   SECTION BODY LIST
+   ============================================================ */
+.section-body ul { padding-inline-start: 18px; }
+
+/* ============================================================
+   FILTER CHIP FIX
+   ============================================================ */
+.filter-chip { display: none; align-items: center; gap: 6px; }
+.filter-chip.show { display: inline-flex; }
+
+/* ============================================================
+   HASH MONO
+   ============================================================ */
+.hash-mono {
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 11px;
+  background: var(--gray-100);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--gray-600);
+  word-break: break-all;
+  max-width: 120px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   ACTION LINKS FLEX FIX
+   ============================================================ */
+.action-links { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+
+/* ============================================================
+   LOADING & EMPTY STATES (enhanced)
+   ============================================================ */
+.loading-state {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; padding: 48px 20px;
+  color: var(--gray-500); font-size: 14px;
+}
+.loading-state .spinner {
+  width: 22px; height: 22px;
+  border: 2.5px solid var(--gray-200);
+  border-top-color: var(--blue-500);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+.empty-state {
+  padding: 56px 20px; text-align: center;
+}
+.empty-state-icon { font-size: 36px; margin-bottom: 12px; }
+.empty-state-title { font-size: 15px; font-weight: 600; color: var(--gray-700); margin-bottom: 4px; }
+.empty-state-sub { font-size: 13px; color: var(--gray-400); }
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  .sidebar, .lang-toggle-btn, .lang-toggle-float, .btn, .pagination-wrap { display: none !important; }
+  .main { margin: 0 !important; padding: 20px !important; }
 }
 
 /* ============================================================

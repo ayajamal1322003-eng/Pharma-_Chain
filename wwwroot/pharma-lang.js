@@ -29,6 +29,9 @@
       btn_refresh:        '🔄 تحديث',
       btn_save:           'حفظ',
       btn_cancel:         'إلغاء',
+      btn_verify:         'تحقق',
+      btn_inspect:        'فحص',
+      btn_delete:         'حذف',
       btn_export_csv:     '⬇ تصدير CSV',
       btn_add_drug_hdr:   '+ إضافة دواء',
 
@@ -203,6 +206,11 @@
       pc_bot_status:      '● متصل الآن',
       pc_back:            '← العودة للخلف',
       pc_welcome:         'أهلاً! أنا مساعدك لمعلومات الدواء. يمكنك البحث عن رقم دوائك أعلاه للحصول على إجابات مخصصة، أو اكتب سؤالك مباشرة.',
+
+      /* ── Dashboard extras ── */
+      ledger_banner_title: 'وضع Ledger Admin — محايد تقنياً',
+      ledger_banner_body:  'صلاحياتك مقتصرة على مراقبة سلسلة Blockchain والتحقق من سلامتها. لا تملك صلاحية إضافة أدوية أو نقلها أو حذفها.',
+      tamper_alert:        'تحذير أمني: ',
     },
 
     /* ────────────────────── ENGLISH ────────────────────── */
@@ -225,6 +233,9 @@
       btn_refresh:        '🔄 Refresh',
       btn_save:           'Save',
       btn_cancel:         'Cancel',
+      btn_verify:         'Verify',
+      btn_inspect:        'Inspect',
+      btn_delete:         'Delete',
       btn_export_csv:     '⬇ Export CSV',
       btn_add_drug_hdr:   '+ Add Drug',
 
@@ -399,6 +410,11 @@
       pc_bot_status:      '● Online Now',
       pc_back:            '← Go Back',
       pc_welcome:         'Hello! I\'m your medication assistant. Search for your drug ID above for personalized answers, or type your question directly.',
+
+      /* ── Dashboard extras ── */
+      ledger_banner_title: 'Ledger Admin Mode — Technically Neutral',
+      ledger_banner_body:  'Your permissions are limited to monitoring the Blockchain and verifying its integrity. You cannot add, transfer, or delete drugs.',
+      tamper_alert:        'Security Alert: ',
     }
   };
 
@@ -429,9 +445,9 @@
       if (map[key] !== undefined) el.placeholder = map[key];
     });
 
-    /* Update all toggle buttons */
-    document.querySelectorAll('.lang-toggle-btn').forEach(function (btn) {
-      btn.textContent = lang === 'ar' ? '🇬🇧 EN' : '🇸🇦 عربي';
+    /* Update toggle button text (both sidebar and floating) */
+    document.querySelectorAll('.lang-toggle-btn, .lang-toggle-float').forEach(function(btn) {
+      btn.textContent = lang === 'ar' ? '🇬🇧 EN' : '🇸🇦 AR';
     });
 
     /* Fire event so pages can re-render dynamic content */
