@@ -2,842 +2,2734 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>PharmaChain — كشف التلاعب</title>
-    <link rel="stylesheet" href="/pharma-styles.css">
-    <script src="/pharma-lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaChain — مختبر كشف التلاعب</title>
     <style>
-        /* ── Tabs ── */
-        .page-tabs { display:flex; gap:4px; background:var(--gray-100); border-radius:12px; padding:4px; width:fit-content; margin-bottom:24px; }
-        .page-tab  { padding:9px 22px; border-radius:9px; border:none; background:transparent; font-size:13px; font-weight:500; color:var(--gray-500); cursor:pointer; font-family:'Segoe UI',sans-serif; transition:all 0.2s; }
-        .page-tab.active { background:white; color:var(--blue-700); font-weight:700; box-shadow:var(--shadow-sm); }
-        .tab-panel { display:none; }
-        .tab-panel.active { display:block; }
-
-        /* ── Attack Cards ── */
-        .attack-cards { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:24px; }
-        .attack-card {
-            background:white; border:2px solid var(--gray-100);
-            border-radius:14px; padding:18px; cursor:pointer;
-            transition:all 0.2s; box-shadow:var(--shadow-sm);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .attack-card:hover { border-color:var(--blue-400); box-shadow:var(--shadow-md); transform:translateY(-1px); }
-        .attack-card.selected { border-color:#ef4444; background:#fff5f5; }
-        .attack-card-icon { font-size:30px; margin-bottom:10px; }
-        .attack-card-title { font-size:14px; font-weight:700; color:var(--gray-800); margin-bottom:4px; }
-        .attack-card-code  { font-family:monospace; font-size:11px; background:var(--gray-100); color:var(--gray-700); padding:2px 7px; border-radius:4px; display:inline-block; margin-bottom:7px; }
-        .attack-card-desc  { font-size:12px; color:var(--gray-500); line-height:1.5; }
 
-        /* ── Sim Panel ── */
-        .sim-panel { background:white; border-radius:14px; border:1px solid var(--gray-100); box-shadow:var(--shadow-md); overflow:hidden; }
-        .sim-panel-header { padding:15px 20px; background:linear-gradient(135deg,#0f1f3d,#1e3a8a); color:white; font-size:14px; font-weight:700; }
-        .sim-panel-body   { padding:20px; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+        }
 
-        .sim-step { display:flex; gap:14px; margin-bottom:18px; padding-bottom:18px; border-bottom:1px solid var(--gray-50); }
-        .sim-step:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
-        .sim-step-num  { width:30px; height:30px; border-radius:50%; background:var(--blue-600); color:white; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        .sim-step-num.red   { background:#dc2626; }
-        .sim-step-num.green { background:#059669; }
-        .sim-step-content  { flex:1; }
-        .sim-step-title    { font-size:13px; font-weight:700; color:var(--gray-800); margin-bottom:5px; }
-        .sim-step-body     { font-size:12px; color:var(--gray-500); line-height:1.6; }
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
 
-        .code-block { background:#0f172a; border-radius:10px; padding:14px 16px; margin:10px 0; font-family:monospace; font-size:12px; line-height:1.8; overflow-x:auto; }
-        .code-ok   { color:#34d399; }
-        .code-err  { color:#f87171; }
-        .code-warn { color:#fbbf24; }
-        .code-gray { color:#64748b; }
-        .code-white{ color:#e2e8f0; }
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 220px;
+            background: linear-gradient(180deg, #0f4c45 0%, #0d3d38 60%, #071e1b 100%);
+            color: white;
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
 
-        .result-box { border-radius:8px; padding:12px 16px; margin-top:12px; font-size:13px; font-weight:500; border:1px solid; }
-        .result-box.ok   { background:#d1fae5; border-color:#6ee7b7; color:#064e3b; }
-        .result-box.err  { background:#fee2e2; border-color:#fca5a5; color:#7f1d1d; }
-        .result-box.warn { background:#fef3c7; border-color:#fcd34d; color:#78350f; }
+        .sidebar-logo {
+            padding: 0 20px 24px;
+            border-bottom: 1px solid rgba(45,212,191,0.2);
+            margin-bottom: 16px;
+        }
 
-        .live-demo-row { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+            .sidebar-logo h2 {
+                font-size: 18px;
+                color: white;
+            }
 
-        /* ── QR Compare ── */
-        .qr-compare { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
-        .qr-box { background:var(--gray-50); border:1px solid var(--gray-100); border-radius:8px; padding:12px 14px; }
-        .qr-box-title { font-size:10px; font-weight:700; color:var(--gray-500); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px; }
-        .qr-field { display:flex; gap:8px; margin-bottom:4px; font-size:12px; }
-        .qr-key   { color:var(--blue-500); min-width:40px; font-family:monospace; }
-        .qr-val   { color:var(--gray-700); font-family:monospace; }
-        .qr-val.changed { color:#dc2626; font-weight:700; background:#fee2e2; padding:1px 4px; border-radius:3px; }
-        .qr-val.ok      { color:#059669; }
+            .sidebar-logo p {
+                font-size: 11px;
+                color: #5eead4;
+                margin-top: 2px;
+            }
 
-        /* ── Blockchain Visual ── */
-        .chain-visual { display:flex; gap:0; overflow-x:auto; padding-bottom:8px; margin-bottom:16px; }
-        .block-box { min-width:160px; background:white; border:2px solid var(--gray-200); border-radius:8px; padding:10px 12px; position:relative; font-size:11px; }
-        .block-box.tampered { border-color:#dc2626; background:#fff5f5; }
-        .block-box.ok       { border-color:#059669; background:#d1fae5; }
-        .block-box + .block-box::before { content:'→'; position:absolute; right:100%; top:50%; transform:translateY(-50%); padding:0 6px; color:var(--gray-400); font-size:18px; font-weight:700; }
-        .block-box + .block-box.tampered::before { color:#dc2626; }
-        .block-num   { font-size:10px; color:var(--gray-400); margin-bottom:4px; font-weight:600; }
-        .block-field { display:flex; justify-content:space-between; gap:8px; padding:2px 0; border-bottom:1px solid var(--gray-50); }
-        .block-field:last-child { border-bottom:none; }
-        .block-key   { color:var(--gray-500); }
-        .block-v     { font-family:monospace; font-size:10px; color:var(--gray-700); }
-        .block-v.red { color:#dc2626; font-weight:700; }
-        .block-v.green { color:#059669; }
+        .nav-item {
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #99f6e4;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
-        /* ── Chain Analysis ── */
-        .main-grid { display:grid; grid-template-columns:1fr 280px; gap:20px; align-items:start; }
-        .right-panel { position:sticky; top:28px; display:flex; flex-direction:column; gap:14px; }
-        .panel-card { background:white; border-radius:12px; border:1px solid var(--gray-100); overflow:hidden; box-shadow:var(--shadow-sm); }
-        .panel-card-header { padding:12px 16px; border-bottom:1px solid var(--gray-50); font-size:13px; font-weight:700; color:var(--gray-700); background:var(--gray-50); }
-        .panel-card-body   { padding:12px 16px; }
-        .check-row { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--gray-50); font-size:12px; }
-        .check-row:last-child { border-bottom:none; }
-        .check-label { flex:1; color:var(--gray-600); }
-        .check-st { font-size:11px; font-weight:700; padding:2px 8px; border-radius:8px; }
-        .cs-ok   { background:#d1fae5; color:#064e3b; }
-        .cs-warn { background:#fef3c7; color:#78350f; }
-        .cs-err  { background:#fee2e2; color:#7f1d1d; }
-        .mini-stat { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--gray-50); font-size:13px; }
-        .mini-stat:last-child { border-bottom:none; }
-        .mini-stat-lbl { color:var(--gray-500); }
-        .mini-stat-val { font-weight:700; }
-        .green  { color:#059669; }
-        .orange { color:#d97706; }
-        .red    { color:#dc2626; }
+            .nav-item:hover, .nav-item.active {
+                background: linear-gradient(135deg, rgba(20,184,166,0.28), rgba(6,182,212,0.18));
+                color: white;
+            }
 
-        .hash-box { background:var(--gray-50); border:1px solid var(--gray-100); border-radius:8px; padding:12px; font-size:12px; line-height:2; }
-        .hash-row { display:flex; gap:10px; }
-        .hash-label { color:var(--gray-400); min-width:130px; font-weight:600; }
-        .hash-val   { font-family:monospace; color:var(--gray-700); word-break:break-all; }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #2dd4bf;
+            flex-shrink: 0;
+        }
 
-        /* ── Log Stats ── */
-        .log-stats-bar { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:20px; }
-        .log-stat-card { background:white; border:1px solid var(--gray-100); border-radius:12px; padding:14px 10px; text-align:center; box-shadow:var(--shadow-sm); }
-        .log-stat-val { font-size:22px; font-weight:800; margin-bottom:4px; }
-        .log-stat-lbl { font-size:11px; color:var(--gray-500); }
-        .attack-tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; font-family:monospace; }
-        .tag-none  { background:#d1fae5; color:#064e3b; }
-        .tag-sig   { background:#ede9fe; color:#4c1d95; }
-        .tag-date  { background:#fef3c7; color:#78350f; }
-        .tag-fake  { background:#fee2e2; color:#7f1d1d; }
-        .tag-exp   { background:#dbeafe; color:#1e3a8a; }
-        .tag-other { background:var(--gray-100); color:var(--gray-600); }
-        .ip-chip   { font-family:monospace; font-size:11px; color:var(--gray-500); background:var(--gray-50); padding:2px 6px; border-radius:4px; }
+        .nav-section {
+            padding: 8px 20px 4px;
+            font-size: 10px;
+            color: #5eead4;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 6px;
+            opacity: 0.7;
+        }
 
-        .stats-bar { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
-        .stat-chip { background:white; border:1px solid var(--gray-100); border-radius:10px; padding:10px 16px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow-sm); }
-        .stat-chip-val { font-size:20px; font-weight:800; color:var(--gray-800); }
-        .stat-chip-lbl { font-size:11px; color:var(--gray-500); }
+        .user-info {
+            margin-top: auto;
+            padding: 16px 20px;
+            border-top: 1px solid rgba(45,212,191,0.2);
+            font-size: 13px;
+        }
 
-        .alert-bar { border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:13px; font-weight:500; display:none; border:1px solid; line-height:1.6; }
-        .alert-bar.show { display:block; }
-        .alert-bar.ok   { background:#d1fae5; border-color:#6ee7b7; color:#064e3b; }
-        .alert-bar.err  { background:#fee2e2; border-color:#fca5a5; color:#7f1d1d; }
-        .alert-bar.warn { background:#fef3c7; border-color:#fcd34d; color:#78350f; }
+            .user-info .name {
+                color: white;
+                font-weight: 500;
+            }
 
-        .issue-line { font-size:11px; color:#dc2626; margin-top:4px; padding-right:10px; border-right:2px solid #fca5a5; }
-        .badge-ok   { background:#d1fae5; color:#064e3b; }
-        .badge-warn { background:#fef3c7; color:#78350f; }
-        .badge-err  { background:#fee2e2; color:#7f1d1d; }
+            .user-info .role {
+                color: #5eead4;
+                font-size: 11px;
+            }
 
-        .empty      { text-align:center; padding:60px 20px; color:var(--gray-400); font-size:14px; }
-        .empty-icon { font-size:40px; margin-bottom:12px; }
+        .logout-btn {
+            margin-top: 8px;
+            background: none;
+            border: 1px solid rgba(94,234,212,0.4);
+            color: #99f6e4;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            width: 100%;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-        .log-filter-row { display:flex; gap:10px; margin-bottom:16px; align-items:center; flex-wrap:wrap; }
+        /* ── Main ── */
+        .main {
+            margin-right: 220px;
+            flex: 1;
+            padding: 28px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0d9488;
+            margin-bottom: 4px;
+        }
+
+        .page-sub {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        /* ── Threat Stats Bar ── */
+        .threat-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .threat-stat {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .threat-stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .ts-blue {
+            background: #ebf4ff;
+        }
+
+        .ts-green {
+            background: #f0fff4;
+        }
+
+        .ts-red {
+            background: #fff5f5;
+        }
+
+        .ts-orange {
+            background: #fffbeb;
+        }
+
+        .threat-stat-val {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0d9488;
+        }
+
+        .threat-stat-lbl {
+            font-size: 11px;
+            color: #718096;
+            margin-top: 2px;
+        }
+
+        /* ── Tabs ── */
+        .page-tabs {
+            display: flex;
+            gap: 4px;
+            background: #edf2f7;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 24px;
+            width: fit-content;
+        }
+
+        .page-tab {
+            padding: 9px 20px;
+            border-radius: 7px;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 500;
+            color: #718096;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.2s;
+        }
+
+            .page-tab.active {
+                background: white;
+                color: #1a365d;
+                font-weight: 600;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            }
+
+        .tab-panel {
+            display: none;
+        }
+
+            .tab-panel.active {
+                display: block;
+            }
+
+        /* ── Buttons ── */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: #2b6cb0;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background: #2c5282;
+            }
+
+        .btn-danger {
+            background: #c53030;
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background: #9b2c2c;
+            }
+
+        .btn-success {
+            background: #276749;
+            color: white;
+        }
+
+            .btn-success:hover {
+                background: #1c4532;
+            }
+
+        .btn-outline {
+            background: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+            .btn-outline:hover {
+                background: #f7fafc;
+            }
+
+        .btn-attack {
+            background: linear-gradient(135deg, #c53030, #9b2c2c);
+            color: white;
+            padding: 14px 32px;
+            font-size: 15px;
+            border-radius: 10px;
+            width: 100%;
+            justify-content: center;
+            margin-top: 20px;
+            box-shadow: 0 4px 14px rgba(197,48,48,0.35);
+        }
+
+            .btn-attack:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 18px rgba(197,48,48,0.4);
+            }
+
+            .btn-attack:active {
+                transform: translateY(0);
+            }
+
+        /* ════════════════════════════════════════════
+           QR LAB STYLES
+        ════════════════════════════════════════════ */
+        .lab-wrapper {
+            max-width: 900px;
+        }
+
+        /* Steps */
+        .lab-step {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .lab-step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2b6cb0, #1a365d);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a365d;
+        }
+
+        .step-sub {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 2px;
+        }
+
+        /* Drug selector */
+        .drug-select-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+            .drug-select-row select {
+                flex: 1;
+                padding: 10px 14px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                font-size: 14px;
+                color: #2d3748;
+                outline: none;
+                background: white;
+                font-family: 'Segoe UI', sans-serif;
+            }
+
+                .drug-select-row select:focus {
+                    border-color: #3182ce;
+                }
+
+        .drug-info-chip {
+            background: #ebf4ff;
+            border: 1px solid #bee3f8;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 12px;
+            color: #2b6cb0;
+            display: none;
+        }
+
+        /* Attack type pills */
+        .attack-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .attack-pill {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            font-size: 13px;
+            color: #4a5568;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+            .attack-pill:hover {
+                border-color: #90cdf4;
+                background: #ebf4ff;
+                color: #1a365d;
+            }
+
+            .attack-pill.selected {
+                border-color: #c53030;
+                background: #fff5f5;
+                color: #c53030;
+                font-weight: 600;
+            }
+
+            .attack-pill.selected-ok {
+                border-color: #276749;
+                background: #f0fff4;
+                color: #276749;
+                font-weight: 600;
+            }
+
+        /* QR Comparison */
+        .qr-compare-section {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .qr-compare-header {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #1a365d, #2b4c7e);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qr-compare-body {
+            padding: 20px;
+        }
+
+        .qr-compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 60px 1fr;
+            gap: 0;
+            align-items: center;
+        }
+
+        .qr-box {
+            border-radius: 10px;
+            padding: 16px;
+            border: 2px solid;
+        }
+
+        .qr-box-original {
+            border-color: #9ae6b4;
+            background: #f0fff4;
+        }
+
+        .qr-box-tampered {
+            border-color: #fc8181;
+            background: #fff5f5;
+        }
+
+        .qr-box-title {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .qr-box-original .qr-box-title {
+            color: #276749;
+        }
+
+        .qr-box-tampered .qr-box-title {
+            color: #c53030;
+        }
+
+        /* QR Code visual */
+        .qr-visual {
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .qr-grid {
+            display: inline-grid;
+            grid-template-columns: repeat(7, 8px);
+            gap: 2px;
+            flex-shrink: 0;
+        }
+
+        .qr-cell {
+            width: 8px;
+            height: 8px;
+            border-radius: 1px;
+        }
+
+            .qr-cell.b {
+                background: #1a202c;
+            }
+
+            .qr-cell.w {
+                background: #fff;
+                border: 1px solid #e2e8f0;
+            }
+
+        /* QR Params */
+        .qr-params {
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 2;
+        }
+
+        .qr-param-row {
+            display: flex;
+            gap: 6px;
+            align-items: baseline;
+        }
+
+        .qr-param-key {
+            color: #3182ce;
+            min-width: 44px;
+            font-weight: 600;
+        }
+
+        .qr-param-val {
+            color: #2d3748;
+        }
+
+            .qr-param-val.changed {
+                color: #c53030;
+                font-weight: 700;
+                background: #fff5f5;
+                padding: 1px 5px;
+                border-radius: 3px;
+                text-decoration: underline;
+                text-underline-offset: 2px;
+            }
+
+            .qr-param-val.ok {
+                color: #276749;
+            }
+
+        .qr-param-tag {
+            font-size: 10px;
+            background: #fed7d7;
+            color: #c53030;
+            padding: 1px 5px;
+            border-radius: 3px;
+            margin-right: 4px;
+        }
+
+        /* Arrow between QR boxes */
+        .qr-arrow-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .qr-arrow-icon {
+            font-size: 24px;
+            color: #c53030;
+        }
+
+        .qr-arrow-label {
+            font-size: 10px;
+            color: #718096;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Result Panel */
+        .scan-result {
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid;
+            display: none;
+            animation: fadeInUp 0.3s ease;
+        }
+
+            .scan-result.show {
+                display: block;
+            }
+
+            .scan-result.detected {
+                background: #fff5f5;
+                border-color: #fc8181;
+            }
+
+            .scan-result.safe {
+                background: #f0fff4;
+                border-color: #9ae6b4;
+            }
+
+            .scan-result.loading {
+                background: #ebf4ff;
+                border-color: #90cdf4;
+            }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .result-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .badge-detected {
+            background: #fed7d7;
+        }
+
+        .badge-safe {
+            background: #c6f6d5;
+        }
+
+        .badge-loading {
+            background: #bee3f8;
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .detected .result-title {
+            color: #822727;
+        }
+
+        .safe .result-title {
+            color: #276749;
+        }
+
+        .loading .result-title {
+            color: #1a365d;
+        }
+
+        .result-attack-type {
+            font-family: monospace;
+            font-size: 12px;
+            background: rgba(0,0,0,0.06);
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .result-detail {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #4a5568;
+            margin-top: 10px;
+        }
+
+        .result-explain {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid #bee3f8;
+            border-top-color: #2b6cb0;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ════════════════════════════════════════════
+           ATTACK SIMULATOR TAB (existing, improved)
+        ════════════════════════════════════════════ */
+        .attack-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .attack-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .attack-card:hover {
+                border-color: #3182ce;
+                box-shadow: 0 4px 12px rgba(49,130,206,0.12);
+                transform: translateY(-2px);
+            }
+
+            .attack-card.selected {
+                border-color: #c53030;
+                background: #fff5f5;
+            }
+
+        .attack-card-icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .attack-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 4px;
+        }
+
+        .attack-card-code {
+            font-family: monospace;
+            font-size: 11px;
+            background: #edf2f7;
+            color: #2d3748;
+            padding: 2px 7px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        .attack-card-desc {
+            font-size: 12px;
+            color: #718096;
+            line-height: 1.5;
+        }
+
+        .sim-panel {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .sim-panel-header {
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #1a365d, #2b4c7e);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .sim-panel-body {
+            padding: 20px;
+        }
+
+        .sim-step {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f4f8;
+        }
+
+            .sim-step:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+        .sim-step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #2b6cb0;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+            .sim-step-num.red {
+                background: #c53030;
+            }
+
+            .sim-step-num.green {
+                background: #276749;
+            }
+
+            .sim-step-num.orange {
+                background: #c05621;
+            }
+
+        .sim-step-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .sim-step-body {
+            font-size: 12px;
+            color: #718096;
+            line-height: 1.7;
+        }
+
+        .code-block {
+            background: #1a202c;
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.9;
+            overflow-x: auto;
+        }
+
+        .code-ok {
+            color: #68d391;
+        }
+
+        .code-err {
+            color: #fc8181;
+        }
+
+        .code-warn {
+            color: #f6e05e;
+        }
+
+        .code-gray {
+            color: #718096;
+        }
+
+        .code-white {
+            color: #e2e8f0;
+        }
+
+        .code-blue {
+            color: #90cdf4;
+        }
+
+        .result-box {
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid;
+        }
+
+            .result-box.ok {
+                background: #f0fff4;
+                border-color: #9ae6b4;
+                color: #276749;
+            }
+
+            .result-box.err {
+                background: #fff5f5;
+                border-color: #fc8181;
+                color: #c53030;
+            }
+
+            .result-box.warn {
+                background: #fffbeb;
+                border-color: #f6ad55;
+                color: #c05621;
+            }
+
+        .live-demo-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .qr-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .qr-box-sim {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .qr-box-sim-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #718096;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .qr-url {
+            font-family: monospace;
+            font-size: 11px;
+            color: #2d3748;
+            word-break: break-all;
+            line-height: 1.8;
+        }
+
+        .qr-field {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .qr-key {
+            color: #3182ce;
+            min-width: 40px;
+        }
+
+        .qr-val {
+            color: #2d3748;
+        }
+
+            .qr-val.changed {
+                color: #c53030;
+                font-weight: 700;
+                background: #fff5f5;
+                padding: 1px 4px;
+                border-radius: 3px;
+            }
+
+            .qr-val.ok {
+                color: #276749;
+            }
+
+        /* Chain visual */
+        .chain-visual {
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+
+        .block-box {
+            min-width: 160px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            position: relative;
+            font-size: 11px;
+        }
+
+            .block-box.tampered {
+                border-color: #c53030;
+                background: #fff5f5;
+            }
+
+            .block-box.ok {
+                border-color: #276749;
+                background: #f0fff4;
+            }
+
+            .block-box + .block-box::before {
+                content: '→';
+                position: absolute;
+                right: 100%;
+                top: 50%;
+                transform: translateY(-50%);
+                padding: 0 6px;
+                color: #a0aec0;
+                font-size: 18px;
+                font-weight: 700;
+            }
+
+            .block-box + .block-box.tampered::before {
+                color: #c53030;
+            }
+
+        .block-num {
+            font-size: 10px;
+            color: #a0aec0;
+            margin-bottom: 4px;
+        }
+
+        .block-field {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 2px 0;
+            border-bottom: 1px solid #f0f4f8;
+        }
+
+            .block-field:last-child {
+                border-bottom: none;
+            }
+
+        .block-key {
+            color: #718096;
+        }
+
+        .block-v {
+            font-family: monospace;
+            font-size: 10px;
+            color: #2d3748;
+        }
+
+            .block-v.red {
+                color: #c53030;
+                font-weight: 700;
+            }
+
+            .block-v.green {
+                color: #276749;
+            }
+
+        /* ── Chain Tab ── */
+        .controls-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        select {
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #2d3748;
+            outline: none;
+            background: white;
+            font-family: 'Segoe UI', sans-serif;
+            min-width: 240px;
+        }
+
+            select:focus {
+                border-color: #3182ce;
+            }
+
+        .stats-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-chip {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-chip-val {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a365d;
+        }
+
+        .stat-chip-lbl {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .alert-bar {
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: none;
+            border: 1px solid;
+            line-height: 1.6;
+        }
+
+            .alert-bar.show {
+                display: block;
+            }
+
+            .alert-bar.ok {
+                background: #f0fff4;
+                border-color: #9ae6b4;
+                color: #276749;
+            }
+
+            .alert-bar.err {
+                background: #fff5f5;
+                border-color: #fc8181;
+                color: #c53030;
+            }
+
+            .alert-bar.warn {
+                background: #fffbeb;
+                border-color: #f6ad55;
+                color: #c05621;
+            }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .card-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a365d;
+            background: #fafbfc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: right;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #a0aec0;
+            background: #fafbfc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f4f8;
+            color: #2d3748;
+            vertical-align: top;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #fafbfc;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-ok {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .badge-warn {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .badge-err {
+            background: #fed7d7;
+            color: #822727;
+        }
+
+        .issue-line {
+            font-size: 11px;
+            color: #c53030;
+            margin-top: 4px;
+            padding-right: 10px;
+            border-right: 2px solid #fc8181;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .right-panel {
+            position: sticky;
+            top: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .panel-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .panel-card-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .panel-card-body {
+            padding: 12px 16px;
+        }
+
+        .check-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f4f8;
+            font-size: 12px;
+        }
+
+            .check-row:last-child {
+                border-bottom: none;
+            }
+
+        .check-label {
+            flex: 1;
+            color: #4a5568;
+        }
+
+        .check-st {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .cs-ok {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .cs-warn {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .cs-err {
+            background: #fed7d7;
+            color: #822727;
+        }
+
+        .mini-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f4f8;
+            font-size: 13px;
+        }
+
+            .mini-stat:last-child {
+                border-bottom: none;
+            }
+
+        .mini-stat-lbl {
+            color: #718096;
+        }
+
+        .mini-stat-val {
+            font-weight: 600;
+        }
+
+        .green {
+            color: #276749;
+        }
+
+        .orange {
+            color: #c05621;
+        }
+
+        .red {
+            color: #c53030;
+        }
+
+        .hash-box {
+            background: #fafbfc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            line-height: 2;
+        }
+
+        .hash-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .hash-label {
+            color: #a0aec0;
+            min-width: 130px;
+            font-weight: 600;
+        }
+
+        .hash-val {
+            font-family: monospace;
+            color: #2d3748;
+            word-break: break-all;
+        }
+
+        /* ── Logs Tab ── */
+        .log-stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .log-stat {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+
+        .log-stat-val {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .log-stat-lbl {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .attack-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: monospace;
+        }
+
+        .tag-none {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .tag-sig {
+            background: #e9d8fd;
+            color: #553c9a;
+        }
+
+        .tag-date {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .tag-fake {
+            background: #fed7d7;
+            color: #822727;
+        }
+
+        .tag-exp {
+            background: #bee3f8;
+            color: #1a365d;
+        }
+
+        .tag-other {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .ip-chip {
+            font-family: monospace;
+            font-size: 11px;
+            color: #718096;
+            background: #f7fafc;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .log-filter-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+            .log-filter-row select {
+                min-width: 180px;
+            }
+
+        /* ── Misc ── */
+        .loading {
+            text-align: center;
+            padding: 48px;
+            color: #718096;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1a365d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            transition: transform 0.3s;
+            z-index: 999;
+            white-space: nowrap;
+        }
+
+            .toast.show {
+                transform: translateX(-50%) translateY(0);
+            }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 4px;
+        }
+
+        .section-sub {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 16px;
+        }
     </style>
 </head>
 <body>
-<div class="layout">
+    <div class="layout">
 
-    <!-- ══ SIDEBAR ══ -->
-    <div class="sidebar">
-        <div class="sidebar-logo"><h2>PharmaChain</h2><p data-i18n="sidebar_sub">نظام تتبع الأدوية</p></div>
-        <button class="lang-toggle-btn" onclick="PharmaLang.toggle()">🇬🇧 EN</button>
-        <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> <span data-i18n="nav_dashboard">لوحة التحكم</span></a>
-        <a class="nav-item" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> <span data-i18n="nav_add_drug">إضافة دواء</span></a>
-        <a class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> <span data-i18n="nav_transfer">نقل دواء</span></a>
-        <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> <span data-i18n="nav_blockchain">Blockchain</span></a>
-        <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> <span data-i18n="nav_verify">التحقق من دواء</span></a>
-        <a class="nav-item active"><span class="nav-icon">🛡️</span> <span data-i18n="nav_tamper">كشف التلاعب</span></a>
-        <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> <span data-i18n="nav_audit">سجل العمليات</span></a>
-        <div class="nav-section-hdr" id="navAISection" style="display:none" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
-        <a class="nav-item" id="navRisk"    style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
-        <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
-        <div class="user-info-bar">
-            <div class="user-row">
-                <div class="user-avatar">👤</div>
-                <div>
-                    <div class="user-name" id="sidebarUsername">...</div>
-                    <div class="user-role" id="sidebarRole">...</div>
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-logo"><h2>⛓️ PharmaChain</h2><p>نظام تتبع الأدوية</p></div>
+            <a class="nav-item" onclick="goTo('dashboard.html')"><div class="nav-dot"></div> لوحة التحكم</a>
+            <a class="nav-item" onclick="goTo('add-drug.html')"><div class="nav-dot"></div> إضافة دواء</a>
+            <a class="nav-item" onclick="goTo('transfer.html')"><div class="nav-dot"></div> نقل دواء</a>
+            <a class="nav-item" onclick="goTo('blockchain.html')"><div class="nav-dot"></div> Blockchain</a>
+            <a class="nav-item" onclick="goTo('verify.html')"><div class="nav-dot"></div> التحقق من دواء</a>
+            <a class="nav-item active"><div class="nav-dot"></div> كشف التلاعب</a>
+            <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><div class="nav-dot"></div> سجل العمليات</a>
+            <div class="nav-section" id="navAISection" style="display:none">الذكاء الاصطناعي</div>
+            <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><div class="nav-dot"></div> محلل المخاطر AI</a>
+            <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><div class="nav-dot"></div> تحليلات الأداء AI</a>
+            <div class="user-info">
+                <div class="name" id="sidebarUsername">...</div>
+                <div class="role" id="sidebarRole">...</div>
+                <button class="logout-btn" onclick="logout()">تسجيل خروج</button>
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div class="main">
+            <div class="page-header">
+                <div class="page-title">🛡️ مختبر كشف التلاعب بـ QR Code</div>
+                <div class="page-sub">محاكاة تفاعلية حقيقية — كيف يحاول المهاجم تزوير QR Code وكيف يرصده النظام فوراً</div>
+            </div>
+
+            <!-- Threat Stats -->
+            <div class="threat-bar" id="threatBar">
+                <div class="threat-stat">
+                    <div class="threat-stat-icon ts-blue">📡</div>
+                    <div><div class="threat-stat-val" id="ts-total">—</div><div class="threat-stat-lbl">إجمالي عمليات المسح</div></div>
+                </div>
+                <div class="threat-stat">
+                    <div class="threat-stat-icon ts-green">✅</div>
+                    <div><div class="threat-stat-val green" id="ts-valid">—</div><div class="threat-stat-lbl">مسح سليم</div></div>
+                </div>
+                <div class="threat-stat">
+                    <div class="threat-stat-icon ts-red">🚨</div>
+                    <div><div class="threat-stat-val red" id="ts-attacks">—</div><div class="threat-stat-lbl">هجمات مكتشفة</div></div>
+                </div>
+                <div class="threat-stat">
+                    <div class="threat-stat-icon ts-orange">🔐</div>
+                    <div><div class="threat-stat-val" id="ts-rate" style="color:#c05621">—</div><div class="threat-stat-lbl">معدل الكشف</div></div>
                 </div>
             </div>
-            <button class="logout-btn" onclick="logout()" data-i18n="btn_logout">🚪 تسجيل خروج</button>
-        </div>
-    </div>
 
-    <!-- ══ MAIN ══ -->
-    <div class="main">
-        <div class="page-header">
-            <div>
-                <div class="page-title" data-i18n="attack_title">كشف التلاعب والهجمات الأمنية</div>
-                <div class="page-subtitle" data-i18n="attack_subtitle">محاكاة حقيقية لكيف يحدث الهجوم — وكيف يكتشفه النظام فوراً</div>
+            <!-- Tabs -->
+            <div class="page-tabs">
+                <button class="page-tab active" onclick="switchTab('lab', this)">🔬 مختبر QR</button>
+                <button class="page-tab" onclick="switchTab('simulator', this)">⚡ شرح الهجمات</button>
+                <button class="page-tab" onclick="switchTab('chain', this)">⛓️ فحص السلسلة</button>
+                <button class="page-tab" onclick="switchTab('logs', this)">🚨 سجل المحاولات</button>
             </div>
-        </div>
 
-        <div class="page-tabs">
-            <button class="page-tab active" onclick="switchTab('simulator', this)">⚡ محاكاة الهجمات</button>
-            <button class="page-tab" onclick="switchTab('chain', this)">⛓️ فحص السلسلة</button>
-            <button class="page-tab" onclick="switchTab('logs', this)">🚨 سجل المحاولات</button>
-        </div>
+            <!-- ══════════════════════════════════════════ -->
+            <!-- تبويب 1: مختبر QR التفاعلي (جديد)        -->
+            <!-- ══════════════════════════════════════════ -->
+            <div class="tab-panel active" id="tab-lab">
+                <div class="lab-wrapper">
 
-        <!-- تبويب 1: محاكاة الهجمات -->
-        <div class="tab-panel active" id="tab-simulator">
-            <div class="card" style="margin-bottom:20px;">
-                <div class="card-header">
-                    <div class="card-header-left">
-                        <div class="card-icon ci-red">⚡</div>
+                    <!-- مقدمة المختبر -->
+                    <div style="background:linear-gradient(135deg,#1a365d,#2b6cb0);border-radius:12px;padding:18px 24px;color:white;margin-bottom:20px;display:flex;align-items:center;gap:16px;">
+                        <div style="font-size:36px;flex-shrink:0;">🔬</div>
                         <div>
-                            <div class="card-title">اختر نوع الهجوم</div>
-                            <div class="card-subtitle">كل هجوم يُظهر: ما يفعله المهاجم ← ما يرسله ← كيف يكتشفه النظام</div>
-                        </div>
-                    </div>
-                </div>
-                <div style="padding:20px;">
-                    <div class="attack-cards">
-                        <div class="attack-card" id="card-sig" onclick="showAttack('sig')">
-                            <div class="attack-card-icon">🔄</div>
-                            <div class="attack-card-title">تبديل ملصق QR</div>
-                            <div class="attack-card-code">SIGNATURE_MISMATCH</div>
-                            <div class="attack-card-desc">يأخذ QR دواء أصلي ويضعه على علبة دواء مختلف — أو يعدّل الـ drug_id في الرابط</div>
-                        </div>
-                        <div class="attack-card" id="card-date" onclick="showAttack('date')">
-                            <div class="attack-card-icon">📅</div>
-                            <div class="attack-card-title">تلاعب بتاريخ الإنتاج</div>
-                            <div class="attack-card-code">DATE_MISMATCH</div>
-                            <div class="attack-card-desc">يستخدم QR من دفعة قديمة على علبة جديدة — أو يعدّل تاريخ الإنتاج في الرابط</div>
-                        </div>
-                        <div class="attack-card" id="card-fake" onclick="showAttack('fake')">
-                            <div class="attack-card-icon">🎭</div>
-                            <div class="attack-card-title">QR كود مزيف كلياً</div>
-                            <div class="attack-card-code">DRUG_NOT_FOUND</div>
-                            <div class="attack-card-desc">يصنع QR بأرقام عشوائية أو لدواء غير موجود — أبسط الهجمات وأسهلها كشفاً</div>
-                        </div>
-                        <div class="attack-card" id="card-delay" onclick="showAttack('delay')">
-                            <div class="attack-card-icon">⏱️</div>
-                            <div class="attack-card-title">تأخير متعمد في السلسلة</div>
-                            <div class="attack-card-code">DELIBERATE_DELAY</div>
-                            <div class="attack-card-desc">يؤخر تسجيل نقل الدواء في Blockchain لإخفاء أين كان الدواء لفترة طويلة</div>
+                            <div style="font-size:16px;font-weight:700;margin-bottom:4px;">كيف تعمل المحاكاة؟</div>
+                            <div style="font-size:13px;opacity:0.85;line-height:1.7;">
+                                QR Code = رابط يحتوي على: <code style="background:rgba(255,255,255,0.15);padding:1px 6px;border-radius:3px;">id + prod + ts + sig</code>
+                                <br>اختر دواء حقيقي من النظام ← اختر كيف "تُعدِّل" الـ QR ← شوف ردّ السيرفر الحقيقي
+                            </div>
                         </div>
                     </div>
 
-                    <div class="sim-panel" id="simPanel" style="display:none">
-                        <div class="sim-panel-header" id="simTitle">...</div>
-                        <div class="sim-panel-body" id="simBody">...</div>
+                    <!-- الخطوة 1: اختيار الدواء -->
+                    <div class="lab-step">
+                        <div class="lab-step-header">
+                            <div class="step-num">1</div>
+                            <div>
+                                <div class="step-title">اختر دواء حقيقي من النظام</div>
+                                <div class="step-sub">سيتم توليد بيانات QR واقعية لهذا الدواء من قاعدة البيانات</div>
+                            </div>
+                        </div>
+                        <div class="drug-select-row">
+                            <select id="labDrug" onchange="onDrugSelected()">
+                                <option value="">⏳ جاري تحميل الأدوية...</option>
+                            </select>
+                            <div class="drug-info-chip" id="drugChip">...</div>
+                        </div>
                     </div>
+
+                    <!-- الخطوة 2: اختيار نوع الهجوم -->
+                    <div class="lab-step">
+                        <div class="lab-step-header">
+                            <div class="step-num">2</div>
+                            <div>
+                                <div class="step-title">اختر سيناريو الهجوم</div>
+                                <div class="step-sub">كيف يريد المهاجم تزوير الـ QR؟</div>
+                            </div>
+                        </div>
+                        <div class="attack-pills">
+                            <button class="attack-pill selected-ok" id="pill-none" onclick="selectAttack('none')">✅ مسح طبيعي</button>
+                            <button class="attack-pill" id="pill-sig" onclick="selectAttack('sig')">🔄 تبديل رقم الدواء</button>
+                            <button class="attack-pill" id="pill-date" onclick="selectAttack('date')">📅 تلاعب بالتاريخ</button>
+                            <button class="attack-pill" id="pill-fake" onclick="selectAttack('fake')">🎭 دواء وهمي (ID=99999)</button>
+                            <button class="attack-pill" id="pill-sigmod" onclick="selectAttack('sigmod')">✏️ تعديل التوقيع مباشرة</button>
+                        </div>
+
+                        <!-- وصف الهجوم المختار -->
+                        <div id="attackDesc" style="margin-top:14px;padding:12px 16px;border-radius:8px;background:#f7fafc;border:1px solid #e2e8f0;font-size:13px;color:#4a5568;line-height:1.7;display:none;"></div>
+                    </div>
+
+                    <!-- مقارنة QR -->
+                    <div class="qr-compare-section" id="qrCompareSection" style="display:none;">
+                        <div class="qr-compare-header">
+                            📱 مقارنة محتوى QR Code — الأصلي مقابل المُعدَّل
+                        </div>
+                        <div class="qr-compare-body">
+                            <div class="qr-compare-grid">
+
+                                <!-- QR الأصلي -->
+                                <div class="qr-box qr-box-original">
+                                    <div class="qr-box-title">✅ QR الأصلي (من المصنع)</div>
+                                    <div class="qr-visual">
+                                        <div class="qr-grid" id="qrGridOriginal">
+                                            <!-- filled by JS -->
+                                        </div>
+                                        <div class="qr-params" id="qrParamsOriginal"></div>
+                                    </div>
+                                </div>
+
+                                <!-- السهم -->
+                                <div class="qr-arrow-col">
+                                    <div class="qr-arrow-icon" id="arrowIcon">→</div>
+                                    <div class="qr-arrow-label" id="arrowLabel">مسح</div>
+                                </div>
+
+                                <!-- QR المعدَّل -->
+                                <div class="qr-box qr-box-tampered" id="tamperedBox">
+                                    <div class="qr-box-title" id="tamperedBoxTitle">✅ QR السليم</div>
+                                    <div class="qr-visual">
+                                        <div class="qr-grid" id="qrGridTampered">
+                                            <!-- filled by JS -->
+                                        </div>
+                                        <div class="qr-params" id="qrParamsTampered"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- زر الإطلاق -->
+                            <button class="btn btn-attack" id="launchBtn" onclick="runAttack()">
+                                📡 إرسال للسيرفر وكشف الهجوم
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- نتيجة الفحص -->
+                    <div class="scan-result" id="scanResult">
+                        <div class="result-header">
+                            <div class="result-badge" id="resultBadge"></div>
+                            <div>
+                                <div class="result-title" id="resultTitle"></div>
+                                <div class="result-attack-type" id="resultType"></div>
+                            </div>
+                        </div>
+                        <div class="result-detail" id="resultDetail"></div>
+                        <div class="result-explain" id="resultExplain"></div>
+                        <div class="result-actions" id="resultActions"></div>
+                    </div>
+
                 </div>
             </div>
-        </div>
 
-        <!-- تبويب 2: فحص السلسلة -->
-        <div class="tab-panel" id="tab-chain">
-            <div class="card" style="margin-bottom:20px;">
-                <div class="card-header">
-                    <div class="card-header-left">
-                        <div class="card-icon ci-blue">⛓️</div>
-                        <div><div class="card-title">فحص سلسلة الدواء</div></div>
+            <!-- ══════════════════════════════════════════ -->
+            <!-- تبويب 2: شرح الهجمات (موجود، محسّن)      -->
+            <!-- ══════════════════════════════════════════ -->
+            <div class="tab-panel" id="tab-simulator">
+                <div class="section-title">اختر نوع الهجوم لترى كيف يحدث وكيف يُكشف</div>
+                <div class="section-sub">كل هجوم يُظهر: ما يفعله المهاجم ← ما يرسله ← كيف يكتشفه النظام</div>
+
+                <div class="attack-cards">
+                    <div class="attack-card" id="card-sig" onclick="showAttack('sig')">
+                        <div class="attack-card-icon">🔄</div>
+                        <div class="attack-card-title">تبديل ملصق QR</div>
+                        <div class="attack-card-code">SIGNATURE_MISMATCH</div>
+                        <div class="attack-card-desc">يأخذ QR دواء أصلي ويضعه على علبة دواء مختلف — أو يعدّل الـ drug_id في الرابط</div>
+                    </div>
+                    <div class="attack-card" id="card-date" onclick="showAttack('date')">
+                        <div class="attack-card-icon">📅</div>
+                        <div class="attack-card-title">تلاعب بتاريخ الإنتاج</div>
+                        <div class="attack-card-code">DATE_MISMATCH</div>
+                        <div class="attack-card-desc">يستخدم QR من دفعة قديمة على علبة جديدة — أو يعدّل تاريخ الإنتاج في الرابط</div>
+                    </div>
+                    <div class="attack-card" id="card-fake" onclick="showAttack('fake')">
+                        <div class="attack-card-icon">🎭</div>
+                        <div class="attack-card-title">QR Code مزيف كلياً</div>
+                        <div class="attack-card-code">DRUG_NOT_FOUND</div>
+                        <div class="attack-card-desc">يصنع QR بأرقام عشوائية أو لدواء غير موجود — أبسط الهجمات وأسهلها كشفاً</div>
+                    </div>
+                    <div class="attack-card" id="card-delay" onclick="showAttack('delay')">
+                        <div class="attack-card-icon">⏱️</div>
+                        <div class="attack-card-title">تأخير متعمد في السلسلة</div>
+                        <div class="attack-card-code">DELIBERATE_DELAY</div>
+                        <div class="attack-card-desc">يؤخر تسجيل نقل الدواء في Blockchain لإخفاء أين كان الدواء لفترة طويلة</div>
                     </div>
                 </div>
-                <div style="padding:16px 20px; display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
-                    <div>
-                        <div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:6px;">اختر الدواء لفحص سلسلته</div>
-                        <select id="drugSelect" onchange="analyze()" class="filter-select" style="min-width:240px;">
+
+                <div class="sim-panel" id="simPanel" style="display:none">
+                    <div class="sim-panel-header" id="simTitle">...</div>
+                    <div class="sim-panel-body" id="simBody">...</div>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- تبويب 3: فحص السلسلة                      -->
+            <!-- ══════════════════════════════════════════ -->
+            <div class="tab-panel" id="tab-chain">
+                <div class="controls-row">
+                    <div class="control-group">
+                        <div class="control-label">اختر الدواء لفحص سلسلته</div>
+                        <select id="drugSelectChain" onchange="analyze()">
                             <option value="">-- اختر دواء --</option>
                         </select>
                     </div>
                     <button class="btn btn-primary" onclick="analyze()">🔍 فحص السلسلة</button>
                     <button class="btn btn-outline" onclick="analyze()">🔄 تحديث</button>
                 </div>
-            </div>
 
-            <div class="stats-bar" id="statsBar" style="display:none">
-                <div class="stat-chip"><div><div class="stat-chip-val" id="sTotal">0</div><div class="stat-chip-lbl">إجمالي النقلات</div></div></div>
-                <div class="stat-chip"><div><div class="stat-chip-val green" id="sOk">0</div><div class="stat-chip-lbl">سليمة</div></div></div>
-                <div class="stat-chip"><div><div class="stat-chip-val orange" id="sWarn">0</div><div class="stat-chip-lbl">تحذيرات</div></div></div>
-                <div class="stat-chip"><div><div class="stat-chip-val red" id="sErr">0</div><div class="stat-chip-lbl">مخالفات</div></div></div>
-                <div class="stat-chip"><div><div class="stat-chip-val" id="sDelay" style="font-size:15px">—</div><div class="stat-chip-lbl">أطول تأخير</div></div></div>
-            </div>
+                <div class="stats-bar" id="statsBar" style="display:none">
+                    <div class="stat-chip"><div><div class="stat-chip-val" id="sTotal">0</div><div class="stat-chip-lbl">إجمالي النقلات</div></div></div>
+                    <div class="stat-chip"><div><div class="stat-chip-val green" id="sOk">0</div><div class="stat-chip-lbl">سليمة</div></div></div>
+                    <div class="stat-chip"><div><div class="stat-chip-val orange" id="sWarn">0</div><div class="stat-chip-lbl">تحذيرات</div></div></div>
+                    <div class="stat-chip"><div><div class="stat-chip-val red" id="sErr">0</div><div class="stat-chip-lbl">مخالفات</div></div></div>
+                    <div class="stat-chip"><div><div class="stat-chip-val" id="sDelay" style="font-size:15px">—</div><div class="stat-chip-lbl">أطول تأخير</div></div></div>
+                </div>
 
-            <div class="alert-bar" id="alertBar"></div>
+                <div class="alert-bar" id="alertBar"></div>
+                <div id="mainArea">
+                    <div class="empty"><div class="empty-icon">⛓️</div><div>اختر دواء لبدء الفحص الأمني الحقيقي</div></div>
+                </div>
 
-            <div id="mainArea">
-                <div class="empty"><div class="empty-icon">⛓️</div><div>اختر دواء لبدء الفحص الأمني الحقيقي</div></div>
-            </div>
-
-            <div id="adminDemoRow" style="display:none; margin-top:16px;">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-header-left">
-                            <div class="card-icon ci-amber">⚙️</div>
-                            <div><div class="card-title">أدوات تجربة حية — Admin فقط</div></div>
+                <div id="adminDemoRow" style="display:none; margin-top:16px;">
+                    <div class="card">
+                        <div class="card-header">⚙️ أدوات تجربة حية — Admin فقط</div>
+                        <div class="card-body" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+                            <button class="btn btn-danger" onclick="demoTamper()">💥 كسر السلسلة (محاكاة هجوم)</button>
+                            <button class="btn btn-success" onclick="demoRestore()">🔄 استعادة السلسلة</button>
+                            <span style="font-size:12px; color:#718096;">اكسر السلسلة وشوف كيف يكتشفها النظام فوراً</span>
                         </div>
-                    </div>
-                    <div style="padding:16px 20px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-                        <button class="btn btn-danger" onclick="demoTamper()">💥 كسر السلسلة (محاكاة هجوم)</button>
-                        <button class="btn btn-success" onclick="demoRestore()">🔄 استعادة السلسلة</button>
-                        <span style="font-size:12px; color:var(--gray-400);">محاكاة حية — اكسر السلسلة وشوف كيف يكتشفها النظام فوراً</span>
                     </div>
                 </div>
             </div>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- تبويب 4: سجل المحاولات                    -->
+            <!-- ══════════════════════════════════════════ -->
+            <div class="tab-panel" id="tab-logs">
+                <div class="log-stats" id="logStats" style="display:none">
+                    <div class="log-stat"><div class="log-stat-val" id="ls-total">0</div><div class="log-stat-lbl">إجمالي المسح</div></div>
+                    <div class="log-stat"><div class="log-stat-val green" id="ls-valid">0</div><div class="log-stat-lbl">مسح سليم</div></div>
+                    <div class="log-stat"><div class="log-stat-val" style="color:#553c9a" id="ls-sig">0</div><div class="log-stat-lbl">تبديل ملصق</div></div>
+                    <div class="log-stat"><div class="log-stat-val orange" id="ls-date">0</div><div class="log-stat-lbl">تلاعب تاريخ</div></div>
+                    <div class="log-stat"><div class="log-stat-val red" id="ls-fake">0</div><div class="log-stat-lbl">كود مزيف</div></div>
+                </div>
+                <div class="log-filter-row">
+                    <select id="logFilter" onchange="loadLogs()">
+                        <option value="ALL">كل المحاولات</option>
+                        <option value="SIGNATURE_MISMATCH">تبديل ملصق (SIGNATURE_MISMATCH)</option>
+                        <option value="DATE_MISMATCH">تلاعب بالتاريخ (DATE_MISMATCH)</option>
+                        <option value="DRUG_NOT_FOUND">كود مزيف (DRUG_NOT_FOUND)</option>
+                        <option value="QR_EXPIRED">QR منتهي (QR_EXPIRED)</option>
+                        <option value="NONE">مسح سليم</option>
+                    </select>
+                    <button class="btn btn-outline" onclick="loadLogs()">🔄 تحديث</button>
+                </div>
+                <div id="logsArea">
+                    <div class="loading"><div class="spinner" style="margin:0 auto 12px"></div><div>جاري تحميل السجل...</div></div>
+                </div>
+            </div>
+
+        </div><!-- /main -->
+    </div><!-- /layout -->
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        var API = 'http://localhost:7036';
+        var token = localStorage.getItem('token');
+        var role = localStorage.getItem('role');
+
+        if (!token) { window.location.replace(API + '/login.html'); }
+
+        document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
+        document.getElementById('sidebarRole').textContent = role || '';
+
+        if (role === 'Admin') {
+            document.getElementById('navAudit').style.display = 'flex';
+            document.getElementById('navRisk').style.display = 'flex';
+            document.getElementById('navAdvisor').style.display = 'flex';
+            document.getElementById('navAISection').style.display = 'block';
+            document.getElementById('adminDemoRow').style.display = 'block';
+        }
+
+        function goTo(p) { window.location.replace(API + '/' + p); }
+        function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+        function showToast(msg) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(function () { t.classList.remove('show'); }, 3000);
+        }
+
+        // ══════════════════════════════════════════════
+        // التبويبات
+        // ══════════════════════════════════════════════
+        function switchTab(name, el) {
+            document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+            document.querySelectorAll('.page-tab').forEach(function (t) { t.classList.remove('active'); });
+            document.getElementById('tab-' + name).classList.add('active');
+            el.classList.add('active');
+            if (name === 'logs') loadLogs();
+            if (name === 'chain') loadDrugsChain();
+        }
+
+        // ══════════════════════════════════════════════
+        // THREAT STATS (للـ header)
+        // ══════════════════════════════════════════════
+        function loadThreatStats() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API + '/api/qr/scan-logs?limit=1', true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                if (xhr.status !== 200) return;
+                try {
+                    var d = JSON.parse(xhr.responseText);
+                    var s = d.stats;
+                    if (!s) return;
+                    document.getElementById('ts-total').textContent = s.total || 0;
+                    document.getElementById('ts-valid').textContent = s.valid || 0;
+                    var attacks = (s.total || 0) - (s.valid || 0);
+                    document.getElementById('ts-attacks').textContent = attacks;
+                    var rate = s.total > 0 ? Math.round((attacks / s.total) * 100) : 0;
+                    document.getElementById('ts-rate').textContent = rate + '%';
+                } catch (e) { }
+            };
+            xhr.send();
+        }
+
+        // ══════════════════════════════════════════════
+        // QR LAB — المتغيرات
+        // ══════════════════════════════════════════════
+        var allDrugs = [];
+        var selectedDrug = null;
+        var attackMode = 'none';
+
+        // نمط QR ثابت — ٧×٧ خلية (0=أبيض، 1=أسود)
+        var QR_PATTERN = [
+            [1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 1, 1, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 1, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1]
+        ];
+
+        function renderQrGrid(elId, tampered) {
+            var el = document.getElementById(elId);
+            el.innerHTML = '';
+            QR_PATTERN.forEach(function (row, ri) {
+                row.forEach(function (cell, ci) {
+                    var div = document.createElement('div');
+                    div.className = 'qr-cell ' + (cell ? 'b' : 'w');
+                    if (tampered && ri === 3 && ci === 3) div.style.background = '#c53030';
+                    el.appendChild(div);
+                });
+            });
+        }
+
+        var attackDescriptions = {
+            'none': {
+                icon: '✅', color: '#276749', bg: '#f0fff4', border: '#9ae6b4',
+                text: 'مسح طبيعي — الـ QR يُرسَل كما هو بدون أي تعديل. السيرفر سيتحقق من الـ Signature ويردّ بالنتيجة.'
+            },
+            'sig': {
+                icon: '🔄', color: '#c53030', bg: '#fff5f5', border: '#fc8181',
+                text: 'هجوم تبديل الرقم — المهاجم يأخذ QR Code من علبة دواء أصلي ويضعه على علبة دواء مختلف. يُعدِّل الـ id لكن الـ Signature لا يزال مبني على الـ id القديم.'
+            },
+            'date': {
+                icon: '📅', color: '#c05621', bg: '#fffbeb', border: '#f6ad55',
+                text: 'هجوم التاريخ — المهاجم يستخدم QR من دفعة إنتاج قديمة على علبة جديدة، أو يُعدِّل تاريخ الإنتاج في الرابط لإخفاء أن الدواء قديم.'
+            },
+            'fake': {
+                icon: '🎭', color: '#822727', bg: '#fff5f5', border: '#fc8181',
+                text: 'دواء وهمي — المهاجم يصنع QR Code بـ drug_id عشوائي (99999) غير موجود في النظام. أبسط أنواع التزوير وأسهلها كشفاً.'
+            },
+            'sigmod': {
+                icon: '✏️', color: '#553c9a', bg: '#faf5ff', border: '#d6bcfa',
+                text: 'تعديل التوقيع — المهاجم يحتفظ بكل البيانات الصحيحة (id، prod، ts) لكنه يُعدِّل الـ Signature يدوياً محاولاً تجاوز الفحص.'
+            }
+        };
+
+        function selectAttack(mode) {
+            attackMode = mode;
+            document.querySelectorAll('.attack-pill').forEach(function (p) { p.className = 'attack-pill'; });
+            var pill = document.getElementById('pill-' + mode);
+            if (mode === 'none') { pill.className = 'attack-pill selected-ok'; }
+            else { pill.className = 'attack-pill selected'; }
+
+            var desc = attackDescriptions[mode];
+            var el = document.getElementById('attackDesc');
+            el.style.display = 'block';
+            el.style.background = desc.bg;
+            el.style.border = '1px solid ' + desc.border;
+            el.style.color = desc.color;
+            el.innerHTML = '<strong>' + desc.icon + ' ' + mode.toUpperCase() + ':</strong> ' + desc.text;
+
+            updateQrDisplay();
+            // إخفاء النتيجة السابقة
+            document.getElementById('scanResult').className = 'scan-result';
+        }
+
+        function onDrugSelected() {
+            var id = document.getElementById('labDrug').value;
+            if (!id) { selectedDrug = null; document.getElementById('qrCompareSection').style.display = 'none'; return; }
+            selectedDrug = allDrugs.find(function (d) { return d.id == id; });
+            if (!selectedDrug) return;
+
+            // عرض chip المعلومات
+            var chip = document.getElementById('drugChip');
+            chip.style.display = 'block';
+            chip.textContent = '💊 ' + selectedDrug.name + ' — ' + selectedDrug.manufacturer + ' | ID: ' + selectedDrug.id;
+
+            document.getElementById('qrCompareSection').style.display = 'block';
+            document.getElementById('scanResult').className = 'scan-result';
+            updateQrDisplay();
+        }
+
+        function fakeTs() {
+            return Math.floor(Date.now() / 1000 - 86400).toString(); // أمس
+        }
+        function fakeSig(prefix) {
+            return (prefix || 'a3f9') + '2c1d8e7b4f6a0e5d3c2b1a9f8e7d6c5b';
+        }
+
+        function updateQrDisplay() {
+            if (!selectedDrug) return;
+
+            var d = selectedDrug;
+            var prodDate = d.createdAt ? d.createdAt.substring(0, 10) : '2024-03-01';
+            var ts = fakeTs();
+            var sig = fakeSig('a3f9');
+
+            // رسم QR grids
+            renderQrGrid('qrGridOriginal', false);
+            var isTampered = (attackMode !== 'none');
+            renderQrGrid('qrGridTampered', isTampered);
+
+            // البيانات الأصلية
+            document.getElementById('qrParamsOriginal').innerHTML =
+                paramRow('id', d.id, false, false) +
+                paramRow('prod', prodDate, false, false) +
+                paramRow('ts', ts, false, false) +
+                paramRow('sig', sig.substring(0, 16) + '...', false, false);
+
+            // البيانات حسب نوع الهجوم
+            var tamperedId = d.id;
+            var tamperedProd = prodDate;
+            var tamperedSig = sig.substring(0, 16) + '...';
+            var tamperedTitle = '✅ QR السليم';
+            var tamperedBox = document.getElementById('tamperedBox');
+            var titleEl = document.getElementById('tamperedBoxTitle');
+            var arrowIcon = document.getElementById('arrowIcon');
+            var arrowLabel = document.getElementById('arrowLabel');
+            var launchBtn = document.getElementById('launchBtn');
+
+            tamperedBox.style.borderColor = '#9ae6b4';
+            tamperedBox.style.background = '#f0fff4';
+            titleEl.style.color = '#276749';
+            arrowIcon.style.color = '#a0aec0';
+            arrowLabel.textContent = 'مسح';
+            launchBtn.textContent = '📡 إرسال للسيرفر وكشف الهجوم';
+
+            var idChanged = false, prodChanged = false, sigChanged = false;
+
+            switch (attackMode) {
+                case 'sig':
+                    tamperedId = d.id + 7;
+                    tamperedTitle = '❌ QR المُزوَّر (id مُعدَّل)';
+                    idChanged = true;
+                    tamperedBox.style.borderColor = '#fc8181';
+                    tamperedBox.style.background = '#fff5f5';
+                    titleEl.style.color = '#c53030';
+                    arrowIcon.style.color = '#c53030';
+                    arrowLabel.textContent = 'هجوم';
+                    break;
+                case 'date':
+                    tamperedProd = '2020-01-01';
+                    tamperedTitle = '❌ QR المُزوَّر (تاريخ مُعدَّل)';
+                    prodChanged = true;
+                    tamperedBox.style.borderColor = '#f6ad55';
+                    tamperedBox.style.background = '#fffbeb';
+                    titleEl.style.color = '#c05621';
+                    arrowIcon.style.color = '#c05621';
+                    arrowLabel.textContent = 'هجوم';
+                    break;
+                case 'fake':
+                    tamperedId = 99999;
+                    tamperedSig = 'FAKE123456789ABC...';
+                    tamperedTitle = '❌ QR وهمي (id=99999)';
+                    idChanged = true; sigChanged = true;
+                    tamperedBox.style.borderColor = '#fc8181';
+                    tamperedBox.style.background = '#fff5f5';
+                    titleEl.style.color = '#c53030';
+                    arrowIcon.style.color = '#c53030';
+                    arrowLabel.textContent = 'هجوم';
+                    break;
+                case 'sigmod':
+                    tamperedSig = 'MODIFIED99999XYZ...';
+                    tamperedTitle = '❌ QR بتوقيع مُعدَّل';
+                    sigChanged = true;
+                    tamperedBox.style.borderColor = '#d6bcfa';
+                    tamperedBox.style.background = '#faf5ff';
+                    titleEl.style.color = '#553c9a';
+                    arrowIcon.style.color = '#553c9a';
+                    arrowLabel.textContent = 'هجوم';
+                    break;
+                default:
+                    tamperedTitle = '✅ QR السليم';
+            }
+
+            document.getElementById('tamperedBoxTitle').textContent = tamperedTitle;
+
+            document.getElementById('qrParamsTampered').innerHTML =
+                paramRow('id', tamperedId, idChanged, false) +
+                paramRow('prod', tamperedProd, prodChanged, false) +
+                paramRow('ts', ts, false, false) +
+                paramRow('sig', tamperedSig, sigChanged, false);
+        }
+
+        function paramRow(key, val, changed, ok) {
+            var cls = changed ? 'changed' : (ok ? 'ok' : '');
+            var tag = changed ? '<span class="qr-param-tag">مُعدَّل</span>' : '';
+            return '<div class="qr-param-row"><span class="qr-param-key">' + key + '</span>'
+                + '<span class="qr-param-val ' + cls + '">' + tag + val + '</span></div>';
+        }
+
+        // ══════════════════════════════════════════════
+        // تشغيل الهجوم — يتصل بالسيرفر الحقيقي
+        // ══════════════════════════════════════════════
+        function runAttack() {
+            if (!selectedDrug) { showToast('اختر دواء أولاً'); return; }
+
+            var d = selectedDrug;
+            var prodDate = d.createdAt ? d.createdAt.substring(0, 10) : '2024-03-01';
+            var ts = fakeTs();
+
+            var id, prod, sig;
+            switch (attackMode) {
+                case 'none': id = d.id; prod = prodDate; sig = 'TESTSIG_NOSECRET'; break;
+                case 'sig': id = d.id + 7; prod = prodDate; sig = 'WRONGSIG_OLD_LABEL'; break;
+                case 'date': id = d.id; prod = '2020-01-01'; sig = 'WRONGSIG_OLD_DATE'; break;
+                case 'fake': id = 99999; prod = '2024-01-01'; sig = 'FAKESIG_COUNTERFEIT'; break;
+                case 'sigmod': id = d.id; prod = prodDate; sig = 'MODIFIED_SIGNATURE_XYZ99'; break;
+            }
+
+            // عرض حالة التحميل
+            var resultEl = document.getElementById('scanResult');
+            resultEl.className = 'scan-result loading show';
+            document.getElementById('resultBadge').innerHTML = '<div class="spinner"></div>';
+            document.getElementById('resultTitle').textContent = 'جاري الإرسال للسيرفر...';
+            document.getElementById('resultType').textContent = '';
+            document.getElementById('resultDetail').textContent = 'يتحقق السيرفر من الـ HMAC-SHA256 Signature...';
+            document.getElementById('resultExplain').textContent = '';
+            document.getElementById('resultActions').innerHTML = '';
+
+            var url = API + '/api/qr/verify-signature?id=' + id
+                + '&prod=' + encodeURIComponent(prod)
+                + '&ts=' + encodeURIComponent(ts)
+                + '&sig=' + encodeURIComponent(sig);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+
+            xhr.onload = function () {
+                var resp;
+                try { resp = JSON.parse(xhr.responseText); } catch (e) { resp = { isValid: false, attackType: 'ERROR', message: xhr.responseText }; }
+                renderScanResult(resp, id, prod, ts, sig);
+                loadThreatStats(); // تحديث الإحصائيات
+            };
+            xhr.onerror = function () {
+                renderScanResult({ isValid: false, attackType: 'NETWORK_ERROR', message: 'تعذر الاتصال بالسيرفر' }, id, prod, ts, sig);
+            };
+            xhr.send();
+        }
+
+        var attackExplains = {
+            'SIGNATURE_MISMATCH': 'السيرفر أعاد حساب الـ HMAC-SHA256 بنفس الـ id والتاريخ ووجد أن الـ Signature لا يطابق. بدون المفتاح السري لا يمكن توليد توقيع صحيح.',
+            'DATE_MISMATCH': 'الـ Signature كانت صحيحة لكن تاريخ الإنتاج في الـ QR لا يطابق ما هو مسجّل في قاعدة البيانات. يعني هذا الـ QR من دفعة إنتاج مختلفة.',
+            'DRUG_NOT_FOUND': 'الدواء برقم 99999 غير موجود في قاعدة البيانات أصلاً. أي QR لدواء غير مسجّل يُرفض فوراً قبل حتى التحقق من الـ Signature.',
+            'QR_EXPIRED': 'الـ QR Code صحيح لكن تجاوز سنة من تاريخ التوليد. النظام يرفض الـ QR القديمة لمنع إعادة استخدامها.',
+            'NONE': 'جميع الفحوصات نجحت: الـ HMAC-SHA256 صحيح، التاريخ مطابق، الدواء موجود، الـ QR لم ينته.',
+            'MISSING_PARAMS': 'بيانات الـ QR غير مكتملة — يعني أحد الحقول (id, prod, ts, sig) مفقود.',
+            'NETWORK_ERROR': 'تعذر الاتصال بالسيرفر. تأكد أن التطبيق يعمل على المنفذ 7036.'
+        };
+
+        function renderScanResult(resp, id, prod, ts, sig) {
+            var resultEl = document.getElementById('scanResult');
+            var isValid = resp.isValid;
+            var type = resp.attackType || 'UNKNOWN';
+
+            resultEl.className = 'scan-result ' + (isValid ? 'safe' : 'detected') + ' show';
+
+            document.getElementById('resultBadge').className = 'result-badge ' + (isValid ? 'badge-safe' : 'badge-detected');
+            document.getElementById('resultBadge').innerHTML = isValid ? '✅' : '🚨';
+
+            var titles = {
+                'SIGNATURE_MISMATCH': 'تم الكشف — توقيع غير صحيح',
+                'DATE_MISMATCH': 'تم الكشف — تلاعب بالتاريخ',
+                'DRUG_NOT_FOUND': 'تم الكشف — دواء وهمي',
+                'QR_EXPIRED': 'تم الكشف — QR منتهي الصلاحية',
+                'MISSING_PARAMS': 'تم الكشف — بيانات ناقصة',
+                'NONE': 'QR Code موثق وسليم ✓',
+                'NETWORK_ERROR': 'خطأ في الاتصال'
+            };
+
+            document.getElementById('resultTitle').textContent = titles[type] || ('مجهول: ' + type);
+            document.getElementById('resultType').textContent = type;
+            document.getElementById('resultDetail').innerHTML =
+                '<strong>ردّ السيرفر:</strong> ' + (resp.message || '—');
+
+            if (resp.qrDate && resp.databaseDate) {
+                document.getElementById('resultDetail').innerHTML +=
+                    '<br><strong>تاريخ الـ QR:</strong> ' + resp.qrDate +
+                    ' &nbsp;|&nbsp; <strong>تاريخ قاعدة البيانات:</strong> ' + resp.databaseDate;
+            }
+
+            document.getElementById('resultExplain').textContent =
+                attackExplains[type] || 'النظام رصد محاولة تلاعب وسجّلها في قاعدة البيانات.';
+
+            // أزرار الإجراءات
+            var actions = '';
+            if (!isValid) {
+                actions += '<button class="btn btn-outline" onclick="switchTab(\'logs\', document.querySelectorAll(\'.page-tab\')[3])">'
+                    + '📋 شوف السجل</button>';
+            }
+            actions += '<a class="btn btn-primary" href="' + API + '/verify.html?id=' + id
+                + '&prod=' + encodeURIComponent(prod)
+                + '&ts=' + encodeURIComponent(ts)
+                + '&sig=' + encodeURIComponent(sig)
+                + '" target="_blank">🔗 فتح verify.html بهذا الـ QR</a>';
+
+            document.getElementById('resultActions').innerHTML = actions;
+        }
+
+        // ══════════════════════════════════════════════
+        // تحميل الأدوية للـ Lab
+        // ══════════════════════════════════════════════
+        function loadDrugsLab() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API + '/api/drugs', true);
+            if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                if (xhr.status !== 200) return;
+                var resp = JSON.parse(xhr.responseText);
+                allDrugs = Array.isArray(resp) ? resp : (resp.drugs || []);
+                var sel = document.getElementById('labDrug');
+                sel.innerHTML = '<option value="">-- اختر دواء --</option>';
+                allDrugs.forEach(function (d) {
+                    var opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = '💊 ' + d.name + ' — ' + d.manufacturer + ' (ID: ' + d.id + ')';
+                    sel.appendChild(opt);
+                });
+            };
+            xhr.send();
+        }
+
+        // ══════════════════════════════════════════════
+        // شرح الهجمات (تبويب 2)
+        // ══════════════════════════════════════════════
+        var attacks = {
+            sig: {
+                title: '🔄 هجوم تبديل ملصق QR — SIGNATURE_MISMATCH',
+                body: function () {
+                    return `
+<div class="sim-step">
+      <div class="sim-step-num">1</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">ماذا يفعل المهاجم؟</div>
+        <div class="sim-step-body">
+          يأخذ QR Code من علبة دواء أصلي (دواء رقم 5) ويضعه على علبة دواء مختلف (دواء رقم 12).
+          أو يعدّل الـ <strong>id</strong> في رابط الـ QR يدوياً من المتصفح.
         </div>
-
-        <!-- تبويب 3: سجل محاولات التلاعب -->
-        <div class="tab-panel" id="tab-logs">
-            <div class="log-stats-bar" id="logStats" style="display:none">
-                <div class="log-stat-card"><div class="log-stat-val" id="ls-total">0</div><div class="log-stat-lbl">إجمالي المسح</div></div>
-                <div class="log-stat-card"><div class="log-stat-val green" id="ls-valid">0</div><div class="log-stat-lbl">مسح سليم</div></div>
-                <div class="log-stat-card"><div class="log-stat-val" style="color:#7c3aed" id="ls-sig">0</div><div class="log-stat-lbl">تبديل ملصق</div></div>
-                <div class="log-stat-card"><div class="log-stat-val orange" id="ls-date">0</div><div class="log-stat-lbl">تلاعب تاريخ</div></div>
-                <div class="log-stat-card"><div class="log-stat-val red" id="ls-fake">0</div><div class="log-stat-lbl">كود مزيف</div></div>
-            </div>
-            <div class="log-filter-row">
-                <select id="logFilter" onchange="loadLogs()" class="filter-select">
-                    <option value="ALL">كل المحاولات</option>
-                    <option value="SIGNATURE_MISMATCH">تبديل ملصق (SIGNATURE_MISMATCH)</option>
-                    <option value="DATE_MISMATCH">تلاعب بالتاريخ (DATE_MISMATCH)</option>
-                    <option value="DRUG_NOT_FOUND">كود مزيف (DRUG_NOT_FOUND)</option>
-                    <option value="QR_EXPIRED">QR منتهي (QR_EXPIRED)</option>
-                    <option value="NONE">مسح سليم</option>
-                </select>
-                <button class="btn btn-outline" onclick="loadLogs()">🔄 تحديث</button>
-            </div>
-            <div id="logsArea">
-                <div class="loading-state"><div class="spinner"></div>جاري تحميل السجل...</div>
-            </div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num red">2</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">الرابط الأصلي مقابل الرابط المزوَّر</div>
+        <div class="qr-compare">
+          <div class="qr-box-sim">
+            <div class="qr-box-sim-title">✅ QR الأصلي</div>
+            <div class="qr-field"><span class="qr-key">id=</span><span class="qr-val ok">5</span></div>
+            <div class="qr-field"><span class="qr-key">prod=</span><span class="qr-val">2024-03-01</span></div>
+            <div class="qr-field"><span class="qr-key">sig=</span><span class="qr-val ok">a3f92c1d8e...</span></div>
+          </div>
+          <div class="qr-box-sim">
+            <div class="qr-box-sim-title">❌ QR المزوَّر</div>
+            <div class="qr-field"><span class="qr-key">id=</span><span class="qr-val changed">12 ← مُعدَّل!</span></div>
+            <div class="qr-field"><span class="qr-key">prod=</span><span class="qr-val">2024-03-01</span></div>
+            <div class="qr-field"><span class="qr-key">sig=</span><span class="qr-val changed">a3f92c1d8e... ← نفس الـ sig القديم</span></div>
+          </div>
         </div>
-    </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-var API   = 'http://localhost:7036';
-var token = localStorage.getItem('token');
-var role  = localStorage.getItem('role');
-
-if (!token) { window.location.replace(API + '/login.html'); }
-
-document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
-document.getElementById('sidebarRole').textContent = role || '';
-
-if (role === 'Admin') {
-    document.getElementById('navAudit').style.display     = 'flex';
-    document.getElementById('navRisk').style.display      = 'flex';
-    document.getElementById('navAdvisor').style.display   = 'flex';
-    document.getElementById('navAISection').style.display = 'block';
-    document.getElementById('adminDemoRow').style.display = 'block';
-}
-
-function goTo(p) { window.location.replace(API + '/' + p); }
-function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
-function showToast(msg) { var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); }, 3000); }
-
-function switchTab(name, el) {
-    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-    document.querySelectorAll('.page-tab').forEach(function(t){ t.classList.remove('active'); });
-    document.getElementById('tab-' + name).classList.add('active');
-    el.classList.add('active');
-    if (name === 'logs')  loadLogs();
-    if (name === 'chain') loadDrugs();
-}
-
-var attacks = {
-    sig: {
-        title: '🔄 هجوم تبديل ملصق QR — SIGNATURE_MISMATCH',
-        body: function() { return `
-<div class="sim-step">
-  <div class="sim-step-num">1</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">ماذا يفعل المهاجم؟</div>
-    <div class="sim-step-body">يأخذ QR Code من علبة دواء أصلي (مثلاً: دواء رقم 5) ويضعه على علبة دواء مختلف (مثلاً: دواء رقم 12). أو يعدّل الـ <strong>drug_id</strong> في رابط الـ QR يدوياً.</div>
-  </div>
-</div>
-<div class="sim-step">
-  <div class="sim-step-num red">2</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">ما الذي يرسله للسيرفر؟</div>
-    <div class="sim-step-body">الرابط الأصلي مقابل الرابط المعدَّل:</div>
-    <div class="qr-compare">
-      <div class="qr-box"><div class="qr-box-title">✅ QR الأصلي (دواء 5)</div>
-        <div class="qr-field"><span class="qr-key">id=</span><span class="qr-val ok">5</span></div>
-        <div class="qr-field"><span class="qr-key">prod=</span><span class="qr-val">2024-03-01</span></div>
-        <div class="qr-field"><span class="qr-key">ts=</span><span class="qr-val">1710000000</span></div>
-        <div class="qr-field"><span class="qr-key">sig=</span><span class="qr-val ok">a3f92c1d8e...</span></div>
       </div>
-      <div class="qr-box"><div class="qr-box-title">❌ QR المزوَّر (دواء 12)</div>
-        <div class="qr-field"><span class="qr-key">id=</span><span class="qr-val changed">12</span></div>
-        <div class="qr-field"><span class="qr-key">prod=</span><span class="qr-val">2024-03-01</span></div>
-        <div class="qr-field"><span class="qr-key">ts=</span><span class="qr-val">1710000000</span></div>
-        <div class="qr-field"><span class="qr-key">sig=</span><span class="qr-val changed">a3f92c1d8e... ← نفس الـ sig!</span></div>
-      </div>
-    </div>
-  </div>
 </div>
 <div class="sim-step">
-  <div class="sim-step-num green">3</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">كيف يكتشفه النظام؟</div>
-    <div class="code-block">
-<span class="code-gray">// السيرفر يحسب:</span>
-<span class="code-white">payload = </span><span class="code-warn">"12|2024-03-01|1710000000"</span>
-<span class="code-white">expected_sig = HMAC_SHA256(payload, SECRET_KEY) = </span><span class="code-ok">"b7d4e9f2a1..."</span>
-<span class="code-gray">// المقارنة:</span>
-<span class="code-white">received_sig = </span><span class="code-err">"a3f92c1d8e..."</span>
+      <div class="sim-step-num green">3</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">كيف يكتشفه النظام؟</div>
+        <div class="code-block">
+<span class="code-gray">// السيرفر يعيد حساب الـ HMAC-SHA256:</span>
+<span class="code-white">payload  = </span><span class="code-warn">"12|2024-03-01|1710000000"</span>  <span class="code-gray">← id الجديد</span>
+<span class="code-white">expected = HMAC_SHA256(payload, SECRET_KEY) = </span><span class="code-ok">"b7d4e9f2..."</span>
+<span class="code-white">received = </span><span class="code-err">"a3f92c1d..."</span>  <span class="code-gray">← من المهاجم</span>
 <span class="code-err">expected ≠ received → SIGNATURE_MISMATCH 🚨</span>
-    </div>
-    <div class="result-box err">🚨 النتيجة: <strong>SIGNATURE_MISMATCH</strong> — الـ HMAC لا يطابق الـ drug_id. السيرفر يرفض الطلب ويسجّل المحاولة مع الـ IP Address.</div>
-  </div>
+        </div>
+        <div class="result-box err">🚨 <strong>SIGNATURE_MISMATCH</strong> — الـ HMAC لا يطابق الـ id. السيرفر يرفض الطلب ويسجّل المحاولة مع الـ IP Address.</div>
+      </div>
 </div>
 <div class="sim-step">
-  <div class="sim-step-num" style="background:#92400e">4</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">لماذا مستحيل تجاوزه؟</div>
-    <div class="sim-step-body">الـ HMAC-SHA256 مشفّر بـ <strong>SECRET_KEY</strong> موجود فقط في السيرفر. بدون هذا المفتاح، المهاجم لا يستطيع توليد sig صحيح لأي drug_id يختاره.</div>
-  </div>
+      <div class="sim-step-num orange">4</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">لماذا مستحيل تجاوزه؟</div>
+        <div class="sim-step-body">
+          الـ HMAC-SHA256 مشفّر بـ <strong>SECRET_KEY</strong> موجود فقط في السيرفر.
+          بدون هذا المفتاح، لا يمكن توليد sig صحيح لأي id — حتى Brute Force مستحيل عملياً (128-bit key).
+        </div>
+      </div>
 </div>
 <div class="live-demo-row">
-  <button class="btn btn-danger" onclick="liveDemoSig()">🔴 جرّب الهجوم على السيرفر الحقيقي</button>
-  <button class="btn btn-outline" onclick="goTo('verify.html?id=1&prod=2024-01-01&ts=1700000000&sig=FAKESIG123456789')">فتح verify.html بـ sig مزيف</button>
-</div>`; }
-    },
+      <button class="btn btn-danger" onclick="liveDemoSig()">🔴 جرّب الهجوم على السيرفر الحقيقي</button>
+</div>`;
+                }
+            },
 
-    date: {
-        title: '📅 هجوم تلاعب بتاريخ الإنتاج — DATE_MISMATCH',
-        body: function() { return `
+            date: {
+                title: '📅 هجوم تلاعب بتاريخ الإنتاج — DATE_MISMATCH',
+                body: function () {
+                    return `
 <div class="sim-step">
-  <div class="sim-step-num">1</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">ماذا يفعل المهاجم؟</div>
-    <div class="sim-step-body">يأخذ QR Code من دفعة قديمة انتهت صلاحيتها (مثلاً: تاريخ 2022) ويضعه على علبة جديدة. أو يعدّل الـ <strong>prod</strong> (تاريخ الإنتاج) في رابط الـ QR لتغيير تاريخ الدواء.</div>
-  </div>
+      <div class="sim-step-num">1</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">ماذا يفعل المهاجم؟</div>
+        <div class="sim-step-body">
+          يأخذ QR من دفعة قديمة (تاريخ 2020) ويضعه على علبة جديدة.
+          أو يعدّل الـ <strong>prod</strong> (تاريخ الإنتاج) في الرابط لتغيير تاريخ الدواء.
+        </div>
+      </div>
 </div>
 <div class="sim-step">
-  <div class="sim-step-num red">2</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">ما الذي يرسله للسيرفر؟</div>
-    <div class="qr-compare">
-      <div class="qr-box"><div class="qr-box-title">✅ QR الأصلي</div>
-        <div class="qr-field"><span class="qr-key">id=</span><span class="qr-val ok">7</span></div>
-        <div class="qr-field"><span class="qr-key">prod=</span><span class="qr-val ok">2024-06-15</span></div>
-        <div class="qr-field"><span class="qr-key">sig=</span><span class="qr-val ok">c9a3f1e2...</span></div>
+      <div class="sim-step-num red">2</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">الرابط الأصلي مقابل المزوَّر</div>
+        <div class="qr-compare">
+          <div class="qr-box-sim">
+            <div class="qr-box-sim-title">✅ QR الأصلي</div>
+            <div class="qr-field"><span class="qr-key">id=</span><span class="qr-val ok">7</span></div>
+            <div class="qr-field"><span class="qr-key">prod=</span><span class="qr-val ok">2024-06-15</span></div>
+            <div class="qr-field"><span class="qr-key">sig=</span><span class="qr-val ok">c9a3f1e2...</span></div>
+          </div>
+          <div class="qr-box-sim">
+            <div class="qr-box-sim-title">❌ QR المزوَّر</div>
+            <div class="qr-field"><span class="qr-key">id=</span><span class="qr-val">7</span></div>
+            <div class="qr-field"><span class="qr-key">prod=</span><span class="qr-val changed">2020-01-01 ← مُعدَّل!</span></div>
+            <div class="qr-field"><span class="qr-key">sig=</span><span class="qr-val changed">sig من 2020...</span></div>
+          </div>
+        </div>
       </div>
-      <div class="qr-box"><div class="qr-box-title">❌ QR المزوَّر</div>
-        <div class="qr-field"><span class="qr-key">id=</span><span class="qr-val">7</span></div>
-        <div class="qr-field"><span class="qr-key">prod=</span><span class="qr-val changed">2022-01-01 ← تاريخ قديم!</span></div>
-        <div class="qr-field"><span class="qr-key">sig=</span><span class="qr-val changed">sig من 2022...</span></div>
-      </div>
-    </div>
-  </div>
 </div>
 <div class="sim-step">
-  <div class="sim-step-num green">3</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">كيف يكتشفه النظام؟</div>
-    <div class="code-block">
-<span class="code-gray">// السيرفر يجلب بيانات الدواء من DB:</span>
+      <div class="sim-step-num green">3</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">كيف يكتشفه النظام؟</div>
+        <div class="code-block">
+<span class="code-gray">// السيرفر يجلب الدواء من DB:</span>
 <span class="code-white">drug = DB.Find(id: 7)</span>
-<span class="code-white">db_production_date = </span><span class="code-ok">"2024-06-15"</span>
+<span class="code-white">db_prod_date = </span><span class="code-ok">"2024-06-15"</span>
+
 <span class="code-gray">// مقارنة التاريخ من QR مع DB:</span>
-<span class="code-white">qr_prod_date = </span><span class="code-err">"2022-01-01"</span>
-<span class="code-err">qr_prod_date ≠ db_production_date → DATE_MISMATCH 🚨</span>
-    </div>
-    <div class="result-box err">🚨 النتيجة: <strong>DATE_MISMATCH</strong> — تاريخ الإنتاج في الـ QR لا يطابق ما هو مسجّل في قاعدة البيانات.</div>
-  </div>
+<span class="code-white">qr_prod_date = </span><span class="code-err">"2020-01-01"</span>
+<span class="code-err">qr_prod_date ≠ db_prod_date → DATE_MISMATCH 🚨</span>
+        </div>
+        <div class="result-box err">🚨 <strong>DATE_MISMATCH</strong> — تاريخ الإنتاج في الـ QR لا يطابق قاعدة البيانات. هذا الـ QR من دفعة مختلفة أو مزيّف.</div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num orange">4</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">أهمية هذا الهجوم</div>
+        <div class="sim-step-body">
+          يُستخدم لبيع أدوية منتهية الصلاحية بتواريخ جديدة، أو لإعادة استخدام علب قديمة.
+          ربط الـ QR بتاريخ الإنتاج الفعلي في DB يجعل هذا التزوير مستحيلاً.
+        </div>
+      </div>
 </div>
 <div class="live-demo-row">
-  <button class="btn btn-danger" onclick="liveDemoDate()">🔴 جرّب الهجوم على السيرفر الحقيقي</button>
-</div>`; }
-    },
+      <button class="btn btn-danger" onclick="liveDemoDate()">🔴 جرّب الهجوم على السيرفر الحقيقي</button>
+</div>`;
+                }
+            },
 
-    fake: {
-        title: '🎭 هجوم QR مزيف كلياً — DRUG_NOT_FOUND',
-        body: function() { return `
+            fake: {
+                title: '🎭 هجوم QR مزيف كلياً — DRUG_NOT_FOUND',
+                body: function () {
+                    return `
 <div class="sim-step">
-  <div class="sim-step-num">1</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">ماذا يفعل المهاجم؟</div>
-    <div class="sim-step-body">يصنع QR Code بأرقام عشوائية أو بـ drug_id غير موجود في النظام. هذا أبسط أنواع التزوير — يستخدمه من لا يعرف آلية عمل النظام.</div>
-  </div>
+      <div class="sim-step-num">1</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">ماذا يفعل المهاجم؟</div>
+        <div class="sim-step-body">
+          يصنع QR Code بأرقام عشوائية أو بـ drug_id غير موجود في النظام.
+          أبسط أنواع التزوير — يستخدمه من لا يعرف آلية عمل النظام.
+        </div>
+      </div>
 </div>
 <div class="sim-step">
-  <div class="sim-step-num red">2</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">ما الذي يرسله؟</div>
-    <div class="code-block">
-<span class="code-gray">// QR مزيف — drug_id غير موجود في DB:</span>
+      <div class="sim-step-num red">2</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">الرابط المزوَّر</div>
+        <div class="code-block">
+<span class="code-gray">// QR مزيف — drug_id غير موجود:</span>
 <span class="code-white">verify.html?id=</span><span class="code-err">99999</span><span class="code-white">&prod=2024-01-01&ts=1700000&sig=</span><span class="code-err">FAKE123ABC</span>
-    </div>
-  </div>
+        </div>
+      </div>
 </div>
 <div class="sim-step">
-  <div class="sim-step-num green">3</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">كيف يكتشفه النظام؟</div>
-    <div class="code-block">
+      <div class="sim-step-num green">3</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">كيف يكتشفه النظام؟</div>
+        <div class="code-block">
 <span class="code-gray">// السيرفر يبحث في DB:</span>
 <span class="code-white">drug = DB.Drugs.Find(id: 99999)</span>
 <span class="code-err">if (drug == null) → DRUG_NOT_FOUND 🚨</span>
-<span class="code-gray">// لا يصل حتى للتحقق من الـ sig!</span>
-    </div>
-    <div class="result-box err">🚨 النتيجة: <strong>DRUG_NOT_FOUND</strong> — الدواء برقم 99999 غير موجود في قاعدة البيانات أصلاً.</div>
-  </div>
+<span class="code-gray">// لا يصل حتى لفحص الـ Signature!</span>
+        </div>
+        <div class="result-box err">🚨 <strong>DRUG_NOT_FOUND</strong> — رقم 99999 غير موجود أصلاً. أي QR لدواء غير مسجّل يُرفض فوراً.</div>
+      </div>
 </div>
 <div class="live-demo-row">
-  <button class="btn btn-danger" onclick="liveDemoFake()">🔴 جرّب: ابعث drug_id غير موجود</button>
-</div>`; }
-    },
+      <button class="btn btn-danger" onclick="liveDemoFake()">🔴 جرّب: ابعث drug_id غير موجود</button>
+</div>`;
+                }
+            },
 
-    delay: {
-        title: '⏱️ هجوم التأخير المتعمد — DELIBERATE_DELAY',
-        body: function() { return `
+            delay: {
+                title: '⏱️ هجوم التأخير المتعمد — DELIBERATE_DELAY',
+                body: function () {
+                    return `
 <div class="sim-step">
-  <div class="sim-step-num">1</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">ماذا يفعل المهاجم؟</div>
-    <div class="sim-step-body">موزع أو صيدلاني يستلم الدواء لكنه <strong>يؤخر تسجيل الاستلام</strong> في Blockchain. خلال هذا التأخير يمكنه: بيع الدواء بالسوق السوداء، استبداله، أو التلاعب بالكميات.</div>
-  </div>
+      <div class="sim-step-num">1</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">ماذا يفعل المهاجم؟</div>
+        <div class="sim-step-body">
+          موزع أو صيدلاني يستلم الدواء لكنه <strong>يؤخر تسجيل الاستلام</strong> في Blockchain.
+          خلال هذا التأخير يمكنه: بيع الدواء بالسوق السوداء، استبداله، أو التلاعب بالكميات.
+        </div>
+      </div>
 </div>
 <div class="sim-step">
-  <div class="sim-step-num red">2</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">كيف يبدو في Blockchain؟</div>
-    <div class="chain-visual">
-      <div class="block-box ok"><div class="block-num">Block #1</div>
-        <div class="block-field"><span class="block-key">من</span><span class="block-v green">المصنع</span></div>
-        <div class="block-field"><span class="block-key">إلى</span><span class="block-v">الموزع</span></div>
-        <div class="block-field"><span class="block-key">وقت</span><span class="block-v">2024-01-01</span></div>
-        <div class="block-field"><span class="block-key">تأخير</span><span class="block-v green">—</span></div>
+      <div class="sim-step-num red">2</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">كيف يبدو في Blockchain؟</div>
+        <div class="chain-visual">
+          <div class="block-box ok">
+            <div class="block-num">Block #1</div>
+            <div class="block-field"><span class="block-key">من</span><span class="block-v green">المصنع</span></div>
+            <div class="block-field"><span class="block-key">إلى</span><span class="block-v">الموزع</span></div>
+            <div class="block-field"><span class="block-key">وقت</span><span class="block-v">2024-01-01</span></div>
+            <div class="block-field"><span class="block-key">تأخير</span><span class="block-v green">—</span></div>
+          </div>
+          <div class="block-box tampered">
+            <div class="block-num">Block #2</div>
+            <div class="block-field"><span class="block-key">من</span><span class="block-v">الموزع</span></div>
+            <div class="block-field"><span class="block-key">إلى</span><span class="block-v">الصيدلية</span></div>
+            <div class="block-field"><span class="block-key">وقت</span><span class="block-v red">2024-03-15</span></div>
+            <div class="block-field"><span class="block-key">تأخير</span><span class="block-v red">1704 ساعة ⚠</span></div>
+          </div>
+          <div class="block-box ok">
+            <div class="block-num">Block #3</div>
+            <div class="block-field"><span class="block-key">من</span><span class="block-v">الصيدلية</span></div>
+            <div class="block-field"><span class="block-key">إلى</span><span class="block-v">الزبون</span></div>
+            <div class="block-field"><span class="block-key">وقت</span><span class="block-v">2024-03-16</span></div>
+            <div class="block-field"><span class="block-key">تأخير</span><span class="block-v green">24 ساعة</span></div>
+          </div>
+        </div>
       </div>
-      <div class="block-box tampered"><div class="block-num">Block #2</div>
-        <div class="block-field"><span class="block-key">من</span><span class="block-v">الموزع</span></div>
-        <div class="block-field"><span class="block-key">إلى</span><span class="block-v">الصيدلية</span></div>
-        <div class="block-field"><span class="block-key">وقت</span><span class="block-v red">2024-03-15</span></div>
-        <div class="block-field"><span class="block-key">تأخير</span><span class="block-v red">1704 ساعة ⚠</span></div>
-      </div>
-      <div class="block-box ok"><div class="block-num">Block #3</div>
-        <div class="block-field"><span class="block-key">من</span><span class="block-v">الصيدلية</span></div>
-        <div class="block-field"><span class="block-key">إلى</span><span class="block-v">الزبون</span></div>
-        <div class="block-field"><span class="block-key">وقت</span><span class="block-v">2024-03-16</span></div>
-        <div class="block-field"><span class="block-key">تأخير</span><span class="block-v green">24 ساعة</span></div>
-      </div>
-    </div>
-  </div>
 </div>
 <div class="sim-step">
-  <div class="sim-step-num green">3</div>
-  <div class="sim-step-content">
-    <div class="sim-step-title">كيف يكتشفه النظام؟</div>
-    <div class="code-block">
+      <div class="sim-step-num green">3</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">كيف يكتشفه النظام؟</div>
+        <div class="code-block">
 <span class="code-gray">// النظام يحسب الفرق الزمني بين كل نقلتين:</span>
 <span class="code-white">diffHours = (tx[i].timestamp - tx[i-1].timestamp) / 3600000</span>
-<span class="code-white">if (diffHours &gt; 168) </span><span class="code-err">→ CRITICAL_DELAY 🚨</span>
-<span class="code-white">else if (diffHours &gt; 48) </span><span class="code-warn">→ WARNING_DELAY ⚠️</span>
-    </div>
-    <div class="result-box warn">⚠️ النتيجة: تأخير <strong>1704 ساعة</strong> (71 يوم!) بين المصنع والصيدلية — النظام يُنبّه المدير ويضع علامة تحذير.</div>
-  </div>
+<span class="code-white">if (diffHours &gt; 168)  </span><span class="code-err">→ CRITICAL_DELAY 🚨</span>
+<span class="code-white">elif (diffHours &gt; 48) </span><span class="code-warn">→ WARNING_DELAY ⚠️</span>
+        </div>
+        <div class="result-box warn">⚠️ تأخير <strong>1704 ساعة</strong> (71 يوم!) — مشبوه جداً. النظام يُنبّه المدير ويضع علامة تحذير.</div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num orange">4</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">لماذا لا يستطيع المهاجم تعديل الـ Timestamp؟</div>
+        <div class="sim-step-body">
+          كل Timestamp هو جزء من الـ <strong>blockHash</strong> المحسوب بـ SHA256.
+          أي تعديل → blockHash مختلف → يكسر السلسلة. الـ Blockchain يجعل التواريخ غير قابلة للتعديل.
+        </div>
+      </div>
 </div>
 <div class="live-demo-row">
-  <button class="btn btn-primary" onclick="switchTab('chain', document.querySelectorAll('.page-tab')[1]); document.getElementById('drugSelect').focus();">⛓️ افتح فحص السلسلة الحقيقي</button>
-</div>`; }
-    }
-};
+      <button class="btn btn-primary" onclick="switchTab('chain', document.querySelectorAll('.page-tab')[2]); loadDrugsChain();">⛓️ افتح فحص السلسلة</button>
+</div>`;
+                }
+            }
+        };
 
-function showAttack(type) {
-    document.querySelectorAll('.attack-card').forEach(function(c){ c.classList.remove('selected'); });
-    document.getElementById('card-' + type).classList.add('selected');
-    var atk = attacks[type];
-    var panel = document.getElementById('simPanel');
-    document.getElementById('simTitle').textContent = atk.title;
-    document.getElementById('simBody').innerHTML = atk.body();
-    panel.style.display = 'block';
-    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
+        function showAttack(type) {
+            document.querySelectorAll('.attack-card').forEach(function (c) { c.classList.remove('selected'); });
+            document.getElementById('card-' + type).classList.add('selected');
+            var atk = attacks[type];
+            var panel = document.getElementById('simPanel');
+            document.getElementById('simTitle').textContent = atk.title;
+            document.getElementById('simBody').innerHTML = atk.body();
+            panel.style.display = 'block';
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
 
-function liveDemoSig() {
-    var url = API + '/api/qr/verify-signature?id=1&prod=2024-01-01&ts=1700000000&sig=WRONGSIGHERE1234';
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-    xhr.onload = function() {
-        try { var d = JSON.parse(xhr.responseText); showToast('السيرفر ردّ: ' + (d.attackType || d.message || 'تحقق من السجل')); }
-        catch(e) { showToast('تم الإرسال — تحقق من تبويب السجل'); }
-    };
-    xhr.onerror = function() { showToast('تعذر الاتصال بالسيرفر'); };
-    xhr.send();
-}
+        // Live Demo buttons (تبويب 2)
+        function liveDemoSig() {
+            var url = API + '/api/qr/verify-signature?id=1&prod=2024-01-01&ts=1700000000&sig=WRONGSIGHERE1234';
+            callApiAndToast(url);
+        }
+        function liveDemoDate() {
+            var url = API + '/api/qr/verify-signature?id=1&prod=2000-01-01&ts=1700000000&sig=ANYSIG12345678';
+            callApiAndToast(url);
+        }
+        function liveDemoFake() {
+            var url = API + '/api/qr/verify-signature?id=99999&prod=2024-01-01&ts=1700000000&sig=FAKESIG';
+            callApiAndToast(url);
+        }
+        function callApiAndToast(url) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                try { var d = JSON.parse(xhr.responseText); showToast('السيرفر: ' + (d.attackType || d.message || '—')); }
+                catch (e) { showToast('تم الإرسال — تحقق من تبويب السجل'); }
+                loadThreatStats();
+            };
+            xhr.onerror = function () { showToast('تعذر الاتصال بالسيرفر'); };
+            xhr.send();
+        }
 
-function liveDemoDate() {
-    var url = API + '/api/qr/verify-signature?id=1&prod=2000-01-01&ts=1700000000&sig=ANYSIG12345678';
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-    xhr.onload = function() {
-        try { var d = JSON.parse(xhr.responseText); showToast('السيرفر ردّ: ' + (d.attackType || d.message || 'تحقق من السجل')); }
-        catch(e) { showToast('تم الإرسال — تحقق من تبويب السجل'); }
-    };
-    xhr.onerror = function() { showToast('تعذر الاتصال بالسيرفر'); };
-    xhr.send();
-}
+        // ══════════════════════════════════════════════
+        // فحص السلسلة
+        // ══════════════════════════════════════════════
+        var roleLabels = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون', Admin: 'المدير' };
 
-function liveDemoFake() {
-    var url = API + '/api/qr/verify-signature?id=99999&prod=2024-01-01&ts=1700000000&sig=FAKESIG';
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-    xhr.onload = function() {
-        try { var d = JSON.parse(xhr.responseText); showToast('السيرفر ردّ: ' + (d.attackType || d.message || 'DRUG_NOT_FOUND')); }
-        catch(e) { showToast('تم الإرسال — تحقق من تبويب السجل'); }
-    };
-    xhr.onerror = function() { showToast('تعذر الاتصال بالسيرفر'); };
-    xhr.send();
-}
+        function loadDrugsChain() {
+            var sel = document.getElementById('drugSelectChain');
+            if (sel.options.length > 1) return;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API + '/api/drugs', true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                if (xhr.status !== 200) return;
+                var drugs = JSON.parse(xhr.responseText);
+                if (!Array.isArray(drugs)) drugs = drugs.drugs || [];
+                drugs.forEach(function (d) {
+                    var opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = d.name + ' (#' + d.id + ')';
+                    sel.appendChild(opt);
+                });
+                var p = new URLSearchParams(window.location.search);
+                if (p.get('drug')) { sel.value = p.get('drug'); analyze(); }
+            };
+            xhr.send();
+        }
 
-var roleLabels = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون', Admin: 'المدير' };
+        function analyze() {
+            var drugId = document.getElementById('drugSelectChain').value;
+            document.getElementById('alertBar').classList.remove('show');
+            document.getElementById('statsBar').style.display = 'none';
+            if (!drugId) {
+                document.getElementById('mainArea').innerHTML = '<div class="empty"><div class="empty-icon">⛓️</div><div>اختر دواء لبدء الفحص</div></div>';
+                return;
+            }
+            document.getElementById('mainArea').innerHTML = '<div class="loading"><div class="spinner" style="margin:0 auto 12px"></div><div>جاري فحص السلسلة...</div></div>';
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API + '/api/transaction/history/' + drugId, true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                if (xhr.status !== 200) { document.getElementById('mainArea').innerHTML = '<div class="loading">تعذر الاتصال</div>'; return; }
+                var txs = JSON.parse(xhr.responseText);
+                if (!txs || txs.length === 0) {
+                    document.getElementById('mainArea').innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div>لا توجد نقلات مسجلة لهذا الدواء بعد</div></div>';
+                    return;
+                }
+                runAnalysis(txs);
+            };
+            xhr.onerror = function () { document.getElementById('mainArea').innerHTML = '<div class="loading">تعذر الاتصال</div>'; };
+            xhr.send();
+        }
 
-function loadDrugs() {
-    var sel = document.getElementById('drugSelect');
-    if (sel.options.length > 1) return;
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', API + '/api/drugs', true);
-    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-    xhr.onload = function() {
-        if (xhr.status !== 200) return;
-        var drugs = JSON.parse(xhr.responseText);
-        drugs.forEach(function(d) {
-            var opt = document.createElement('option');
-            opt.value = d.id;
-            opt.textContent = d.name + ' (#' + d.id + ')';
-            sel.appendChild(opt);
-        });
+        function runAnalysis(txs) {
+            var results = [], countOk = 0, countWarn = 0, countErr = 0, maxDelayH = 0;
+            for (var i = 0; i < txs.length; i++) {
+                var t = txs[i], prev = i > 0 ? txs[i - 1] : null, issues = [], status = 'ok', diffH = null;
+                if (prev && t.previousHash !== prev.blockHash) { issues.push('previousHash لا يطابق blockHash السابق — كسر في السلسلة'); status = 'err'; }
+                if (prev) {
+                    diffH = Math.round((new Date(t.timestamp) - new Date(prev.timestamp)) / 3600000);
+                    if (diffH > maxDelayH) maxDelayH = diffH;
+                    if (diffH > 168) { issues.push('تأخير ' + diffH + ' ساعة (' + Math.round(diffH / 24) + ' يوم) — هجوم تأخير متعمد محتمل'); status = 'err'; }
+                    else if (diffH > 48) { issues.push('تأخير ' + diffH + ' ساعة — يستحق المراجعة'); if (status !== 'err') status = 'warn'; }
+                }
+                if (prev && t.fromRole !== prev.toRole) { issues.push('الراسل لا يطابق مستلم السابق — تخطّي في السلسلة'); status = 'err'; }
+                if (t.blockHash && !t.blockHash.startsWith('00')) { issues.push('blockHash لا يبدأ بـ 00 — Proof of Work غير مستوفى'); if (status === 'ok') status = 'warn'; }
+                if (status === 'ok') countOk++; else if (status === 'warn') countWarn++; else countErr++;
+                results.push({ tx: t, issues: issues, status: status, diffH: diffH });
+            }
+            document.getElementById('sTotal').textContent = txs.length;
+            document.getElementById('sOk').textContent = countOk;
+            document.getElementById('sWarn').textContent = countWarn;
+            document.getElementById('sErr').textContent = countErr;
+            document.getElementById('sDelay').textContent = maxDelayH > 0 ? maxDelayH + ' ساعة' : '—';
+            document.getElementById('statsBar').style.display = 'flex';
+            var ab = document.getElementById('alertBar');
+            if (countErr > 0) { ab.className = 'alert-bar show err'; ab.innerHTML = '🚨 <strong>تم رصد ' + countErr + ' مخالفة أمنية</strong> في السلسلة'; }
+            else if (countWarn > 0) { ab.className = 'alert-bar show warn'; ab.innerHTML = '⚠️ <strong>' + countWarn + ' تحذير</strong> يستحق المراجعة'; }
+            else { ab.className = 'alert-bar show ok'; ab.innerHTML = '✅ <strong>السلسلة سليمة</strong> — جميع النقلات الـ ' + txs.length + ' مرّت بنجاح'; }
+            renderResults(results, countOk, countWarn, countErr, maxDelayH);
+        }
+
+        function renderResults(results, ok, warn, err, maxDelay) {
+            var rows = '';
+            results.forEach(function (r, i) {
+                var t = r.tx, from = roleLabels[t.fromRole] || t.fromRole, to = roleLabels[t.toRole] || t.toRole;
+                var bc = r.status === 'ok' ? 'badge-ok' : r.status === 'warn' ? 'badge-warn' : 'badge-err';
+                var bt = r.status === 'ok' ? '✓ سليم' : r.status === 'warn' ? '⚠ تحذير' : '✗ مخالفة';
+                var hash = t.blockHash ? t.blockHash.substring(0, 14) + '...' : '—';
+                var date = new Date(t.timestamp).toLocaleDateString('ar-JO');
+                var delayTxt = r.diffH !== null ? r.diffH + ' ساعة' : '—';
+                var delayColor = r.diffH > 168 ? 'color:#c53030' : r.diffH > 48 ? 'color:#c05621' : 'color:#276749';
+                rows += '<tr><td style="color:#a0aec0;font-size:12px">' + (i + 1) + '</td>'
+                    + '<td><div style="font-weight:500">' + (t.drugName || '—') + '</div>'
+                    + '<div style="font-size:11px;color:#718096;margin-top:2px">' + from + ' → ' + to + '</div>'
+                    + (r.issues.length > 0 ? r.issues.map(function (iss) { return '<div class="issue-line">⚑ ' + iss + '</div>'; }).join('') : '')
+                    + '</td>'
+                    + '<td style="font-size:12px">' + date + '</td>'
+                    + '<td style="font-size:12px;font-weight:600;' + delayColor + '">' + delayTxt + '</td>'
+                    + '<td style="font-family:monospace;font-size:11px;color:#a0aec0">' + hash + '</td>'
+                    + '<td><span class="badge ' + bc + '">' + bt + '</span></td></tr>';
+            });
+            var tableCard = '<div class="card"><div class="card-header">📋 نتائج فحص كل نقلة</div>'
+                + '<table><thead><tr><th>#</th><th>الدواء / المسار</th><th>التاريخ</th><th>التأخير</th><th>Block Hash</th><th>الحالة</th></tr></thead>'
+                + '<tbody>' + rows + '</tbody></table></div>';
+            var ft = results[0].tx;
+            var hashCard = '<div class="card"><div class="card-header">🔗 تفاصيل Hash — أول Block</div><div class="card-body"><div class="hash-box">'
+                + '<div class="hash-row"><span class="hash-label">Block #</span><span class="hash-val">' + (ft.blockNumber || 1) + '</span></div>'
+                + '<div class="hash-row"><span class="hash-label">Previous Hash</span><span class="hash-val">' + (ft.previousHash || '—') + '</span></div>'
+                + '<div class="hash-row"><span class="hash-label">Block Hash</span><span class="hash-val">' + (ft.blockHash || '—') + '</span></div>'
+                + '<div class="hash-row"><span class="hash-label">Nonce</span><span class="hash-val">' + (ft.nonce || '0') + '</span></div>'
+                + '<div class="hash-row"><span class="hash-label">Merkle Root</span><span class="hash-val">' + (ft.merkleRoot || '—') + '</span></div>'
+                + '<div class="hash-row"><span class="hash-label">Timestamp</span><span class="hash-val">' + new Date(ft.timestamp).toLocaleString('ar-JO') + '</span></div>'
+                + '</div></div></div>';
+            var checks = [
+                { label: 'Hash Chain مترابط', st: err === 0 ? 'ok' : 'err' },
+                { label: 'ترتيب الأدوار صحيح', st: err === 0 ? 'ok' : 'err' },
+                { label: 'Proof of Work (00...)', st: warn === 0 && err === 0 ? 'ok' : 'warn' },
+                { label: 'تأخير < 48 ساعة', st: maxDelay <= 48 ? 'ok' : maxDelay <= 168 ? 'warn' : 'err' },
+                { label: 'تسلسل النقلات مستمر', st: err === 0 ? 'ok' : 'err' }
+            ];
+            var checksHtml = '<div class="panel-card"><div class="panel-card-header">🔐 الفحوصات الأمنية</div><div class="panel-card-body">';
+            checks.forEach(function (c) { var cls = c.st === 'ok' ? 'cs-ok' : c.st === 'warn' ? 'cs-warn' : 'cs-err'; var txt = c.st === 'ok' ? 'سليم ✓' : c.st === 'warn' ? 'تحذير ⚠' : 'خطأ ✗'; checksHtml += '<div class="check-row"><span class="check-label">' + c.label + '</span><span class="check-st ' + cls + '">' + txt + '</span></div>'; });
+            checksHtml += '</div></div>';
+            var summaryHtml = '<div class="panel-card"><div class="panel-card-header">📊 ملخص</div><div class="panel-card-body">'
+                + '<div class="mini-stat"><span class="mini-stat-lbl">إجمالي النقلات</span><span class="mini-stat-val">' + results.length + '</span></div>'
+                + '<div class="mini-stat"><span class="mini-stat-lbl">سليمة</span><span class="mini-stat-val green">' + ok + '</span></div>'
+                + '<div class="mini-stat"><span class="mini-stat-lbl">تحذيرات</span><span class="mini-stat-val orange">' + warn + '</span></div>'
+                + '<div class="mini-stat"><span class="mini-stat-lbl">مخالفات</span><span class="mini-stat-val red">' + err + '</span></div>'
+                + '<div class="mini-stat"><span class="mini-stat-lbl">أطول تأخير</span><span class="mini-stat-val ' + (maxDelay > 48 ? 'orange' : 'green') + '">' + (maxDelay > 0 ? maxDelay + ' ساعة' : '—') + '</span></div>'
+                + '</div></div>';
+            document.getElementById('mainArea').innerHTML =
+                '<div class="main-grid"><div>' + tableCard + hashCard + '</div>'
+                + '<div class="right-panel">' + checksHtml + summaryHtml + '</div></div>';
+        }
+
+        function demoTamper() {
+            var drugId = document.getElementById('drugSelectChain').value;
+            if (!drugId) { showToast('اختر دواء أولاً'); return; }
+            if (!confirm('هذا سيكسر أول block للدواء #' + drugId + ' — هل تكمل؟')) return;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API + '/api/transaction/history/' + drugId, true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                var txs = JSON.parse(xhr.responseText);
+                if (!txs || txs.length === 0) { showToast('لا توجد نقلات'); return; }
+                var xhr2 = new XMLHttpRequest();
+                xhr2.open('POST', API + '/api/transaction/demo-tamper/' + txs[0].id, true);
+                xhr2.setRequestHeader('Authorization', 'Bearer ' + token);
+                xhr2.onload = function () { showToast('💥 تم كسر السلسلة'); analyze(); };
+                xhr2.send();
+            };
+            xhr.send();
+        }
+
+        function demoRestore() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', API + '/api/transaction/demo-restore', true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () { showToast('✅ تم استعادة السلسلة'); analyze(); };
+            xhr.send();
+        }
+
+        // ══════════════════════════════════════════════
+        // سجل المحاولات
+        // ══════════════════════════════════════════════
+        var attackLabels = {
+            'NONE': { text: 'مسح سليم', cls: 'tag-none' },
+            'SIGNATURE_MISMATCH': { text: 'تبديل ملصق QR', cls: 'tag-sig' },
+            'DATE_MISMATCH': { text: 'تلاعب بالتاريخ', cls: 'tag-date' },
+            'DRUG_NOT_FOUND': { text: 'كود مزيف', cls: 'tag-fake' },
+            'QR_EXPIRED': { text: 'QR منتهي', cls: 'tag-exp' },
+            'MISSING_PARAMS': { text: 'بيانات ناقصة', cls: 'tag-other' }
+        };
+
+        function loadLogs() {
+            var filter = document.getElementById('logFilter').value;
+            document.getElementById('logsArea').innerHTML = '<div class="loading"><div class="spinner" style="margin:0 auto 12px"></div><div>جاري تحميل السجل...</div></div>';
+            var url = API + '/api/qr/scan-logs?limit=200';
+            if (filter && filter !== 'ALL') url += '&attackType=' + filter;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                if (xhr.status === 403) { document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">🔒</div><div>هذا السجل متاح للأدمن فقط</div></div>'; return; }
+                if (xhr.status !== 200) { document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div>تعذر تحميل السجل</div></div>'; return; }
+                var data = JSON.parse(xhr.responseText);
+                renderLogs(data.stats, data.logs);
+            };
+            xhr.onerror = function () { document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div>تعذر الاتصال</div></div>'; };
+            xhr.send();
+        }
+
+        function renderLogs(stats, logs) {
+            if (stats) {
+                document.getElementById('ls-total').textContent = stats.total || 0;
+                document.getElementById('ls-valid').textContent = stats.valid || 0;
+                document.getElementById('ls-sig').textContent = stats.signatureMismatch || 0;
+                document.getElementById('ls-date').textContent = stats.dateMismatch || 0;
+                document.getElementById('ls-fake').textContent = stats.drugNotFound || 0;
+                document.getElementById('logStats').style.display = 'grid';
+            }
+            if (!logs || logs.length === 0) {
+                document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">✅</div><div>لا توجد محاولات مسجلة — جرّب مختبر الـ QR!</div></div>';
+                return;
+            }
+            var rows = logs.map(function (l, i) {
+                var atk = attackLabels[l.attackType] || { text: l.attackType, cls: 'tag-other' };
+                var rowStyle = l.isValid ? '' : 'background:#fffafa';
+                var timeStr = l.scannedAt ? new Date(l.scannedAt).toLocaleString('ar-JO') : '—';
+                return '<tr style="' + rowStyle + '">'
+                    + '<td style="color:#a0aec0;font-size:12px">' + (i + 1) + '</td>'
+                    + '<td style="font-weight:500">' + l.drugId + '</td>'
+                    + '<td><span class="attack-tag ' + atk.cls + '">' + atk.text + '</span></td>'
+                    + '<td style="font-size:12px;color:#4a5568;max-width:280px">' + (l.message || '—') + '</td>'
+                    + '<td><span class="ip-chip">' + (l.ipAddress || '—') + '</span></td>'
+                    + '<td style="font-size:12px;color:#718096;white-space:nowrap">' + timeStr + '</td>'
+                    + '</tr>';
+            }).join('');
+            document.getElementById('logsArea').innerHTML =
+                '<div class="card"><div class="card-header">📋 سجل عمليات مسح QR — ' + logs.length + ' سجل'
+                + '<button class="btn btn-outline" style="font-size:12px;padding:4px 10px" onclick="loadLogs()">🔄 تحديث</button></div>'
+                + '<table><thead><tr><th>#</th><th>Drug ID</th><th>نوع الهجوم</th><th>التفاصيل</th><th>IP</th><th>وقت المسح</th></tr></thead>'
+                + '<tbody>' + rows + '</tbody></table></div>';
+        }
+
+        // ══════════════════════════════════════════════
+        // Init
+        // ══════════════════════════════════════════════
+        loadDrugsLab();
+        loadThreatStats();
+        selectAttack('none');
+
         var p = new URLSearchParams(window.location.search);
-        if (p.get('drug')) { sel.value = p.get('drug'); analyze(); }
-    };
-    xhr.send();
-}
-
-function analyze() {
-    var drugId = document.getElementById('drugSelect').value;
-    document.getElementById('alertBar').classList.remove('show');
-    document.getElementById('statsBar').style.display = 'none';
-    if (!drugId) {
-        document.getElementById('mainArea').innerHTML = '<div class="empty"><div class="empty-icon">⛓️</div><div>اختر دواء لبدء الفحص</div></div>';
-        return;
-    }
-    document.getElementById('mainArea').innerHTML = '<div class="loading-state"><div class="spinner"></div>جاري فحص السلسلة من السيرفر...</div>';
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', API + '/api/transaction/history/' + drugId, true);
-    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-    xhr.onload = function() {
-        if (xhr.status !== 200) { document.getElementById('mainArea').innerHTML = '<div class="loading-state">تعذر الاتصال بالسيرفر</div>'; return; }
-        var txs = JSON.parse(xhr.responseText);
-        if (!txs || txs.length === 0) {
-            document.getElementById('mainArea').innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div>لا توجد نقلات مسجلة لهذا الدواء بعد</div></div>';
-            return;
+        if (p.get('drug')) {
+            switchTab('chain', document.querySelectorAll('.page-tab')[2]);
+            loadDrugsChain();
         }
-        runAnalysis(txs);
-    };
-    xhr.onerror = function() { document.getElementById('mainArea').innerHTML = '<div class="loading-state">تعذر الاتصال بالسيرفر</div>'; };
-    xhr.send();
-}
-
-function runAnalysis(txs) {
-    var results = [];
-    var countOk = 0, countWarn = 0, countErr = 0, maxDelayH = 0;
-    for (var i = 0; i < txs.length; i++) {
-        var t = txs[i], prev = i > 0 ? txs[i-1] : null;
-        var issues = [], status = 'ok', diffH = null;
-        if (prev && t.previousHash !== prev.blockHash) { issues.push('previousHash لا يطابق blockHash السابق — كسر في السلسلة (تلاعب مباشر)'); status = 'err'; }
-        if (prev) {
-            diffH = Math.round((new Date(t.timestamp) - new Date(prev.timestamp)) / 3600000);
-            if (diffH > maxDelayH) maxDelayH = diffH;
-            if (diffH > 168) { issues.push('تأخير ' + diffH + ' ساعة (' + Math.round(diffH/24) + ' يوم) — يتجاوز الحد المقبول بكثير. هجوم تأخير متعمد محتمل'); status = 'err'; }
-            else if (diffH > 48) { issues.push('تأخير ' + diffH + ' ساعة — يستحق المراجعة'); status = status === 'err' ? 'err' : 'warn'; }
-        }
-        if (prev && t.fromRole !== prev.toRole) { issues.push('الراسل (' + (roleLabels[t.fromRole]||t.fromRole) + ') لا يطابق مستلم السابق (' + (roleLabels[prev.toRole]||prev.toRole) + ') — تخطّي في السلسلة'); status = 'err'; }
-        if (t.blockHash && !t.blockHash.startsWith('00')) { issues.push('blockHash لا يبدأ بـ 00 — Proof of Work غير مستوفى'); status = status === 'ok' ? 'warn' : status; }
-        if (status === 'ok') countOk++; else if (status === 'warn') countWarn++; else countErr++;
-        results.push({ tx: t, issues: issues, status: status, diffH: diffH });
-    }
-    document.getElementById('sTotal').textContent = txs.length;
-    document.getElementById('sOk').textContent    = countOk;
-    document.getElementById('sWarn').textContent  = countWarn;
-    document.getElementById('sErr').textContent   = countErr;
-    document.getElementById('sDelay').textContent = maxDelayH > 0 ? maxDelayH + ' ساعة' : '—';
-    document.getElementById('statsBar').style.display = 'flex';
-    var ab = document.getElementById('alertBar');
-    if (countErr > 0) { ab.className = 'alert-bar show err'; ab.innerHTML = '🚨 <strong>تم رصد ' + countErr + ' مخالفة أمنية</strong> في السلسلة — راجع التفاصيل أدناه'; }
-    else if (countWarn > 0) { ab.className = 'alert-bar show warn'; ab.innerHTML = '⚠️ <strong>' + countWarn + ' تحذير</strong> يستحق المراجعة — لا توجد مخالفات حرجة'; }
-    else { ab.className = 'alert-bar show ok'; ab.innerHTML = '✅ <strong>السلسلة سليمة</strong> — جميع النقلات الـ ' + txs.length + ' مرّت الفحص بنجاح'; }
-    renderResults(results, countOk, countWarn, countErr, maxDelayH);
-}
-
-function renderResults(results, ok, warn, err, maxDelay) {
-    var rows = '';
-    results.forEach(function(r, i) {
-        var t = r.tx;
-        var from = roleLabels[t.fromRole]||t.fromRole, to = roleLabels[t.toRole]||t.toRole;
-        var bc = r.status==='ok'?'badge-ok':r.status==='warn'?'badge-warn':'badge-err';
-        var bt = r.status==='ok'?'✓ سليم':r.status==='warn'?'⚠ تحذير':'✗ مخالفة';
-        var hash = t.blockHash ? t.blockHash.substring(0,14)+'...' : '—';
-        var date = new Date(t.timestamp).toLocaleDateString('ar-JO');
-        var delayTxt = r.diffH !== null ? r.diffH + ' ساعة' : '—';
-        var delayColor = r.diffH > 168 ? 'color:#dc2626' : r.diffH > 48 ? 'color:#d97706' : 'color:#059669';
-        rows += '<tr>'
-            + '<td style="color:var(--gray-400);font-size:12px">' + (i+1) + '</td>'
-            + '<td><div style="font-weight:600">' + (t.drugName||'—') + '</div>'
-            + '<div style="font-size:11px;color:var(--gray-400);margin-top:2px">' + from + ' → ' + to + '</div>'
-            + (r.issues.length > 0 ? r.issues.map(function(iss){ return '<div class="issue-line">⚑ '+iss+'</div>'; }).join('') : '')
-            + '</td>'
-            + '<td style="font-size:12px">' + date + '</td>'
-            + '<td style="font-size:12px;font-weight:600;' + delayColor + '">' + delayTxt + '</td>'
-            + '<td style="font-family:monospace;font-size:11px;color:var(--gray-400)">' + hash + '</td>'
-            + '<td><span class="badge ' + bc + '">' + bt + '</span></td>'
-            + '</tr>';
-    });
-
-    var tableCard = '<div class="card" style="margin-bottom:16px;"><div class="card-header"><div class="card-header-left"><div class="card-icon ci-blue">📋</div><div><div class="card-title">نتائج فحص كل نقلة في السلسلة</div></div></div></div>'
-        + '<div class="table-wrap"><table><thead><tr><th>#</th><th>الدواء / المسار</th><th>التاريخ</th><th>التأخير</th><th>Block Hash</th><th>الحالة</th></tr></thead>'
-        + '<tbody>' + rows + '</tbody></table></div></div>';
-
-    var ft = results[0].tx;
-    var hashCard = '<div class="card"><div class="card-header"><div class="card-header-left"><div class="card-icon ci-purple">🔗</div><div><div class="card-title">تفاصيل Hash — أول Block في السلسلة</div></div></div></div><div style="padding:16px 20px;"><div class="hash-box">'
-        + '<div class="hash-row"><span class="hash-label">Block #</span><span class="hash-val">' + (ft.blockNumber||1) + '</span></div>'
-        + '<div class="hash-row"><span class="hash-label">Previous Hash</span><span class="hash-val">' + (ft.previousHash||'—') + '</span></div>'
-        + '<div class="hash-row"><span class="hash-label">Block Hash</span><span class="hash-val">' + (ft.blockHash||'—') + '</span></div>'
-        + '<div class="hash-row"><span class="hash-label">Nonce</span><span class="hash-val">' + (ft.nonce||'0') + '</span></div>'
-        + '<div class="hash-row"><span class="hash-label">Merkle Root</span><span class="hash-val">' + (ft.merkleRoot||'—') + '</span></div>'
-        + '<div class="hash-row"><span class="hash-label">Timestamp</span><span class="hash-val">' + new Date(ft.timestamp).toLocaleString('ar-JO') + '</span></div>'
-        + '</div></div></div>';
-
-    var checks = [
-        { label: 'Hash Chain مترابط',    st: err===0?'ok':'err' },
-        { label: 'ترتيب الأدوار صحيح',  st: err===0?'ok':'err' },
-        { label: 'Proof of Work (00...)',st: warn===0&&err===0?'ok':'warn' },
-        { label: 'تأخير < 48 ساعة',     st: maxDelay<=48?'ok':maxDelay<=168?'warn':'err' },
-        { label: 'تسلسل النقلات مستمر', st: err===0?'ok':'err' }
-    ];
-    var checksHtml = '<div class="panel-card"><div class="panel-card-header">🔐 الفحوصات الأمنية</div><div class="panel-card-body">';
-    checks.forEach(function(c) {
-        var cls = c.st==='ok'?'cs-ok':c.st==='warn'?'cs-warn':'cs-err';
-        var txt = c.st==='ok'?'سليم ✓':c.st==='warn'?'تحذير ⚠':'خطأ ✗';
-        checksHtml += '<div class="check-row"><span class="check-label">'+c.label+'</span><span class="check-st '+cls+'">'+txt+'</span></div>';
-    });
-    checksHtml += '</div></div>';
-
-    var summaryHtml = '<div class="panel-card"><div class="panel-card-header">📊 ملخص</div><div class="panel-card-body">'
-        + '<div class="mini-stat"><span class="mini-stat-lbl">إجمالي النقلات</span><span class="mini-stat-val">'+results.length+'</span></div>'
-        + '<div class="mini-stat"><span class="mini-stat-lbl">سليمة</span><span class="mini-stat-val green">'+ok+'</span></div>'
-        + '<div class="mini-stat"><span class="mini-stat-lbl">تحذيرات</span><span class="mini-stat-val orange">'+warn+'</span></div>'
-        + '<div class="mini-stat"><span class="mini-stat-lbl">مخالفات</span><span class="mini-stat-val red">'+err+'</span></div>'
-        + '<div class="mini-stat"><span class="mini-stat-lbl">أطول تأخير</span><span class="mini-stat-val '+(maxDelay>48?'orange':'green')+'">'+(maxDelay>0?maxDelay+' ساعة':'—')+'</span></div>'
-        + '</div></div>';
-
-    document.getElementById('mainArea').innerHTML =
-        '<div class="main-grid"><div>' + tableCard + hashCard + '</div>'
-        + '<div class="right-panel">' + checksHtml + summaryHtml + '</div></div>';
-}
-
-function demoTamper() {
-    var drugId = document.getElementById('drugSelect').value;
-    if (!drugId) { showToast('اختر دواء أولاً'); return; }
-    if (!confirm('هذا سيكسر أول block للدواء #' + drugId + ' — هل تكملي؟')) return;
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', API + '/api/transaction/history/' + drugId, true);
-    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-    xhr.onload = function() {
-        var txs = JSON.parse(xhr.responseText);
-        if (!txs || txs.length === 0) { showToast('لا توجد نقلات لهذا الدواء'); return; }
-        var firstBlockId = txs[0].id;
-        var xhr2 = new XMLHttpRequest();
-        xhr2.open('POST', API + '/api/transaction/demo-tamper/' + firstBlockId, true);
-        xhr2.setRequestHeader('Authorization', 'Bearer ' + token);
-        xhr2.onload = function() { showToast('💥 تم كسر السلسلة — اضغط فحص لترى النتيجة'); analyze(); };
-        xhr2.onerror = function() { showToast('تعذر الاتصال'); };
-        xhr2.send();
-    };
-    xhr.onerror = function() { showToast('تعذر الاتصال'); };
-    xhr.send();
-}
-
-function demoRestore() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', API + '/api/transaction/demo-restore', true);
-    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-    xhr.onload = function() { showToast('✅ تم استعادة السلسلة'); analyze(); };
-    xhr.onerror = function() { showToast('تعذر الاتصال'); };
-    xhr.send();
-}
-
-var attackLabels = {
-    'NONE':               { text: 'مسح سليم',       cls: 'tag-none' },
-    'SIGNATURE_MISMATCH': { text: 'تبديل ملصق QR',  cls: 'tag-sig'  },
-    'DATE_MISMATCH':      { text: 'تلاعب بالتاريخ', cls: 'tag-date' },
-    'DRUG_NOT_FOUND':     { text: 'كود مزيف',        cls: 'tag-fake' },
-    'QR_EXPIRED':         { text: 'QR منتهي',        cls: 'tag-exp'  },
-    'MISSING_PARAMS':     { text: 'بيانات ناقصة',   cls: 'tag-other'}
-};
-
-function loadLogs() {
-    var filter = document.getElementById('logFilter') ? document.getElementById('logFilter').value : 'ALL';
-    document.getElementById('logsArea').innerHTML = '<div class="loading-state"><div class="spinner"></div>جاري تحميل سجل المحاولات...</div>';
-    var url = API + '/api/qr/scan-logs?limit=200';
-    if (filter && filter !== 'ALL') url += '&attackType=' + filter;
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-    xhr.onload = function() {
-        if (xhr.status === 403) { document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">🔒</div><div>هذا السجل متاح للأدمن فقط</div></div>'; return; }
-        if (xhr.status !== 200) { document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div>تعذر تحميل السجل</div></div>'; return; }
-        var data = JSON.parse(xhr.responseText);
-        renderLogs(data.stats, data.logs);
-    };
-    xhr.onerror = function() { document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div>تعذر الاتصال بالسيرفر</div></div>'; };
-    xhr.send();
-}
-
-function renderLogs(stats, logs) {
-    if (stats) {
-        document.getElementById('ls-total').textContent = stats.total  || 0;
-        document.getElementById('ls-valid').textContent = stats.valid  || 0;
-        document.getElementById('ls-sig').textContent   = stats.signatureMismatch || 0;
-        document.getElementById('ls-date').textContent  = stats.dateMismatch      || 0;
-        document.getElementById('ls-fake').textContent  = stats.drugNotFound      || 0;
-        document.getElementById('logStats').style.display = 'grid';
-    }
-    if (!logs || logs.length === 0) {
-        document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">✅</div><div>لا توجد محاولات مسجلة بعد — جرّب الأزرار في تبويب محاكاة الهجمات!</div></div>';
-        return;
-    }
-    var rows = logs.map(function(l, i) {
-        var atk = attackLabels[l.attackType] || { text: l.attackType, cls: 'tag-other' };
-        var rowStyle = l.isValid ? '' : 'background:#fffafa';
-        var timeStr = l.scannedAt ? new Date(l.scannedAt).toLocaleString('ar-JO') : '—';
-        return '<tr style="' + rowStyle + '">'
-            + '<td style="color:var(--gray-400);font-size:12px">' + (i+1) + '</td>'
-            + '<td style="font-weight:600">' + l.drugId + '</td>'
-            + '<td><span class="attack-tag ' + atk.cls + '">' + atk.text + '</span></td>'
-            + '<td style="font-size:12px;color:var(--gray-600);max-width:280px">' + (l.message||'—') + '</td>'
-            + '<td><span class="ip-chip">' + (l.ipAddress||'—') + '</span></td>'
-            + '<td style="font-size:12px;color:var(--gray-500);white-space:nowrap">' + timeStr + '</td>'
-            + '</tr>';
-    }).join('');
-
-    document.getElementById('logsArea').innerHTML =
-        '<div class="card"><div class="card-header"><div class="card-header-left"><div class="card-icon ci-red">📋</div><div><div class="card-title">سجل عمليات مسح QR <span class="count-badge">' + logs.length + '</span></div></div></div></div>'
-        + '<div class="table-wrap"><table><thead><tr><th>#</th><th>Drug ID</th><th>نوع الهجوم</th><th>التفاصيل</th><th>IP</th><th>وقت المسح</th></tr></thead>'
-        + '<tbody>' + rows + '</tbody></table></div></div>';
-}
-
-var p = new URLSearchParams(window.location.search);
-if (p.get('drug')) {
-    switchTab('chain', document.querySelectorAll('.page-tab')[1]);
-    loadDrugs();
-}
-</script>
+    </script>
 </body>
 </html>
