@@ -511,19 +511,29 @@
                 var res = JSON.parse(xhr.responseText);
                 showMsg(msg, '✅ ' + res.message, true);
                 loadQuotas();
+            } else if (xhr.status === 404) {
+                showMsg(msg, '❌ الـ API غير موجود (404) — أعد تشغيل السيرفر بعد البيلد', false);
+            } else if (xhr.status === 401 || xhr.status === 403) {
+                showMsg(msg, '❌ غير مصرح ('+xhr.status+') — سجّل خروج ثم دخول', false);
+            } else if (xhr.status === 500) {
+                var detail = '';
+                try { detail = JSON.parse(xhr.responseText).detail || JSON.parse(xhr.responseText).title || ''; } catch(e){}
+                showMsg(msg, '❌ خطأ 500 في السيرفر' + (detail ? ': ' + detail : ' — تحقق من إنشاء الجداول'), false);
             } else {
-                showMsg(msg, '❌ ' + (xhr.responseText || 'خطأ'), false);
+                showMsg(msg, '❌ خطأ ' + xhr.status + ': ' + (xhr.responseText.substring(0,120) || 'غير معروف'), false);
             }
         };
-        xhr.onerror = function() { btn.disabled = false; btn.textContent = '💾 حفظ'; showMsg(msg, '❌ تعذر الاتصال', false); };
+        xhr.onerror = function() { btn.disabled = false; btn.textContent = '💾 حفظ'; showMsg(msg, '❌ تعذر الاتصال بالسيرفر', false); };
         xhr.send(JSON.stringify(body));
     }
 
     function showMsg(el, text, ok) {
-        el.style.display = '';
-        el.style.color   = ok ? '#0d9488' : '#dc2626';
-        el.textContent   = text;
-        setTimeout(function(){ el.style.display = 'none'; }, 4000);
+        el.style.display    = '';
+        el.style.color      = ok ? '#0d9488' : '#dc2626';
+        el.style.fontWeight = '600';
+        el.textContent      = text;
+        // errors stay 10s, success 4s
+        setTimeout(function(){ el.style.display = 'none'; }, ok ? 4000 : 10000);
     }
 
     // ── Shared auth GET ──

@@ -54,44 +54,40 @@ using (var scope = app.Services.CreateScope())
     catch { /* يُهمَل إذا DB غير موجودة بعد */ }
 
     // ── QR Issuance Control Tables ──
-    try
-    {
-        db.Database.ExecuteSqlRaw(@"
-            IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = N'QrQuotas')
-            CREATE TABLE QrQuotas (
-                Id          INT IDENTITY(1,1) PRIMARY KEY,
-                Role        NVARCHAR(50)  NOT NULL DEFAULT '',
-                Username    NVARCHAR(100) NULL,
-                QuotaLimit  INT           NOT NULL DEFAULT 100,
-                IssuedCount INT           NOT NULL DEFAULT 0,
-                PeriodType  NVARCHAR(20)  NOT NULL DEFAULT 'Monthly',
-                PeriodStart DATETIME2     NOT NULL,
-                PeriodEnd   DATETIME2     NOT NULL,
-                IsActive    BIT           NOT NULL DEFAULT 1,
-                CreatedAt   DATETIME2     NOT NULL DEFAULT GETUTCDATE(),
-                UpdatedAt   DATETIME2     NOT NULL DEFAULT GETUTCDATE()
-            )");
+    db.Database.ExecuteSqlRaw(
+        "IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = N'QrQuotas') " +
+        "CREATE TABLE QrQuotas (" +
+        "  Id INT IDENTITY(1,1) PRIMARY KEY," +
+        "  Role NVARCHAR(50) NOT NULL DEFAULT ''," +
+        "  Username NVARCHAR(100) NULL," +
+        "  QuotaLimit INT NOT NULL DEFAULT 100," +
+        "  IssuedCount INT NOT NULL DEFAULT 0," +
+        "  PeriodType NVARCHAR(20) NOT NULL DEFAULT 'Monthly'," +
+        "  PeriodStart DATETIME2 NOT NULL DEFAULT GETUTCDATE()," +
+        "  PeriodEnd DATETIME2 NOT NULL DEFAULT GETUTCDATE()," +
+        "  IsActive BIT NOT NULL DEFAULT 1," +
+        "  CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE()," +
+        "  UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE()" +
+        ")");
 
-        db.Database.ExecuteSqlRaw(@"
-            IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = N'QrIssuances')
-            CREATE TABLE QrIssuances (
-                Id               INT IDENTITY(1,1) PRIMARY KEY,
-                DrugId           INT           NOT NULL DEFAULT 0,
-                DrugName         NVARCHAR(200) NOT NULL DEFAULT '',
-                UserId           INT           NOT NULL DEFAULT 0,
-                Username         NVARCHAR(100) NOT NULL DEFAULT '',
-                Role             NVARCHAR(50)  NOT NULL DEFAULT '',
-                QuotaId          INT           NOT NULL DEFAULT 0,
-                QuotaLimit       INT           NOT NULL DEFAULT 0,
-                SequenceNumber   INT           NOT NULL DEFAULT 0,
-                Status           NVARCHAR(20)  NOT NULL DEFAULT 'Valid',
-                SuspicionReason  NVARCHAR(500) NULL,
-                Signature        NVARCHAR(100) NOT NULL DEFAULT '',
-                IpAddress        NVARCHAR(60)  NOT NULL DEFAULT '',
-                IssuedAt         DATETIME2     NOT NULL DEFAULT GETUTCDATE()
-            )");
-    }
-    catch { /* يُهمَل */ }
+    db.Database.ExecuteSqlRaw(
+        "IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = N'QrIssuances') " +
+        "CREATE TABLE QrIssuances (" +
+        "  Id INT IDENTITY(1,1) PRIMARY KEY," +
+        "  DrugId INT NOT NULL DEFAULT 0," +
+        "  DrugName NVARCHAR(200) NOT NULL DEFAULT ''," +
+        "  UserId INT NOT NULL DEFAULT 0," +
+        "  Username NVARCHAR(100) NOT NULL DEFAULT ''," +
+        "  Role NVARCHAR(50) NOT NULL DEFAULT ''," +
+        "  QuotaId INT NOT NULL DEFAULT 0," +
+        "  QuotaLimit INT NOT NULL DEFAULT 0," +
+        "  SequenceNumber INT NOT NULL DEFAULT 0," +
+        "  Status NVARCHAR(20) NOT NULL DEFAULT 'Valid'," +
+        "  SuspicionReason NVARCHAR(500) NULL," +
+        "  Signature NVARCHAR(100) NOT NULL DEFAULT ''," +
+        "  IpAddress NVARCHAR(60) NOT NULL DEFAULT ''," +
+        "  IssuedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE()" +
+        ")");
 }
 app.UseDefaultFiles();
 app.UseStaticFiles();
