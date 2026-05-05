@@ -213,7 +213,9 @@
         <!-- Tabs -->
         <div class="tab-row">
             <button class="tab-btn active" onclick="switchTab('quotas')">📊 الحصص الحالية</button>
+            <button class="tab-btn" onclick="switchTab('generate')">🖨️ توليد QR</button>
             <button class="tab-btn" onclick="switchTab('issuances')">📋 سجل الإصدارات</button>
+            <button class="tab-btn admin-only" onclick="switchTab('scanlogs')" style="display:none">🔍 سجل المسح</button>
             <button class="tab-btn admin-only" onclick="switchTab('settings')" style="display:none">⚙️ تعيين الحصص</button>
         </div>
 
@@ -233,6 +235,45 @@
                 <div style="padding:20px">
                     <div class="quota-grid" id="quotaGrid">
                         <div class="loading-area"><div class="ai-spinner"></div><div style="font-size:13px;color:var(--gray-500);">جاري التحميل...</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Generate QR -->
+        <div class="tab-panel" id="tab-generate">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-icon ci-teal">🖨️</div>
+                        <div>
+                            <div style="font-size:14px;font-weight:700;color:var(--gray-800);">توليد رمز QR لدواء</div>
+                            <div style="font-size:12px;color:var(--gray-500);">موقَّع بـ HMAC-SHA256 + AI Token · يُسجَّل في سجل الإصدار تلقائياً</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding:20px">
+                    <div class="info-strip">🔐 كل رمز QR يحمل توقيعاً رقمياً فريداً مرتبطاً بـ Blockchain — لا يمكن تزويره</div>
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;">
+                        <div class="form-fld" style="flex:1;min-width:200px;">
+                            <label>اختر الدواء <span style="color:#dc2626">*</span></label>
+                            <select id="genDrugSelect">
+                                <option value="">— جاري التحميل... —</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary" onclick="generateQR()" id="genBtn">🖨️ توليد رمز QR</button>
+                        </div>
+                    </div>
+                    <div id="genStatus"></div>
+                    <div id="genResult" style="display:none;text-align:center;padding:16px 0;">
+                        <div id="genInfoStrip" class="info-strip" style="display:inline-flex;margin-bottom:16px;"></div>
+                        <div style="display:inline-block;padding:12px;background:white;border:2px solid #99f6e4;border-radius:16px;box-shadow:0 4px 20px rgba(13,148,136,0.12);">
+                            <img id="genQrImg" src="" alt="QR Code" width="200" height="200" style="display:block;border-radius:8px;">
+                        </div>
+                        <div style="margin-top:12px;">
+                            <button class="btn btn-outline" onclick="downloadQR()">⬇️ تحميل PNG</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -258,6 +299,37 @@
                         <button class="filter-btn" onclick="filterIssuances('Blocked',this)">🚫 محظورة</button>
                     </div>
                     <div id="issuancesArea">
+                        <div class="loading-area"><div class="ai-spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Scan Logs (Admin) -->
+        <div class="tab-panel" id="tab-scanlogs">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-icon ci-red" style="background:#fef2f2;">🔍</div>
+                        <div>
+                            <div style="font-size:14px;font-weight:700;color:var(--gray-800);">سجل مسح رموز QR وكشف الهجمات</div>
+                            <div style="font-size:12px;color:var(--gray-500);">كل عملية تحقق مسجلة — كشف التزوير والتلاعب فوري</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline" onclick="loadScanLogs()" style="font-size:12px;">🔄 تحديث</button>
+                </div>
+                <div style="padding:20px">
+                    <div id="scanStatsRow" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;"></div>
+                    <div class="filters-row">
+                        <button class="filter-btn active" onclick="filterScanLogs('ALL',this)">الكل</button>
+                        <button class="filter-btn" onclick="filterScanLogs('NONE',this)">✅ صحيح</button>
+                        <button class="filter-btn" onclick="filterScanLogs('SIGNATURE_MISMATCH',this)">❌ توقيع مزيف</button>
+                        <button class="filter-btn" onclick="filterScanLogs('DATE_MISMATCH',this)">📅 تاريخ مختلف</button>
+                        <button class="filter-btn" onclick="filterScanLogs('DRUG_NOT_FOUND',this)">👻 دواء غير موجود</button>
+                        <button class="filter-btn" onclick="filterScanLogs('QR_EXPIRED',this)">⏰ منتهي</button>
+                        <button class="filter-btn" onclick="filterScanLogs('QUOTA_EXCEEDED',this)">🚫 تجاوز حصة</button>
+                    </div>
+                    <div id="scanLogsArea">
                         <div class="loading-area"><div class="ai-spinner"></div></div>
                     </div>
                 </div>
@@ -354,6 +426,131 @@
         event.target.classList.add('active');
         if (name === 'issuances') loadIssuances('ALL');
         if (name === 'quotas')    loadQuotas();
+        if (name === 'generate')  loadDrugList();
+        if (name === 'scanlogs')  loadScanLogs();
+    }
+
+    // ── Generate QR ──
+    function loadDrugList() {
+        authGet('/api/drugs', function(data) {
+            var drugs = Array.isArray(data) ? data : (data && data.drugs ? data.drugs : []);
+            var sel = document.getElementById('genDrugSelect');
+            if (!drugs.length) { sel.innerHTML = '<option value="">لا توجد أدوية</option>'; return; }
+            sel.innerHTML = '<option value="">— اختر دواء —</option>'
+                + drugs.map(function(d){ return '<option value="' + d.id + '">' + d.name + ' (ID: ' + d.id + ')</option>'; }).join('');
+        });
+    }
+
+    function generateQR() {
+        var drugId = document.getElementById('genDrugSelect').value;
+        if (!drugId) {
+            document.getElementById('genStatus').innerHTML = '<div class="alert-strip">⚠️ اختر دواءً أولاً</div>';
+            return;
+        }
+        var btn = document.getElementById('genBtn');
+        btn.disabled = true; btn.textContent = '⏳ جاري التوليد...';
+        document.getElementById('genResult').style.display = 'none';
+        document.getElementById('genStatus').innerHTML = '';
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', API + '/api/qr/' + drugId + '?token=' + encodeURIComponent(token), true);
+        xhr.responseType = 'blob';
+        xhr.onload = function() {
+            btn.disabled = false; btn.textContent = '🖨️ توليد رمز QR';
+            if (xhr.status === 429) {
+                var reader = new FileReader();
+                reader.onload = function() {
+                    try { var err = JSON.parse(reader.result);
+                        document.getElementById('genStatus').innerHTML =
+                            '<div class="alert-strip">🚫 تجاوز الحصة! صدر ' + err.issued + '/' + err.limit
+                            + ' رمز. الفترة تنتهي: ' + err.periodEnd + '</div>'; } catch(e){}
+                };
+                reader.readAsText(xhr.response); return;
+            }
+            if (xhr.status !== 200) {
+                document.getElementById('genStatus').innerHTML = '<div class="alert-strip">❌ خطأ ' + xhr.status + ' أثناء التوليد</div>'; return;
+            }
+            var seq       = xhr.getResponseHeader('X-QR-Sequence')  || '?';
+            var remaining = xhr.getResponseHeader('X-QR-Remaining') || '?';
+            var status    = xhr.getResponseHeader('X-QR-Status')    || 'Valid';
+            var url = URL.createObjectURL(xhr.response);
+            document.getElementById('genQrImg').src = url;
+            var sc = status === 'Valid' ? '#0d9488' : '#d97706';
+            document.getElementById('genInfoStrip').innerHTML =
+                '✅ تم التوليد &nbsp;·&nbsp; التسلسل: <strong>#' + seq + '</strong>'
+                + ' &nbsp;·&nbsp; متبقي: <strong>' + remaining + '</strong>'
+                + ' &nbsp;·&nbsp; <span style="font-weight:700;color:' + sc + '">' + status + '</span>';
+            document.getElementById('genResult').style.display = 'block';
+            loadStats(); // refresh quota counters
+        };
+        xhr.onerror = function() {
+            btn.disabled = false; btn.textContent = '🖨️ توليد رمز QR';
+            document.getElementById('genStatus').innerHTML = '<div class="alert-strip">❌ تعذر الاتصال بالسيرفر</div>';
+        };
+        xhr.send();
+    }
+
+    function downloadQR() {
+        var img = document.getElementById('genQrImg');
+        if (!img.src) return;
+        var a = document.createElement('a'); a.href = img.src; a.download = 'pharmachain-qr.png'; a.click();
+    }
+
+    // ── Scan Logs ──
+    var currentScanFilter = 'ALL';
+    function loadScanLogs() {
+        var area = document.getElementById('scanLogsArea');
+        area.innerHTML = '<div class="loading-area"><div class="ai-spinner"></div></div>';
+        var url = '/api/qr/scan-logs?limit=100' + (currentScanFilter !== 'ALL' ? '&attackType=' + currentScanFilter : '');
+        authGet(url, function(data) {
+            if (!data) { area.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">تعذر التحميل</div>'; return; }
+            var s = data.stats || {};
+            var attackLabel = {
+                NONE: '✅ صحيح', SIGNATURE_MISMATCH: '❌ توقيع مزيف',
+                DATE_MISMATCH: '📅 تاريخ مختلف', DRUG_NOT_FOUND: '👻 دواء غير موجود',
+                QR_EXPIRED: '⏰ منتهي', QUOTA_EXCEEDED: '🚫 تجاوز حصة'
+            };
+            document.getElementById('scanStatsRow').innerHTML =
+                statMini('🔍', s.total || 0, 'إجمالي المسح', '#0d9488')
+                + statMini('✅', s.valid || 0, 'صحيح', '#059669')
+                + statMini('❌', s.signatureMismatch || 0, 'توقيع مزيف', '#dc2626')
+                + statMini('📅', s.dateMismatch || 0, 'تاريخ مختلف', '#d97706')
+                + statMini('👻', s.drugNotFound || 0, 'دواء غير موجود', '#dc2626')
+                + statMini('⏰', s.qrExpired || 0, 'منتهي الصلاحية', '#b45309')
+                + statMini('🚫', s.quotaExceeded || 0, 'تجاوز حصة', '#dc2626');
+
+            var logs = data.logs || [];
+            if (!logs.length) { area.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">لا توجد سجلات</div>'; return; }
+            var rows = logs.map(function(l) {
+                var bc = l.isValid ? '#f0fdfa;color:#0d9488' : '#fef2f2;color:#dc2626';
+                var lbl = attackLabel[l.attackType] || l.attackType;
+                return '<tr>'
+                    + '<td>#' + l.id + '</td>'
+                    + '<td>Drug ID ' + l.drugId + '</td>'
+                    + '<td><span class="status-badge" style="background:' + bc + ';">' + lbl + '</span></td>'
+                    + '<td style="font-size:11px;color:var(--gray-500);max-width:260px;">' + (l.message || '—') + '</td>'
+                    + '<td style="font-size:11px;">' + (l.ipAddress || '—') + '</td>'
+                    + '<td style="font-size:12px;">' + l.scannedAt + '</td>'
+                    + '</tr>';
+            }).join('');
+            area.innerHTML = '<div class="table-container"><table>'
+                + '<thead><tr><th>#</th><th>الدواء</th><th>نوع الهجوم</th><th>الرسالة</th><th>IP</th><th>الوقت</th></tr></thead>'
+                + '<tbody>' + rows + '</tbody></table></div>';
+        });
+    }
+
+    function filterScanLogs(filter, btn) {
+        currentScanFilter = filter;
+        document.querySelectorAll('#tab-scanlogs .filter-btn').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        loadScanLogs();
+    }
+
+    function statMini(icon, val, lbl, color) {
+        return '<div class="stat-card">'
+            + '<div class="num" style="font-size:22px;color:' + color + ';">' + val + '</div>'
+            + '<div class="lbl">' + icon + ' ' + lbl + '</div>'
+            + '</div>';
     }
 
     // ── Load stats ──
