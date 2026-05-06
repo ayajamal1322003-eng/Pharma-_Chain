@@ -149,7 +149,7 @@
         <div class="nav-section-hdr" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
         <a class="nav-item" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
         <a class="nav-item" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
-        <a class="nav-item active"><span class="nav-icon">🔐</span> <span>إدارة QR Code</span></a>
+        <a class="nav-item active"><span class="nav-icon">🔐</span> <span data-i18n="nav_qr_control">إدارة QR Code</span></a>
         <div class="user-info-bar">
             <div class="user-row">
                 <div class="user-avatar">👤</div>
@@ -166,20 +166,20 @@
     <div class="main">
         <div class="page-header">
             <div>
-                <div class="page-title">إدارة إصدار QR Code</div>
-                <div class="page-subtitle">حصص الإصدار • كشف التلاعب • سجل الإصدارات</div>
+                <div class="page-title" data-i18n="qr_page_title">إدارة إصدار QR Code</div>
+                <div class="page-subtitle" data-i18n="qr_page_sub">حصص الإصدار • كشف التلاعب • سجل الإصدارات</div>
             </div>
         </div>
 
         <!-- Hero -->
         <div class="qr-hero">
             <div class="qr-hero-left">
-                <h2>🔐 نظام التحكم في إصدار QR</h2>
-                <p>يراقب كل QR صادر ويكتشف أي تجاوز للحصة أو محاولة تزوير</p>
+                <h2 data-i18n="qr_hero_title">🔐 نظام التحكم في إصدار QR</h2>
+                <p data-i18n="qr_hero_desc">يراقب كل QR صادر ويكتشف أي تجاوز للحصة أو محاولة تزوير</p>
             </div>
             <div class="qr-hero-badge">
                 <div class="live-dot"></div>
-                مراقبة مستمرة
+                <span data-i18n="qr_live">مراقبة مستمرة</span>
             </div>
         </div>
 
@@ -187,36 +187,36 @@
         <div class="stats-row" id="statsRow">
             <div class="stat-card">
                 <div class="num c-teal" id="statTotal">—</div>
-                <div class="lbl">إجمالي QR الصادرة</div>
+                <div class="lbl" data-i18n="qr_stat_total_lbl">إجمالي QR الصادرة</div>
             </div>
             <div class="stat-card">
                 <div class="num c-green" id="statValid">—</div>
-                <div class="lbl">صالحة (ضمن الحصة)</div>
+                <div class="lbl" data-i18n="qr_stat_valid_lbl">صالحة (ضمن الحصة)</div>
             </div>
             <div class="stat-card">
                 <div class="num c-orange" id="statSusp">—</div>
-                <div class="lbl">مشبوهة (burst)</div>
+                <div class="lbl" data-i18n="qr_stat_susp_lbl">مشبوهة (burst)</div>
                 <div class="sub c-orange" id="subSusp"></div>
             </div>
             <div class="stat-card">
                 <div class="num c-red" id="statBlocked">—</div>
-                <div class="lbl">محظورة (تجاوز حصة)</div>
+                <div class="lbl" data-i18n="qr_stat_blocked_lbl">محظورة (تجاوز حصة)</div>
                 <div class="sub c-red" id="subBlocked"></div>
             </div>
             <div class="stat-card" id="myQuotaCard" style="display:none">
                 <div class="num c-teal" id="statMyRemain">—</div>
-                <div class="lbl">QR متبقية لك هذا الشهر</div>
+                <div class="lbl" data-i18n="qr_stat_my_remain">QR متبقية لك هذا الشهر</div>
                 <div class="sub" id="statMyPct" style="color:var(--gray-500)"></div>
             </div>
         </div>
 
         <!-- Tabs -->
         <div class="tab-row">
-            <button class="tab-btn active" onclick="switchTab('quotas')">📊 الحصص الحالية</button>
-            <button class="tab-btn" onclick="switchTab('generate')">🖨️ توليد QR</button>
-            <button class="tab-btn" onclick="switchTab('issuances')">📋 سجل الإصدارات</button>
-            <button class="tab-btn admin-only" onclick="switchTab('scanlogs')" style="display:none">🔍 سجل المسح</button>
-            <button class="tab-btn admin-only" onclick="switchTab('settings')" style="display:none">⚙️ تعيين الحصص</button>
+            <button class="tab-btn active" onclick="switchTab('quotas')" data-i18n="qr_tab_quotas">📊 الحصص الحالية</button>
+            <button class="tab-btn" onclick="switchTab('generate')" data-i18n="qr_tab_generate">🖨️ توليد QR</button>
+            <button class="tab-btn" onclick="switchTab('issuances')" data-i18n="qr_tab_issuances">📋 سجل الإصدارات</button>
+            <button class="tab-btn admin-only" onclick="switchTab('scanlogs')" style="display:none" data-i18n="qr_tab_scanlogs">🔍 سجل المسح</button>
+            <button class="tab-btn admin-only" onclick="switchTab('settings')" style="display:none" data-i18n="qr_tab_settings">⚙️ تعيين الحصص</button>
         </div>
 
         <!-- Tab: Quotas -->
@@ -226,8 +226,8 @@
                     <div class="card-header-left">
                         <div class="card-icon ci-teal">📊</div>
                         <div>
-                            <div style="font-size:14px;font-weight:700;color:var(--gray-800);">حصص الإصدار النشطة — هذا الشهر</div>
-                            <div style="font-size:12px;color:var(--gray-500);">لكل دور — تُجدَّد تلقائياً في أول الشهر</div>
+                            <div style="font-size:14px;font-weight:700;color:var(--gray-800);" data-i18n="qr_quotas_title">حصص الإصدار النشطة — هذا الشهر</div>
+                            <div style="font-size:12px;color:var(--gray-500);" data-i18n="qr_quotas_sub">لكل دور — تُجدَّد تلقائياً في أول الشهر</div>
                         </div>
                     </div>
                     <button class="btn btn-outline" onclick="loadQuotas()" style="font-size:12px;">🔄 تحديث</button>
@@ -247,22 +247,22 @@
                     <div class="card-header-left">
                         <div class="card-icon ci-teal">🖨️</div>
                         <div>
-                            <div style="font-size:14px;font-weight:700;color:var(--gray-800);">توليد رمز QR لدواء</div>
-                            <div style="font-size:12px;color:var(--gray-500);">موقَّع بـ HMAC-SHA256 + AI Token · يُسجَّل في سجل الإصدار تلقائياً</div>
+                            <div style="font-size:14px;font-weight:700;color:var(--gray-800);" data-i18n="qr_gen_title">توليد رمز QR لدواء</div>
+                            <div style="font-size:12px;color:var(--gray-500);" data-i18n="qr_gen_sub">موقَّع بـ HMAC-SHA256 + AI Token · يُسجَّل في سجل الإصدار تلقائياً</div>
                         </div>
                     </div>
                 </div>
                 <div style="padding:20px">
-                    <div class="info-strip">🔐 كل رمز QR يحمل توقيعاً رقمياً فريداً مرتبطاً بـ Blockchain — لا يمكن تزويره</div>
+                    <div class="info-strip" data-i18n="qr_gen_info">🔐 كل رمز QR يحمل توقيعاً رقمياً فريداً مرتبطاً بـ Blockchain — لا يمكن تزويره</div>
                     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;">
                         <div class="form-fld" style="flex:1;min-width:200px;">
-                            <label>اختر الدواء <span style="color:#dc2626">*</span></label>
+                            <label data-i18n="qr_gen_drug_label">اختر الدواء <span style="color:#dc2626">*</span></label>
                             <select id="genDrugSelect">
                                 <option value="">— جاري التحميل... —</option>
                             </select>
                         </div>
                         <div>
-                            <button class="btn btn-primary" onclick="generateQR()" id="genBtn">🖨️ توليد رمز QR</button>
+                            <button class="btn btn-primary" onclick="generateQR()" id="genBtn" data-i18n="qr_gen_btn">🖨️ توليد رمز QR</button>
                         </div>
                     </div>
                     <div id="genStatus"></div>
@@ -272,7 +272,7 @@
                             <img id="genQrImg" src="" alt="QR Code" width="200" height="200" style="display:block;border-radius:8px;">
                         </div>
                         <div style="margin-top:12px;">
-                            <button class="btn btn-outline" onclick="downloadQR()">⬇️ تحميل PNG</button>
+                            <button class="btn btn-outline" onclick="downloadQR()" data-i18n="qr_download">⬇️ تحميل PNG</button>
                         </div>
                     </div>
                 </div>
@@ -286,17 +286,17 @@
                     <div class="card-header-left">
                         <div class="card-icon ci-teal">📋</div>
                         <div>
-                            <div style="font-size:14px;font-weight:700;color:var(--gray-800);">سجل إصدارات QR</div>
-                            <div style="font-size:12px;color:var(--gray-500);">كل QR صدر مع رقمه التسلسلي والحالة</div>
+                            <div style="font-size:14px;font-weight:700;color:var(--gray-800);" data-i18n="qr_issuances_title">سجل إصدارات QR</div>
+                            <div style="font-size:12px;color:var(--gray-500);" data-i18n="qr_issuances_sub">كل QR صدر مع رقمه التسلسلي والحالة</div>
                         </div>
                     </div>
                 </div>
                 <div style="padding:20px">
                     <div class="filters-row">
-                        <button class="filter-btn active" onclick="filterIssuances('ALL',this)">الكل</button>
-                        <button class="filter-btn" onclick="filterIssuances('Valid',this)">✅ صالحة</button>
-                        <button class="filter-btn" onclick="filterIssuances('Suspicious',this)">⚠️ مشبوهة</button>
-                        <button class="filter-btn" onclick="filterIssuances('Blocked',this)">🚫 محظورة</button>
+                        <button class="filter-btn active" onclick="filterIssuances('ALL',this)" data-i18n="qr_filter_all">الكل</button>
+                        <button class="filter-btn" onclick="filterIssuances('Valid',this)" data-i18n="qr_filter_valid">✅ صالحة</button>
+                        <button class="filter-btn" onclick="filterIssuances('Suspicious',this)" data-i18n="qr_filter_susp">⚠️ مشبوهة</button>
+                        <button class="filter-btn" onclick="filterIssuances('Blocked',this)" data-i18n="qr_filter_blocked">🚫 محظورة</button>
                     </div>
                     <div id="issuancesArea">
                         <div class="loading-area"><div class="ai-spinner"></div></div>
@@ -312,8 +312,8 @@
                     <div class="card-header-left">
                         <div class="card-icon ci-red" style="background:#fef2f2;">🔍</div>
                         <div>
-                            <div style="font-size:14px;font-weight:700;color:var(--gray-800);">سجل مسح رموز QR وكشف الهجمات</div>
-                            <div style="font-size:12px;color:var(--gray-500);">كل عملية تحقق مسجلة — كشف التزوير والتلاعب فوري</div>
+                            <div style="font-size:14px;font-weight:700;color:var(--gray-800);" data-i18n="qr_scanlogs_title">سجل مسح رموز QR وكشف الهجمات</div>
+                            <div style="font-size:12px;color:var(--gray-500);" data-i18n="qr_scanlogs_sub">كل عملية تحقق مسجلة — كشف التزوير والتلاعب فوري</div>
                         </div>
                     </div>
                     <button class="btn btn-outline" onclick="loadScanLogs()" style="font-size:12px;">🔄 تحديث</button>
@@ -321,13 +321,13 @@
                 <div style="padding:20px">
                     <div id="scanStatsRow" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;"></div>
                     <div class="filters-row">
-                        <button class="filter-btn active" onclick="filterScanLogs('ALL',this)">الكل</button>
-                        <button class="filter-btn" onclick="filterScanLogs('NONE',this)">✅ صحيح</button>
-                        <button class="filter-btn" onclick="filterScanLogs('SIGNATURE_MISMATCH',this)">❌ توقيع مزيف</button>
-                        <button class="filter-btn" onclick="filterScanLogs('DATE_MISMATCH',this)">📅 تاريخ مختلف</button>
-                        <button class="filter-btn" onclick="filterScanLogs('DRUG_NOT_FOUND',this)">👻 دواء غير موجود</button>
-                        <button class="filter-btn" onclick="filterScanLogs('QR_EXPIRED',this)">⏰ منتهي</button>
-                        <button class="filter-btn" onclick="filterScanLogs('QUOTA_EXCEEDED',this)">🚫 تجاوز حصة</button>
+                        <button class="filter-btn active" onclick="filterScanLogs('ALL',this)" data-i18n="qr_scan_all">الكل</button>
+                        <button class="filter-btn" onclick="filterScanLogs('NONE',this)" data-i18n="qr_scan_correct">✅ صحيح</button>
+                        <button class="filter-btn" onclick="filterScanLogs('SIGNATURE_MISMATCH',this)" data-i18n="qr_scan_sig">❌ توقيع مزيف</button>
+                        <button class="filter-btn" onclick="filterScanLogs('DATE_MISMATCH',this)" data-i18n="qr_scan_date">📅 تاريخ مختلف</button>
+                        <button class="filter-btn" onclick="filterScanLogs('DRUG_NOT_FOUND',this)" data-i18n="qr_scan_notfound">👻 دواء غير موجود</button>
+                        <button class="filter-btn" onclick="filterScanLogs('QR_EXPIRED',this)" data-i18n="qr_scan_expired">⏰ منتهي</button>
+                        <button class="filter-btn" onclick="filterScanLogs('QUOTA_EXCEEDED',this)" data-i18n="qr_scan_quota">🚫 تجاوز حصة</button>
                     </div>
                     <div id="scanLogsArea">
                         <div class="loading-area"><div class="ai-spinner"></div></div>
@@ -343,16 +343,16 @@
                     <div class="card-header-left">
                         <div class="card-icon ci-teal">⚙️</div>
                         <div>
-                            <div style="font-size:14px;font-weight:700;color:var(--gray-800);">تعيين حصة إصدار QR</div>
-                            <div style="font-size:12px;color:var(--gray-500);">تحديد العدد المسموح به لكل دور أو مستخدم</div>
+                            <div style="font-size:14px;font-weight:700;color:var(--gray-800);" data-i18n="qr_settings_title">تعيين حصة إصدار QR</div>
+                            <div style="font-size:12px;color:var(--gray-500);" data-i18n="qr_settings_sub">تحديد العدد المسموح به لكل دور أو مستخدم</div>
                         </div>
                     </div>
                 </div>
                 <div style="padding:20px">
-                    <div class="info-strip">💡 ستُطبَّق الحصة الجديدة على الفترة الحالية فوراً. الإصدارات السابقة لا تتأثر.</div>
+                    <div class="info-strip" data-i18n="qr_settings_info">💡 ستُطبَّق الحصة الجديدة على الفترة الحالية فوراً. الإصدارات السابقة لا تتأثر.</div>
                     <div class="set-quota-form">
                         <div class="form-fld">
-                            <label>الدور <span style="color:#dc2626">*</span></label>
+                            <label data-i18n="qr_role_label">الدور <span style="color:#dc2626">*</span></label>
                             <select id="fRole">
                                 <option value="Factory">🏭 Factory</option>
                                 <option value="Distributor">🚚 Distributor</option>
@@ -361,30 +361,30 @@
                             </select>
                         </div>
                         <div class="form-fld">
-                            <label>مستخدم محدد (اختياري)</label>
-                            <input type="text" id="fUser" placeholder="اتركه فارغاً = كل الدور">
+                            <label data-i18n="qr_user_label">مستخدم محدد (اختياري)</label>
+                            <input type="text" id="fUser" data-i18n-ph="qr_user_ph" placeholder="اتركه فارغاً = كل الدور">
                         </div>
                         <div class="form-fld">
-                            <label>الحد الأقصى للإصدار</label>
+                            <label data-i18n="qr_limit_label">الحد الأقصى للإصدار</label>
                             <input type="number" id="fLimit" value="100" min="1" max="99999">
                         </div>
                         <div class="form-fld">
-                            <label>الفترة</label>
+                            <label data-i18n="qr_period_label">الفترة</label>
                             <select id="fPeriod">
-                                <option value="Monthly">شهري</option>
-                                <option value="Yearly">سنوي</option>
+                                <option value="Monthly" data-i18n="qr_period_monthly">شهري</option>
+                                <option value="Yearly" data-i18n="qr_period_yearly">سنوي</option>
                             </select>
                         </div>
                         <div>
-                            <button class="btn btn-primary" onclick="setQuota()" id="setQuotaBtn">💾 حفظ</button>
+                            <button class="btn btn-primary" onclick="setQuota()" id="setQuotaBtn" data-i18n="qr_save_btn">💾 حفظ</button>
                         </div>
                     </div>
                     <div id="setQuotaMsg" style="margin-top:10px;font-size:13px;display:none;"></div>
 
                     <div style="margin-top:24px;">
-                        <div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:12px;">🏷️ الحصص الافتراضية للنظام</div>
+                        <div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:12px;" data-i18n="qr_defaults_title">🏷️ الحصص الافتراضية للنظام</div>
                         <table>
-                            <thead><tr><th>الدور</th><th>الحصة الافتراضية / شهر</th></tr></thead>
+                            <thead><tr><th data-i18n="qr_th_role">الدور</th><th data-i18n="qr_th_default_quota">الحصة الافتراضية / شهر</th></tr></thead>
                             <tbody>
                                 <tr><td>🏭 Factory</td><td>500 QR</td></tr>
                                 <tr><td>🚚 Distributor</td><td>200 QR</td></tr>
@@ -435,8 +435,8 @@
         authGet('/api/drugs', function(data) {
             var drugs = Array.isArray(data) ? data : (data && data.drugs ? data.drugs : []);
             var sel = document.getElementById('genDrugSelect');
-            if (!drugs.length) { sel.innerHTML = '<option value="">لا توجد أدوية</option>'; return; }
-            sel.innerHTML = '<option value="">— اختر دواء —</option>'
+            if (!drugs.length) { sel.innerHTML = '<option value="">' + PharmaLang.t('qr_no_drugs') + '</option>'; return; }
+            sel.innerHTML = '<option value="">' + PharmaLang.t('qr_gen_select_ph') + '</option>'
                 + drugs.map(function(d){ return '<option value="' + d.id + '">' + d.name + ' (ID: ' + d.id + ')</option>'; }).join('');
         });
     }
@@ -444,11 +444,11 @@
     function generateQR() {
         var drugId = document.getElementById('genDrugSelect').value;
         if (!drugId) {
-            document.getElementById('genStatus').innerHTML = '<div class="alert-strip">⚠️ اختر دواءً أولاً</div>';
+            document.getElementById('genStatus').innerHTML = '<div class="alert-strip">' + PharmaLang.t('qr_select_warn') + '</div>';
             return;
         }
         var btn = document.getElementById('genBtn');
-        btn.disabled = true; btn.textContent = '⏳ جاري التوليد...';
+        btn.disabled = true; btn.textContent = PharmaLang.t('qr_generating');
         document.getElementById('genResult').style.display = 'none';
         document.getElementById('genStatus').innerHTML = '';
 
@@ -456,19 +456,19 @@
         xhr.open('GET', API + '/api/qr/' + drugId + '?token=' + encodeURIComponent(token), true);
         xhr.responseType = 'blob';
         xhr.onload = function() {
-            btn.disabled = false; btn.textContent = '🖨️ توليد رمز QR';
+            btn.disabled = false; btn.textContent = PharmaLang.t('qr_gen_btn');
             if (xhr.status === 429) {
                 var reader = new FileReader();
                 reader.onload = function() {
                     try { var err = JSON.parse(reader.result);
                         document.getElementById('genStatus').innerHTML =
-                            '<div class="alert-strip">🚫 تجاوز الحصة! صدر ' + err.issued + '/' + err.limit
-                            + ' رمز. الفترة تنتهي: ' + err.periodEnd + '</div>'; } catch(e){}
+                            '<div class="alert-strip">🚫 ' + PharmaLang.t('qr_quota_exc_msg') + ' ' + err.issued + '/' + err.limit
+                            + '. ' + PharmaLang.t('qr_period_end') + ': ' + err.periodEnd + '</div>'; } catch(e){}
                 };
                 reader.readAsText(xhr.response); return;
             }
             if (xhr.status !== 200) {
-                document.getElementById('genStatus').innerHTML = '<div class="alert-strip">❌ خطأ ' + xhr.status + ' أثناء التوليد</div>'; return;
+                document.getElementById('genStatus').innerHTML = '<div class="alert-strip">' + PharmaLang.t('qr_err_gen') + ' (' + xhr.status + ')</div>'; return;
             }
             var seq       = xhr.getResponseHeader('X-QR-Sequence')  || '?';
             var remaining = xhr.getResponseHeader('X-QR-Remaining') || '?';
@@ -477,15 +477,15 @@
             document.getElementById('genQrImg').src = url;
             var sc = status === 'Valid' ? '#0d9488' : '#d97706';
             document.getElementById('genInfoStrip').innerHTML =
-                '✅ تم التوليد &nbsp;·&nbsp; التسلسل: <strong>#' + seq + '</strong>'
-                + ' &nbsp;·&nbsp; متبقي: <strong>' + remaining + '</strong>'
+                PharmaLang.t('qr_generated') + ' &nbsp;·&nbsp; ' + PharmaLang.t('qr_seq') + ': <strong>#' + seq + '</strong>'
+                + ' &nbsp;·&nbsp; ' + PharmaLang.t('qr_remain') + ': <strong>' + remaining + '</strong>'
                 + ' &nbsp;·&nbsp; <span style="font-weight:700;color:' + sc + '">' + status + '</span>';
             document.getElementById('genResult').style.display = 'block';
-            loadStats(); // refresh quota counters
+            loadStats();
         };
         xhr.onerror = function() {
-            btn.disabled = false; btn.textContent = '🖨️ توليد رمز QR';
-            document.getElementById('genStatus').innerHTML = '<div class="alert-strip">❌ تعذر الاتصال بالسيرفر</div>';
+            btn.disabled = false; btn.textContent = PharmaLang.t('qr_gen_btn');
+            document.getElementById('genStatus').innerHTML = '<div class="alert-strip">' + PharmaLang.t('qr_connect_fail') + '</div>';
         };
         xhr.send();
     }
@@ -503,24 +503,24 @@
         area.innerHTML = '<div class="loading-area"><div class="ai-spinner"></div></div>';
         var url = '/api/qr/scan-logs?limit=100' + (currentScanFilter !== 'ALL' ? '&attackType=' + currentScanFilter : '');
         authGet(url, function(data) {
-            if (!data) { area.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">تعذر التحميل</div>'; return; }
+            if (!data) { area.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">' + PharmaLang.t('qr_load_fail') + '</div>'; return; }
             var s = data.stats || {};
             var attackLabel = {
-                NONE: '✅ صحيح', SIGNATURE_MISMATCH: '❌ توقيع مزيف',
-                DATE_MISMATCH: '📅 تاريخ مختلف', DRUG_NOT_FOUND: '👻 دواء غير موجود',
-                QR_EXPIRED: '⏰ منتهي', QUOTA_EXCEEDED: '🚫 تجاوز حصة'
+                NONE: PharmaLang.t('qr_attack_none'), SIGNATURE_MISMATCH: PharmaLang.t('qr_attack_sig'),
+                DATE_MISMATCH: PharmaLang.t('qr_attack_date'), DRUG_NOT_FOUND: PharmaLang.t('qr_attack_notfound'),
+                QR_EXPIRED: PharmaLang.t('qr_attack_expired'), QUOTA_EXCEEDED: PharmaLang.t('qr_attack_quota')
             };
             document.getElementById('scanStatsRow').innerHTML =
-                statMini('🔍', s.total || 0, 'إجمالي المسح', '#0d9488')
-                + statMini('✅', s.valid || 0, 'صحيح', '#059669')
-                + statMini('❌', s.signatureMismatch || 0, 'توقيع مزيف', '#dc2626')
-                + statMini('📅', s.dateMismatch || 0, 'تاريخ مختلف', '#d97706')
-                + statMini('👻', s.drugNotFound || 0, 'دواء غير موجود', '#dc2626')
-                + statMini('⏰', s.qrExpired || 0, 'منتهي الصلاحية', '#b45309')
-                + statMini('🚫', s.quotaExceeded || 0, 'تجاوز حصة', '#dc2626');
+                statMini('🔍', s.total || 0, PharmaLang.t('qr_scan_total'), '#0d9488')
+                + statMini('✅', s.valid || 0, PharmaLang.t('qr_scan_correct_lbl'), '#059669')
+                + statMini('❌', s.signatureMismatch || 0, PharmaLang.t('qr_scan_sig_lbl'), '#dc2626')
+                + statMini('📅', s.dateMismatch || 0, PharmaLang.t('qr_scan_date_lbl'), '#d97706')
+                + statMini('👻', s.drugNotFound || 0, PharmaLang.t('qr_scan_nf_lbl'), '#dc2626')
+                + statMini('⏰', s.qrExpired || 0, PharmaLang.t('qr_scan_exp_lbl'), '#b45309')
+                + statMini('🚫', s.quotaExceeded || 0, PharmaLang.t('qr_scan_quota_lbl'), '#dc2626');
 
             var logs = data.logs || [];
-            if (!logs.length) { area.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">لا توجد سجلات</div>'; return; }
+            if (!logs.length) { area.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">' + PharmaLang.t('qr_no_scanlogs') + '</div>'; return; }
             var rows = logs.map(function(l) {
                 var bc = l.isValid ? '#f0fdfa;color:#0d9488' : '#fef2f2;color:#dc2626';
                 var lbl = attackLabel[l.attackType] || l.attackType;
@@ -534,7 +534,7 @@
                     + '</tr>';
             }).join('');
             area.innerHTML = '<div class="table-container"><table>'
-                + '<thead><tr><th>#</th><th>الدواء</th><th>نوع الهجوم</th><th>الرسالة</th><th>IP</th><th>الوقت</th></tr></thead>'
+                + '<thead><tr><th>#</th><th>' + PharmaLang.t('qr_th_drug') + '</th><th>' + PharmaLang.t('qr_th_attack') + '</th><th>' + PharmaLang.t('qr_th_message') + '</th><th>IP</th><th>' + PharmaLang.t('qr_th_time') + '</th></tr></thead>'
                 + '<tbody>' + rows + '</tbody></table></div>';
         });
     }
@@ -561,15 +561,15 @@
             document.getElementById('statValid').textContent   = data.stats.valid;
             document.getElementById('statSusp').textContent    = data.stats.suspicious;
             document.getElementById('statBlocked').textContent = data.stats.blocked;
-            if (data.stats.suspicious > 0) document.getElementById('subSusp').textContent   = '⚠️ يحتاج مراجعة';
-            if (data.stats.blocked    > 0) document.getElementById('subBlocked').textContent = '🚫 تجاوز الحصة';
+            if (data.stats.suspicious > 0) document.getElementById('subSusp').textContent   = PharmaLang.t('qr_needs_review');
+            if (data.stats.blocked    > 0) document.getElementById('subBlocked').textContent = PharmaLang.t('qr_quota_exceeded_sub');
         });
         authGet('/api/qr/quota', function(data) {
             if (!data) return;
             var card = document.getElementById('myQuotaCard');
             card.style.display = '';
             document.getElementById('statMyRemain').textContent = data.remaining;
-            document.getElementById('statMyPct').textContent    = data.usedPct + '% مستخدم';
+            document.getElementById('statMyPct').textContent    = data.usedPct + '% ' + PharmaLang.t('qr_used_pct');
         });
     }
 
@@ -580,7 +580,7 @@
             grid.innerHTML = '<div class="loading-area"><div class="ai-spinner"></div></div>';
             authGet('/api/qr/quota/all', function(data) {
                 if (!data || !data.quotas.length) {
-                    grid.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">لا توجد حصص نشطة حتى الآن</div>';
+                    grid.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">' + PharmaLang.t('qr_no_quotas') + '</div>';
                     return;
                 }
                 grid.innerHTML = data.quotas.map(renderQuotaCard).join('');
@@ -602,19 +602,19 @@
     function renderQuotaCard(q) {
         var pct   = q.usedPct || Math.round((q.issuedCount / (q.quotaLimit || 1)) * 100);
         var cls   = pct >= 100 ? 'full' : pct >= 80 ? 'warn' : 'ok';
-        var label = pct >= 100 ? 'ممتلئة' : pct >= 80 ? 'تحذير' : 'نشطة';
+        var label = pct >= 100 ? PharmaLang.t('qr_quota_full') : pct >= 80 ? PharmaLang.t('qr_quota_warn') : PharmaLang.t('qr_quota_ok');
         var barCls = 'qbar-' + cls;
         var badge  = '<span class="quota-badge qb-' + cls + '">' + label + '</span>';
         var userLine = q.username
             ? '<div class="quota-user">👤 ' + q.username + '</div>'
-            : '<div class="quota-user">كل مستخدمي الدور</div>';
+            : '<div class="quota-user">' + PharmaLang.t('qr_all_role_users') + '</div>';
         return '<div class="quota-card">'
             + '<div class="quota-card-top">'
             + '  <div><div class="quota-role">' + roleIcon(q.role) + ' ' + q.role + '</div>' + userLine + '</div>'
             + badge
             + '</div>'
             + '<div class="quota-bar-bg"><div class="quota-bar ' + barCls + '" style="width:' + Math.min(pct,100) + '%"></div></div>'
-            + '<div class="quota-nums"><span>' + q.issuedCount + ' مُصدَر</span><span>' + q.quotaLimit + ' حد أقصى</span></div>'
+            + '<div class="quota-nums"><span>' + q.issuedCount + ' ' + PharmaLang.t('qr_issued') + '</span><span>' + q.quotaLimit + ' ' + PharmaLang.t('qr_max') + '</span></div>'
             + '<div style="font-size:11px;color:var(--gray-400);margin-top:6px;">' + (q.periodType || 'Monthly') + ' · ' + q.periodStart + ' → ' + q.periodEnd + '</div>'
             + '</div>';
     }
@@ -635,12 +635,11 @@
             : '/api/qr/quota'; // non-admin sees own recent issuances only
 
         authGet(url, function(data) {
-            if (!data) { area.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">تعذر التحميل</div>'; return; }
+            if (!data) { area.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">' + PharmaLang.t('qr_load_fail') + '</div>'; return; }
 
             if (role !== 'Admin') {
-                // show only recentIssued list
                 var rows = (data.recentIssued || []);
-                if (!rows.length) { area.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">لا توجد إصدارات بعد</div>'; return; }
+                if (!rows.length) { area.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">' + PharmaLang.t('qr_no_issuances') + '</div>'; return; }
                 area.innerHTML = buildTable(rows.map(function(r){ return {
                     id: r.id, drugId: r.drugId, drugName: r.drugName,
                     username: username, role: role,
@@ -652,15 +651,15 @@
             }
 
             var list = data.issuances || [];
-            if (!list.length) { area.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">لا توجد إصدارات</div>'; return; }
+            if (!list.length) { area.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400);">' + PharmaLang.t('qr_no_issuances2') + '</div>'; return; }
             area.innerHTML = buildTable(list, true);
         });
     }
 
     function buildTable(rows, showUser) {
         var hdr = '<thead><tr>'
-            + (showUser ? '<th>المستخدم</th><th>الدور</th>' : '')
-            + '<th>الدواء</th><th>الرقم التسلسلي</th><th>الحالة</th><th>IP</th><th>التاريخ</th>'
+            + (showUser ? '<th>' + PharmaLang.t('qr_th_user') + '</th><th>' + PharmaLang.t('qr_th_role_col') + '</th>' : '')
+            + '<th>' + PharmaLang.t('qr_th_drug') + '</th><th>' + PharmaLang.t('qr_th_seq') + '</th><th>' + PharmaLang.t('th_status') + '</th><th>IP</th><th>' + PharmaLang.t('qr_th_date') + '</th>'
             + '</tr></thead>';
         var body = '<tbody>' + rows.map(function(r) {
             var sClass = r.status === 'Valid' ? 'sb-valid' : r.status === 'Suspicious' ? 'sb-suspicious' : 'sb-blocked';
@@ -695,32 +694,32 @@
             periodType: document.getElementById('fPeriod').value
         };
         if (!body.limit || body.limit < 1) {
-            showMsg(msg, '❌ أدخل حداً أقصى صحيحاً', false); return;
+            showMsg(msg, PharmaLang.t('qr_invalid_limit'), false); return;
         }
-        btn.disabled = true; btn.textContent = '⏳ جاري الحفظ...';
+        btn.disabled = true; btn.textContent = PharmaLang.t('qr_saving');
         var xhr = new XMLHttpRequest();
         xhr.open('POST', API + '/api/qr/quota/set', true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
         xhr.onload = function() {
-            btn.disabled = false; btn.textContent = '💾 حفظ';
+            btn.disabled = false; btn.textContent = PharmaLang.t('qr_save_btn');
             if (xhr.status === 200) {
                 var res = JSON.parse(xhr.responseText);
                 showMsg(msg, '✅ ' + res.message, true);
                 loadQuotas();
             } else if (xhr.status === 404) {
-                showMsg(msg, '❌ الـ API غير موجود (404) — أعد تشغيل السيرفر بعد البيلد', false);
+                showMsg(msg, PharmaLang.t('qr_api_not_found'), false);
             } else if (xhr.status === 401 || xhr.status === 403) {
-                showMsg(msg, '❌ غير مصرح ('+xhr.status+') — سجّل خروج ثم دخول', false);
+                showMsg(msg, PharmaLang.t('qr_unauthorized') + ' (' + xhr.status + ')', false);
             } else if (xhr.status === 500) {
                 var detail = '';
                 try { detail = JSON.parse(xhr.responseText).detail || JSON.parse(xhr.responseText).title || ''; } catch(e){}
-                showMsg(msg, '❌ خطأ 500 في السيرفر' + (detail ? ': ' + detail : ' — تحقق من إنشاء الجداول'), false);
+                showMsg(msg, PharmaLang.t('qr_server_err') + (detail ? ': ' + detail : ''), false);
             } else {
-                showMsg(msg, '❌ خطأ ' + xhr.status + ': ' + (xhr.responseText.substring(0,120) || 'غير معروف'), false);
+                showMsg(msg, PharmaLang.t('qr_err_gen') + ' ' + xhr.status + ': ' + (xhr.responseText.substring(0,120) || ''), false);
             }
         };
-        xhr.onerror = function() { btn.disabled = false; btn.textContent = '💾 حفظ'; showMsg(msg, '❌ تعذر الاتصال بالسيرفر', false); };
+        xhr.onerror = function() { btn.disabled = false; btn.textContent = PharmaLang.t('qr_save_btn'); showMsg(msg, PharmaLang.t('qr_connect_fail'), false); };
         xhr.send(JSON.stringify(body));
     }
 
@@ -745,6 +744,18 @@
         xhr.onerror = function(){ cb(null); };
         xhr.send();
     }
+
+    // ── Re-render on language change ──
+    window.addEventListener('pharmaLangChanged', function() {
+        loadStats();
+        loadQuotas();
+        var activePanel = document.querySelector('.tab-panel.active');
+        if (activePanel) {
+            if (activePanel.id === 'tab-issuances') loadIssuances(currentFilter);
+            if (activePanel.id === 'tab-scanlogs')  loadScanLogs();
+            if (activePanel.id === 'tab-generate')  loadDrugList();
+        }
+    });
 
     // ── Init ──
     loadStats();

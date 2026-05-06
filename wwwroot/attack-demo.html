@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+<!-- pharma-lang.js will update lang/dir on toggle -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,6 +122,11 @@
             flex: 1;
             padding: 28px;
         }
+
+        [dir="ltr"] .main { margin-right: 0; margin-left: 220px; }
+        [dir="ltr"] .sidebar { right: auto; left: 0; }
+        [dir="ltr"] th { text-align: left; }
+        [dir="ltr"] .issue-line { padding-right: 0; border-right: none; padding-left: 10px; border-left: 2px solid #fc8181; }
 
         .page-header {
             margin-bottom: 24px;
@@ -1523,64 +1529,66 @@
             margin-bottom: 16px;
         }
     </style>
+    <script src="/pharma-lang.js"></script>
 </head>
 <body>
     <div class="layout">
 
         <!-- Sidebar -->
         <div class="sidebar">
-            <div class="sidebar-logo"><h2>⛓️ PharmaChain</h2><p>نظام تتبع الأدوية</p></div>
-            <a class="nav-item" onclick="goTo('dashboard.html')"><div class="nav-dot"></div> لوحة التحكم</a>
-            <a class="nav-item" onclick="goTo('add-drug.html')"><div class="nav-dot"></div> إضافة دواء</a>
-            <a class="nav-item" onclick="goTo('transfer.html')"><div class="nav-dot"></div> نقل دواء</a>
-            <a class="nav-item" onclick="goTo('blockchain.html')"><div class="nav-dot"></div> Blockchain</a>
-            <a class="nav-item" onclick="goTo('verify.html')"><div class="nav-dot"></div> التحقق من دواء</a>
-            <a class="nav-item active"><div class="nav-dot"></div> كشف التلاعب</a>
-            <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><div class="nav-dot"></div> سجل العمليات</a>
-            <div class="nav-section" id="navAISection" style="display:none">الذكاء الاصطناعي</div>
-            <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><div class="nav-dot"></div> محلل المخاطر AI</a>
-            <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><div class="nav-dot"></div> تحليلات الأداء AI</a>
-            <a class="nav-item" onclick="goTo('qr-control.html')"><div class="nav-dot"></div> إدارة QR Code</a>
+            <div class="sidebar-logo"><h2>⛓️ PharmaChain</h2><p data-i18n="sidebar_sub">نظام تتبع الأدوية</p></div>
+            <a class="nav-item" onclick="goTo('dashboard.html')"><div class="nav-dot"></div><span data-i18n="nav_dashboard">لوحة التحكم</span></a>
+            <a class="nav-item" onclick="goTo('add-drug.html')"><div class="nav-dot"></div><span data-i18n="nav_add_drug">إضافة دواء</span></a>
+            <a class="nav-item" onclick="goTo('transfer.html')"><div class="nav-dot"></div><span data-i18n="nav_transfer">نقل دواء</span></a>
+            <a class="nav-item" onclick="goTo('blockchain.html')"><div class="nav-dot"></div><span data-i18n="nav_blockchain">Blockchain</span></a>
+            <a class="nav-item" onclick="goTo('verify.html')"><div class="nav-dot"></div><span data-i18n="nav_verify">التحقق من دواء</span></a>
+            <a class="nav-item active"><div class="nav-dot"></div><span data-i18n="nav_tamper">كشف التلاعب</span></a>
+            <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><div class="nav-dot"></div><span data-i18n="nav_audit">سجل العمليات</span></a>
+            <div class="nav-section" id="navAISection" style="display:none" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
+            <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><div class="nav-dot"></div><span data-i18n="nav_risk">محلل المخاطر AI</span></a>
+            <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><div class="nav-dot"></div><span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
+            <a class="nav-item" onclick="goTo('qr-control.html')"><div class="nav-dot"></div><span data-i18n="nav_qr_control">إدارة QR Code</span></a>
+            <button class="logout-btn" onclick="PharmaLang.toggle()" style="margin:8px 14px;background:rgba(94,234,212,0.1);border:1px solid rgba(94,234,212,0.3);color:#99f6e4;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-family:'Segoe UI',sans-serif;">🌐 EN / AR</button>
             <div class="user-info">
                 <div class="name" id="sidebarUsername">...</div>
                 <div class="role" id="sidebarRole">...</div>
-                <button class="logout-btn" onclick="logout()">تسجيل خروج</button>
+                <button class="logout-btn" onclick="logout()" data-i18n="btn_logout">🚪 تسجيل خروج</button>
             </div>
         </div>
 
         <!-- Main -->
         <div class="main">
             <div class="page-header">
-                <div class="page-title">🛡️ مختبر كشف التلاعب بـ QR Code</div>
-                <div class="page-sub">محاكاة تفاعلية حقيقية — كيف يحاول المهاجم تزوير QR Code وكيف يرصده النظام فوراً</div>
+                <div class="page-title" data-i18n="attack_page_title">🛡️ مختبر كشف التلاعب بـ QR Code</div>
+                <div class="page-sub" data-i18n="attack_page_sub">محاكاة تفاعلية حقيقية — كيف يحاول المهاجم تزوير QR Code وكيف يرصده النظام فوراً</div>
             </div>
 
             <!-- Threat Stats -->
             <div class="threat-bar" id="threatBar">
                 <div class="threat-stat">
                     <div class="threat-stat-icon ts-blue">📡</div>
-                    <div><div class="threat-stat-val" id="ts-total">—</div><div class="threat-stat-lbl">إجمالي عمليات المسح</div></div>
+                    <div><div class="threat-stat-val" id="ts-total">—</div><div class="threat-stat-lbl" data-i18n="atk_ts_total">إجمالي عمليات المسح</div></div>
                 </div>
                 <div class="threat-stat">
                     <div class="threat-stat-icon ts-green">✅</div>
-                    <div><div class="threat-stat-val green" id="ts-valid">—</div><div class="threat-stat-lbl">مسح سليم</div></div>
+                    <div><div class="threat-stat-val green" id="ts-valid">—</div><div class="threat-stat-lbl" data-i18n="atk_ts_valid">مسح سليم</div></div>
                 </div>
                 <div class="threat-stat">
                     <div class="threat-stat-icon ts-red">🚨</div>
-                    <div><div class="threat-stat-val red" id="ts-attacks">—</div><div class="threat-stat-lbl">هجمات مكتشفة</div></div>
+                    <div><div class="threat-stat-val red" id="ts-attacks">—</div><div class="threat-stat-lbl" data-i18n="atk_ts_attacks">هجمات مكتشفة</div></div>
                 </div>
                 <div class="threat-stat">
                     <div class="threat-stat-icon ts-orange">🔐</div>
-                    <div><div class="threat-stat-val" id="ts-rate" style="color:#c05621">—</div><div class="threat-stat-lbl">معدل الكشف</div></div>
+                    <div><div class="threat-stat-val" id="ts-rate" style="color:#c05621">—</div><div class="threat-stat-lbl" data-i18n="atk_ts_rate">معدل الكشف</div></div>
                 </div>
             </div>
 
             <!-- Tabs -->
             <div class="page-tabs">
-                <button class="page-tab active" onclick="switchTab('lab', this)">🔬 مختبر QR</button>
-                <button class="page-tab" onclick="switchTab('simulator', this)">⚡ شرح الهجمات</button>
-                <button class="page-tab" onclick="switchTab('chain', this)">⛓️ فحص السلسلة</button>
-                <button class="page-tab" onclick="switchTab('logs', this)">🚨 سجل المحاولات</button>
+                <button class="page-tab active" onclick="switchTab('lab', this)" data-i18n="atk_tab_lab">🔬 مختبر QR</button>
+                <button class="page-tab" onclick="switchTab('simulator', this)" data-i18n="atk_tab_sim">⚡ شرح الهجمات</button>
+                <button class="page-tab" onclick="switchTab('chain', this)" data-i18n="atk_tab_chain">⛓️ فحص السلسلة</button>
+                <button class="page-tab" onclick="switchTab('logs', this)" data-i18n="atk_tab_logs">🚨 سجل المحاولات</button>
             </div>
 
             <!-- ══════════════════════════════════════════ -->
@@ -1593,8 +1601,8 @@
                     <div style="background:linear-gradient(135deg,#1a365d,#2b6cb0);border-radius:12px;padding:18px 24px;color:white;margin-bottom:20px;display:flex;align-items:center;gap:16px;">
                         <div style="font-size:36px;flex-shrink:0;">🔬</div>
                         <div>
-                            <div style="font-size:16px;font-weight:700;margin-bottom:4px;">كيف تعمل المحاكاة؟</div>
-                            <div style="font-size:13px;opacity:0.85;line-height:1.7;">
+                            <div style="font-size:16px;font-weight:700;margin-bottom:4px;" data-i18n="atk_lab_how_title">كيف تعمل المحاكاة؟</div>
+                            <div style="font-size:13px;opacity:0.85;line-height:1.7;" data-i18n="atk_lab_how_desc">
                                 QR Code = رابط يحتوي على: <code style="background:rgba(255,255,255,0.15);padding:1px 6px;border-radius:3px;">id + prod + ts + sig</code>
                                 <br>اختر دواء حقيقي من النظام ← اختر كيف "تُعدِّل" الـ QR ← شوف ردّ السيرفر الحقيقي
                             </div>
@@ -1606,13 +1614,13 @@
                         <div class="lab-step-header">
                             <div class="step-num">1</div>
                             <div>
-                                <div class="step-title">اختر دواء حقيقي من النظام</div>
-                                <div class="step-sub">سيتم توليد بيانات QR واقعية لهذا الدواء من قاعدة البيانات</div>
+                                <div class="step-title" data-i18n="atk_step1_title">اختر دواء حقيقي من النظام</div>
+                                <div class="step-sub" data-i18n="atk_step1_sub">سيتم توليد بيانات QR واقعية لهذا الدواء من قاعدة البيانات</div>
                             </div>
                         </div>
                         <div class="drug-select-row">
                             <select id="labDrug" onchange="onDrugSelected()">
-                                <option value="">⏳ جاري تحميل الأدوية...</option>
+                                <option value="" data-i18n="atk_chain_select_ph">-- اختر دواء --</option>
                             </select>
                             <div class="drug-info-chip" id="drugChip">...</div>
                         </div>
@@ -1623,16 +1631,16 @@
                         <div class="lab-step-header">
                             <div class="step-num">2</div>
                             <div>
-                                <div class="step-title">اختر سيناريو الهجوم</div>
-                                <div class="step-sub">كيف يريد المهاجم تزوير الـ QR؟</div>
+                                <div class="step-title" data-i18n="atk_step2_title">اختر سيناريو الهجوم</div>
+                                <div class="step-sub" data-i18n="atk_step2_sub">كيف يريد المهاجم تزوير الـ QR؟</div>
                             </div>
                         </div>
                         <div class="attack-pills">
-                            <button class="attack-pill selected-ok" id="pill-none" onclick="selectAttack('none')">✅ مسح طبيعي</button>
-                            <button class="attack-pill" id="pill-sig" onclick="selectAttack('sig')">🔄 تبديل رقم الدواء</button>
-                            <button class="attack-pill" id="pill-date" onclick="selectAttack('date')">📅 تلاعب بالتاريخ</button>
-                            <button class="attack-pill" id="pill-fake" onclick="selectAttack('fake')">🎭 دواء وهمي (ID=99999)</button>
-                            <button class="attack-pill" id="pill-sigmod" onclick="selectAttack('sigmod')">✏️ تعديل التوقيع مباشرة</button>
+                            <button class="attack-pill selected-ok" id="pill-none" onclick="selectAttack('none')" data-i18n="atk_pill_none">✅ مسح طبيعي</button>
+                            <button class="attack-pill" id="pill-sig" onclick="selectAttack('sig')" data-i18n="atk_pill_sig">🔄 تبديل رقم الدواء</button>
+                            <button class="attack-pill" id="pill-date" onclick="selectAttack('date')" data-i18n="atk_pill_date">📅 تلاعب بالتاريخ</button>
+                            <button class="attack-pill" id="pill-fake" onclick="selectAttack('fake')" data-i18n="atk_pill_fake">🎭 دواء وهمي (ID=99999)</button>
+                            <button class="attack-pill" id="pill-sigmod" onclick="selectAttack('sigmod')" data-i18n="atk_pill_sigmod">✏️ تعديل التوقيع مباشرة</button>
                         </div>
 
                         <!-- وصف الهجوم المختار -->
@@ -1641,7 +1649,7 @@
 
                     <!-- مقارنة QR -->
                     <div class="qr-compare-section" id="qrCompareSection" style="display:none;">
-                        <div class="qr-compare-header">
+                        <div class="qr-compare-header" data-i18n="atk_qr_compare_header">
                             📱 مقارنة محتوى QR Code — الأصلي مقابل المُعدَّل
                         </div>
                         <div class="qr-compare-body">
@@ -1678,7 +1686,7 @@
                             </div>
 
                             <!-- زر الإطلاق -->
-                            <button class="btn btn-attack" id="launchBtn" onclick="runAttack()">
+                            <button class="btn btn-attack" id="launchBtn" onclick="runAttack()" data-i18n="atk_launch_btn">
                                 📡 إرسال للسيرفر وكشف الهجوم
                             </button>
                         </div>
@@ -1705,33 +1713,33 @@
             <!-- تبويب 2: شرح الهجمات (موجود، محسّن)      -->
             <!-- ══════════════════════════════════════════ -->
             <div class="tab-panel" id="tab-simulator">
-                <div class="section-title">اختر نوع الهجوم لترى كيف يحدث وكيف يُكشف</div>
-                <div class="section-sub">كل هجوم يُظهر: ما يفعله المهاجم ← ما يرسله ← كيف يكتشفه النظام</div>
+                <div class="section-title" data-i18n="atk_sim_title">اختر نوع الهجوم لترى كيف يحدث وكيف يُكشف</div>
+                <div class="section-sub" data-i18n="atk_sim_sub">كل هجوم يُظهر: ما يفعله المهاجم ← ما يرسله ← كيف يكتشفه النظام</div>
 
                 <div class="attack-cards">
                     <div class="attack-card" id="card-sig" onclick="showAttack('sig')">
                         <div class="attack-card-icon">🔄</div>
-                        <div class="attack-card-title">تبديل ملصق QR</div>
+                        <div class="attack-card-title" data-i18n="atk_card_sig_title">تبديل ملصق QR</div>
                         <div class="attack-card-code">SIGNATURE_MISMATCH</div>
-                        <div class="attack-card-desc">يأخذ QR دواء أصلي ويضعه على علبة دواء مختلف — أو يعدّل الـ drug_id في الرابط</div>
+                        <div class="attack-card-desc" data-i18n="atk_card_sig_desc">يأخذ QR دواء أصلي ويضعه على علبة دواء مختلف — أو يعدّل الـ drug_id في الرابط</div>
                     </div>
                     <div class="attack-card" id="card-date" onclick="showAttack('date')">
                         <div class="attack-card-icon">📅</div>
-                        <div class="attack-card-title">تلاعب بتاريخ الإنتاج</div>
+                        <div class="attack-card-title" data-i18n="atk_card_date_title">تلاعب بتاريخ الإنتاج</div>
                         <div class="attack-card-code">DATE_MISMATCH</div>
-                        <div class="attack-card-desc">يستخدم QR من دفعة قديمة على علبة جديدة — أو يعدّل تاريخ الإنتاج في الرابط</div>
+                        <div class="attack-card-desc" data-i18n="atk_card_date_desc">يستخدم QR من دفعة قديمة على علبة جديدة — أو يعدّل تاريخ الإنتاج في الرابط</div>
                     </div>
                     <div class="attack-card" id="card-fake" onclick="showAttack('fake')">
                         <div class="attack-card-icon">🎭</div>
-                        <div class="attack-card-title">QR Code مزيف كلياً</div>
+                        <div class="attack-card-title" data-i18n="atk_card_fake_title">QR Code مزيف كلياً</div>
                         <div class="attack-card-code">DRUG_NOT_FOUND</div>
-                        <div class="attack-card-desc">يصنع QR بأرقام عشوائية أو لدواء غير موجود — أبسط الهجمات وأسهلها كشفاً</div>
+                        <div class="attack-card-desc" data-i18n="atk_card_fake_desc">يصنع QR بأرقام عشوائية أو لدواء غير موجود — أبسط الهجمات وأسهلها كشفاً</div>
                     </div>
                     <div class="attack-card" id="card-delay" onclick="showAttack('delay')">
                         <div class="attack-card-icon">⏱️</div>
-                        <div class="attack-card-title">تأخير متعمد في السلسلة</div>
+                        <div class="attack-card-title" data-i18n="atk_card_delay_title">تأخير متعمد في السلسلة</div>
                         <div class="attack-card-code">DELIBERATE_DELAY</div>
-                        <div class="attack-card-desc">يؤخر تسجيل نقل الدواء في Blockchain لإخفاء أين كان الدواء لفترة طويلة</div>
+                        <div class="attack-card-desc" data-i18n="atk_card_delay_desc">يؤخر تسجيل نقل الدواء في Blockchain لإخفاء أين كان الدواء لفترة طويلة</div>
                     </div>
                 </div>
 
@@ -1747,35 +1755,35 @@
             <div class="tab-panel" id="tab-chain">
                 <div class="controls-row">
                     <div class="control-group">
-                        <div class="control-label">اختر الدواء لفحص سلسلته</div>
+                        <div class="control-label" data-i18n="atk_chain_select_lbl">اختر الدواء لفحص سلسلته</div>
                         <select id="drugSelectChain" onchange="analyze()">
-                            <option value="">-- اختر دواء --</option>
+                            <option value="" data-i18n="atk_chain_select_ph">-- اختر دواء --</option>
                         </select>
                     </div>
-                    <button class="btn btn-primary" onclick="analyze()">🔍 فحص السلسلة</button>
-                    <button class="btn btn-outline" onclick="analyze()">🔄 تحديث</button>
+                    <button class="btn btn-primary" onclick="analyze()" data-i18n="atk_btn_chain_inspect">🔍 فحص السلسلة</button>
+                    <button class="btn btn-outline" onclick="analyze()" data-i18n="btn_refresh">🔄 تحديث</button>
                 </div>
 
                 <div class="stats-bar" id="statsBar" style="display:none">
-                    <div class="stat-chip"><div><div class="stat-chip-val" id="sTotal">0</div><div class="stat-chip-lbl">إجمالي النقلات</div></div></div>
-                    <div class="stat-chip"><div><div class="stat-chip-val green" id="sOk">0</div><div class="stat-chip-lbl">سليمة</div></div></div>
-                    <div class="stat-chip"><div><div class="stat-chip-val orange" id="sWarn">0</div><div class="stat-chip-lbl">تحذيرات</div></div></div>
-                    <div class="stat-chip"><div><div class="stat-chip-val red" id="sErr">0</div><div class="stat-chip-lbl">مخالفات</div></div></div>
-                    <div class="stat-chip"><div><div class="stat-chip-val" id="sDelay" style="font-size:15px">—</div><div class="stat-chip-lbl">أطول تأخير</div></div></div>
+                    <div class="stat-chip"><div><div class="stat-chip-val" id="sTotal">0</div><div class="stat-chip-lbl" data-i18n="atk_chain_total">إجمالي النقلات</div></div></div>
+                    <div class="stat-chip"><div><div class="stat-chip-val green" id="sOk">0</div><div class="stat-chip-lbl" data-i18n="atk_chain_ok">سليمة</div></div></div>
+                    <div class="stat-chip"><div><div class="stat-chip-val orange" id="sWarn">0</div><div class="stat-chip-lbl" data-i18n="atk_chain_warn">تحذيرات</div></div></div>
+                    <div class="stat-chip"><div><div class="stat-chip-val red" id="sErr">0</div><div class="stat-chip-lbl" data-i18n="atk_chain_err">مخالفات</div></div></div>
+                    <div class="stat-chip"><div><div class="stat-chip-val" id="sDelay" style="font-size:15px">—</div><div class="stat-chip-lbl" data-i18n="atk_chain_delay">أطول تأخير</div></div></div>
                 </div>
 
                 <div class="alert-bar" id="alertBar"></div>
                 <div id="mainArea">
-                    <div class="empty"><div class="empty-icon">⛓️</div><div>اختر دواء لبدء الفحص الأمني الحقيقي</div></div>
+                    <div class="empty"><div class="empty-icon">⛓️</div><div data-i18n="atk_chain_empty">اختر دواء لبدء الفحص</div></div>
                 </div>
 
                 <div id="adminDemoRow" style="display:none; margin-top:16px;">
                     <div class="card">
-                        <div class="card-header">⚙️ أدوات تجربة حية — Admin فقط</div>
+                        <div class="card-header" data-i18n="atk_admin_tools">⚙️ أدوات تجربة حية — Admin فقط</div>
                         <div class="card-body" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-                            <button class="btn btn-danger" onclick="demoTamper()">💥 كسر السلسلة (محاكاة هجوم)</button>
-                            <button class="btn btn-success" onclick="demoRestore()">🔄 استعادة السلسلة</button>
-                            <span style="font-size:12px; color:#718096;">اكسر السلسلة وشوف كيف يكتشفها النظام فوراً</span>
+                            <button class="btn btn-danger" onclick="demoTamper()" data-i18n="atk_btn_tamper">💥 كسر السلسلة (محاكاة هجوم)</button>
+                            <button class="btn btn-success" onclick="demoRestore()" data-i18n="atk_btn_restore">🔄 استعادة السلسلة</button>
+                            <span style="font-size:12px; color:#718096;" data-i18n="atk_admin_hint">اكسر السلسلة وشوف كيف يكتشفها النظام فوراً</span>
                         </div>
                     </div>
                 </div>
@@ -1786,25 +1794,25 @@
             <!-- ══════════════════════════════════════════ -->
             <div class="tab-panel" id="tab-logs">
                 <div class="log-stats" id="logStats" style="display:none">
-                    <div class="log-stat"><div class="log-stat-val" id="ls-total">0</div><div class="log-stat-lbl">إجمالي المسح</div></div>
-                    <div class="log-stat"><div class="log-stat-val green" id="ls-valid">0</div><div class="log-stat-lbl">مسح سليم</div></div>
-                    <div class="log-stat"><div class="log-stat-val" style="color:#553c9a" id="ls-sig">0</div><div class="log-stat-lbl">تبديل ملصق</div></div>
-                    <div class="log-stat"><div class="log-stat-val orange" id="ls-date">0</div><div class="log-stat-lbl">تلاعب تاريخ</div></div>
-                    <div class="log-stat"><div class="log-stat-val red" id="ls-fake">0</div><div class="log-stat-lbl">كود مزيف</div></div>
+                    <div class="log-stat"><div class="log-stat-val" id="ls-total">0</div><div class="log-stat-lbl" data-i18n="atk_ts_total">إجمالي المسح</div></div>
+                    <div class="log-stat"><div class="log-stat-val green" id="ls-valid">0</div><div class="log-stat-lbl" data-i18n="atk_ts_valid">مسح سليم</div></div>
+                    <div class="log-stat"><div class="log-stat-val" style="color:#553c9a" id="ls-sig">0</div><div class="log-stat-lbl" data-i18n="atk_card_sig_title">تبديل ملصق</div></div>
+                    <div class="log-stat"><div class="log-stat-val orange" id="ls-date">0</div><div class="log-stat-lbl" data-i18n="atk_log_date">تلاعب تاريخ</div></div>
+                    <div class="log-stat"><div class="log-stat-val red" id="ls-fake">0</div><div class="log-stat-lbl" data-i18n="atk_log_fake">كود مزيف</div></div>
                 </div>
                 <div class="log-filter-row">
                     <select id="logFilter" onchange="loadLogs()">
-                        <option value="ALL">كل المحاولات</option>
-                        <option value="SIGNATURE_MISMATCH">تبديل ملصق (SIGNATURE_MISMATCH)</option>
-                        <option value="DATE_MISMATCH">تلاعب بالتاريخ (DATE_MISMATCH)</option>
-                        <option value="DRUG_NOT_FOUND">كود مزيف (DRUG_NOT_FOUND)</option>
-                        <option value="QR_EXPIRED">QR منتهي (QR_EXPIRED)</option>
-                        <option value="NONE">مسح سليم</option>
+                        <option value="ALL" data-i18n="atk_log_filter_all">كل المحاولات</option>
+                        <option value="SIGNATURE_MISMATCH" data-i18n="atk_log_filter_sig">تبديل ملصق (SIGNATURE_MISMATCH)</option>
+                        <option value="DATE_MISMATCH" data-i18n="atk_log_filter_date">تلاعب بالتاريخ (DATE_MISMATCH)</option>
+                        <option value="DRUG_NOT_FOUND" data-i18n="atk_log_filter_fake">كود مزيف (DRUG_NOT_FOUND)</option>
+                        <option value="QR_EXPIRED" data-i18n="atk_log_filter_exp">QR منتهي (QR_EXPIRED)</option>
+                        <option value="NONE" data-i18n="atk_log_filter_none">مسح سليم</option>
                     </select>
-                    <button class="btn btn-outline" onclick="loadLogs()">🔄 تحديث</button>
+                    <button class="btn btn-outline" onclick="loadLogs()" data-i18n="btn_refresh">🔄 تحديث</button>
                 </div>
                 <div id="logsArea">
-                    <div class="loading"><div class="spinner" style="margin:0 auto 12px"></div><div>جاري تحميل السجل...</div></div>
+                    <div class="loading"><div class="spinner" style="margin:0 auto 12px"></div><div data-i18n="atk_log_loading">جاري تحميل السجل...</div></div>
                 </div>
             </div>
 
@@ -1910,23 +1918,28 @@
         var attackDescriptions = {
             'none': {
                 icon: '✅', color: '#276749', bg: '#f0fff4', border: '#9ae6b4',
-                text: 'مسح طبيعي — الـ QR يُرسَل كما هو بدون أي تعديل. السيرفر سيتحقق من الـ Signature ويردّ بالنتيجة.'
+                ar: 'مسح طبيعي — الـ QR يُرسَل كما هو بدون أي تعديل. السيرفر سيتحقق من الـ Signature ويردّ بالنتيجة.',
+                en: 'Normal scan — the QR is sent as-is without any modification. The server will verify the Signature and return the result.'
             },
             'sig': {
                 icon: '🔄', color: '#c53030', bg: '#fff5f5', border: '#fc8181',
-                text: 'هجوم تبديل الرقم — المهاجم يأخذ QR Code من علبة دواء أصلي ويضعه على علبة دواء مختلف. يُعدِّل الـ id لكن الـ Signature لا يزال مبني على الـ id القديم.'
+                ar: 'هجوم تبديل الرقم — المهاجم يأخذ QR Code من علبة دواء أصلي ويضعه على علبة دواء مختلف. يُعدِّل الـ id لكن الـ Signature لا يزال مبني على الـ id القديم.',
+                en: 'ID swap attack — attacker takes a QR Code from a genuine drug and puts it on a different drug. They modify the id but the Signature is still built on the old id.'
             },
             'date': {
                 icon: '📅', color: '#c05621', bg: '#fffbeb', border: '#f6ad55',
-                text: 'هجوم التاريخ — المهاجم يستخدم QR من دفعة إنتاج قديمة على علبة جديدة، أو يُعدِّل تاريخ الإنتاج في الرابط لإخفاء أن الدواء قديم.'
+                ar: 'هجوم التاريخ — المهاجم يستخدم QR من دفعة إنتاج قديمة على علبة جديدة، أو يُعدِّل تاريخ الإنتاج في الرابط لإخفاء أن الدواء قديم.',
+                en: 'Date attack — attacker uses a QR from an old production batch on a new box, or modifies the production date in the URL to hide that the drug is old.'
             },
             'fake': {
                 icon: '🎭', color: '#822727', bg: '#fff5f5', border: '#fc8181',
-                text: 'دواء وهمي — المهاجم يصنع QR Code بـ drug_id عشوائي (99999) غير موجود في النظام. أبسط أنواع التزوير وأسهلها كشفاً.'
+                ar: 'دواء وهمي — المهاجم يصنع QR Code بـ drug_id عشوائي (99999) غير موجود في النظام. أبسط أنواع التزوير وأسهلها كشفاً.',
+                en: 'Fake drug — attacker creates a QR Code with a random drug_id (99999) that does not exist in the system. The simplest and easiest-to-detect forgery.'
             },
             'sigmod': {
                 icon: '✏️', color: '#553c9a', bg: '#faf5ff', border: '#d6bcfa',
-                text: 'تعديل التوقيع — المهاجم يحتفظ بكل البيانات الصحيحة (id، prod، ts) لكنه يُعدِّل الـ Signature يدوياً محاولاً تجاوز الفحص.'
+                ar: 'تعديل التوقيع — المهاجم يحتفظ بكل البيانات الصحيحة (id، prod، ts) لكنه يُعدِّل الـ Signature يدوياً محاولاً تجاوز الفحص.',
+                en: 'Signature modification — attacker keeps all correct data (id, prod, ts) but manually modifies the Signature trying to bypass the check.'
             }
         };
 
@@ -1943,7 +1956,7 @@
             el.style.background = desc.bg;
             el.style.border = '1px solid ' + desc.border;
             el.style.color = desc.color;
-            el.innerHTML = '<strong>' + desc.icon + ' ' + mode.toUpperCase() + ':</strong> ' + desc.text;
+            el.innerHTML = '<strong>' + desc.icon + ' ' + mode.toUpperCase() + ':</strong> ' + (PharmaLang.get() === 'ar' ? desc.ar : desc.en);
 
             updateQrDisplay();
             // إخفاء النتيجة السابقة
@@ -2008,55 +2021,57 @@
             tamperedBox.style.background = '#f0fff4';
             titleEl.style.color = '#276749';
             arrowIcon.style.color = '#a0aec0';
-            arrowLabel.textContent = 'مسح';
-            launchBtn.textContent = '📡 إرسال للسيرفر وكشف الهجوم';
+            arrowLabel.textContent = PharmaLang.t('atk_arrow_scan');
+            launchBtn.textContent = PharmaLang.t('atk_launch_btn');
 
             var idChanged = false, prodChanged = false, sigChanged = false;
 
+            var isAr = PharmaLang.get() === 'ar';
+            var atkWord = isAr ? 'هجوم' : 'Attack';
             switch (attackMode) {
                 case 'sig':
                     tamperedId = d.id + 7;
-                    tamperedTitle = '❌ QR المُزوَّر (id مُعدَّل)';
+                    tamperedTitle = isAr ? '❌ QR المُزوَّر (id مُعدَّل)' : '❌ Tampered QR (id modified)';
                     idChanged = true;
                     tamperedBox.style.borderColor = '#fc8181';
                     tamperedBox.style.background = '#fff5f5';
                     titleEl.style.color = '#c53030';
                     arrowIcon.style.color = '#c53030';
-                    arrowLabel.textContent = 'هجوم';
+                    arrowLabel.textContent = atkWord;
                     break;
                 case 'date':
                     tamperedProd = '2020-01-01';
-                    tamperedTitle = '❌ QR المُزوَّر (تاريخ مُعدَّل)';
+                    tamperedTitle = isAr ? '❌ QR المُزوَّر (تاريخ مُعدَّل)' : '❌ Tampered QR (date modified)';
                     prodChanged = true;
                     tamperedBox.style.borderColor = '#f6ad55';
                     tamperedBox.style.background = '#fffbeb';
                     titleEl.style.color = '#c05621';
                     arrowIcon.style.color = '#c05621';
-                    arrowLabel.textContent = 'هجوم';
+                    arrowLabel.textContent = atkWord;
                     break;
                 case 'fake':
                     tamperedId = 99999;
                     tamperedSig = 'FAKE123456789ABC...';
-                    tamperedTitle = '❌ QR وهمي (id=99999)';
+                    tamperedTitle = isAr ? '❌ QR وهمي (id=99999)' : '❌ Fake QR (id=99999)';
                     idChanged = true; sigChanged = true;
                     tamperedBox.style.borderColor = '#fc8181';
                     tamperedBox.style.background = '#fff5f5';
                     titleEl.style.color = '#c53030';
                     arrowIcon.style.color = '#c53030';
-                    arrowLabel.textContent = 'هجوم';
+                    arrowLabel.textContent = atkWord;
                     break;
                 case 'sigmod':
                     tamperedSig = 'MODIFIED99999XYZ...';
-                    tamperedTitle = '❌ QR بتوقيع مُعدَّل';
+                    tamperedTitle = isAr ? '❌ QR بتوقيع مُعدَّل' : '❌ QR with modified signature';
                     sigChanged = true;
                     tamperedBox.style.borderColor = '#d6bcfa';
                     tamperedBox.style.background = '#faf5ff';
                     titleEl.style.color = '#553c9a';
                     arrowIcon.style.color = '#553c9a';
-                    arrowLabel.textContent = 'هجوم';
+                    arrowLabel.textContent = atkWord;
                     break;
                 default:
-                    tamperedTitle = '✅ QR السليم';
+                    tamperedTitle = isAr ? '✅ QR السليم' : '✅ Valid QR';
             }
 
             document.getElementById('tamperedBoxTitle').textContent = tamperedTitle;
@@ -2070,7 +2085,7 @@
 
         function paramRow(key, val, changed, ok) {
             var cls = changed ? 'changed' : (ok ? 'ok' : '');
-            var tag = changed ? '<span class="qr-param-tag">مُعدَّل</span>' : '';
+            var tag = changed ? '<span class="qr-param-tag">' + (PharmaLang.get() === 'ar' ? 'مُعدَّل' : 'Modified') + '</span>' : '';
             return '<div class="qr-param-row"><span class="qr-param-key">' + key + '</span>'
                 + '<span class="qr-param-val ' + cls + '">' + tag + val + '</span></div>';
         }
@@ -2079,7 +2094,7 @@
         // تشغيل الهجوم — يتصل بالسيرفر الحقيقي
         // ══════════════════════════════════════════════
         function runAttack() {
-            if (!selectedDrug) { showToast('اختر دواء أولاً'); return; }
+            if (!selectedDrug) { showToast(PharmaLang.t('atk_toast_select_drug')); return; }
 
             var d = selectedDrug;
             var prodDate = d.createdAt ? d.createdAt.substring(0, 10) : '2024-03-01';
@@ -2098,9 +2113,9 @@
             var resultEl = document.getElementById('scanResult');
             resultEl.className = 'scan-result loading show';
             document.getElementById('resultBadge').innerHTML = '<div class="spinner"></div>';
-            document.getElementById('resultTitle').textContent = 'جاري الإرسال للسيرفر...';
+            document.getElementById('resultTitle').textContent = PharmaLang.t('atk_sending');
             document.getElementById('resultType').textContent = '';
-            document.getElementById('resultDetail').textContent = 'يتحقق السيرفر من الـ HMAC-SHA256 Signature...';
+            document.getElementById('resultDetail').textContent = PharmaLang.t('atk_verifying');
             document.getElementById('resultExplain').textContent = '';
             document.getElementById('resultActions').innerHTML = '';
 
@@ -2120,19 +2135,40 @@
                 loadThreatStats(); // تحديث الإحصائيات
             };
             xhr.onerror = function () {
-                renderScanResult({ isValid: false, attackType: 'NETWORK_ERROR', message: 'تعذر الاتصال بالسيرفر' }, id, prod, ts, sig);
+                renderScanResult({ isValid: false, attackType: 'NETWORK_ERROR', message: PharmaLang.t('conn_fail_server') }, id, prod, ts, sig);
             };
             xhr.send();
         }
 
         var attackExplains = {
-            'SIGNATURE_MISMATCH': 'السيرفر أعاد حساب الـ HMAC-SHA256 بنفس الـ id والتاريخ ووجد أن الـ Signature لا يطابق. بدون المفتاح السري لا يمكن توليد توقيع صحيح.',
-            'DATE_MISMATCH': 'الـ Signature كانت صحيحة لكن تاريخ الإنتاج في الـ QR لا يطابق ما هو مسجّل في قاعدة البيانات. يعني هذا الـ QR من دفعة إنتاج مختلفة.',
-            'DRUG_NOT_FOUND': 'الدواء برقم 99999 غير موجود في قاعدة البيانات أصلاً. أي QR لدواء غير مسجّل يُرفض فوراً قبل حتى التحقق من الـ Signature.',
-            'QR_EXPIRED': 'الـ QR Code صحيح لكن تجاوز سنة من تاريخ التوليد. النظام يرفض الـ QR القديمة لمنع إعادة استخدامها.',
-            'NONE': 'جميع الفحوصات نجحت: الـ HMAC-SHA256 صحيح، التاريخ مطابق، الدواء موجود، الـ QR لم ينته.',
-            'MISSING_PARAMS': 'بيانات الـ QR غير مكتملة — يعني أحد الحقول (id, prod, ts, sig) مفقود.',
-            'NETWORK_ERROR': 'تعذر الاتصال بالسيرفر. تأكد أن التطبيق يعمل على المنفذ 7036.'
+            'SIGNATURE_MISMATCH': {
+                ar: 'السيرفر أعاد حساب الـ HMAC-SHA256 بنفس الـ id والتاريخ ووجد أن الـ Signature لا يطابق. بدون المفتاح السري لا يمكن توليد توقيع صحيح.',
+                en: 'The server recalculated HMAC-SHA256 with the same id and date and found the Signature does not match. Without the secret key, no valid signature can be generated.'
+            },
+            'DATE_MISMATCH': {
+                ar: 'الـ Signature كانت صحيحة لكن تاريخ الإنتاج في الـ QR لا يطابق ما هو مسجّل في قاعدة البيانات. يعني هذا الـ QR من دفعة إنتاج مختلفة.',
+                en: 'The Signature was valid but the production date in the QR does not match what is recorded in the database — this QR is from a different batch.'
+            },
+            'DRUG_NOT_FOUND': {
+                ar: 'الدواء برقم 99999 غير موجود في قاعدة البيانات أصلاً. أي QR لدواء غير مسجّل يُرفض فوراً قبل حتى التحقق من الـ Signature.',
+                en: 'Drug #99999 does not exist in the database at all. Any QR for an unregistered drug is rejected immediately, before even checking the Signature.'
+            },
+            'QR_EXPIRED': {
+                ar: 'الـ QR Code صحيح لكن تجاوز سنة من تاريخ التوليد. النظام يرفض الـ QR القديمة لمنع إعادة استخدامها.',
+                en: 'The QR Code is valid but has exceeded one year from its generation date. The system rejects old QR codes to prevent reuse.'
+            },
+            'NONE': {
+                ar: 'جميع الفحوصات نجحت: الـ HMAC-SHA256 صحيح، التاريخ مطابق، الدواء موجود، الـ QR لم ينته.',
+                en: 'All checks passed: HMAC-SHA256 is valid, date matches, drug exists, QR has not expired.'
+            },
+            'MISSING_PARAMS': {
+                ar: 'بيانات الـ QR غير مكتملة — يعني أحد الحقول (id, prod, ts, sig) مفقود.',
+                en: 'QR data is incomplete — one of the fields (id, prod, ts, sig) is missing.'
+            },
+            'NETWORK_ERROR': {
+                ar: 'تعذر الاتصال بالسيرفر. تأكد أن التطبيق يعمل على المنفذ 7036.',
+                en: 'Cannot connect to the server. Make sure the application is running on port 7036.'
+            }
         };
 
         function renderScanResult(resp, id, prod, ts, sig) {
@@ -2145,7 +2181,8 @@
             document.getElementById('resultBadge').className = 'result-badge ' + (isValid ? 'badge-safe' : 'badge-detected');
             document.getElementById('resultBadge').innerHTML = isValid ? '✅' : '🚨';
 
-            var titles = {
+            var ar = PharmaLang.get() === 'ar';
+            var titles = ar ? {
                 'SIGNATURE_MISMATCH': 'تم الكشف — توقيع غير صحيح',
                 'DATE_MISMATCH': 'تم الكشف — تلاعب بالتاريخ',
                 'DRUG_NOT_FOUND': 'تم الكشف — دواء وهمي',
@@ -2153,33 +2190,42 @@
                 'MISSING_PARAMS': 'تم الكشف — بيانات ناقصة',
                 'NONE': 'QR Code موثق وسليم ✓',
                 'NETWORK_ERROR': 'خطأ في الاتصال'
+            } : {
+                'SIGNATURE_MISMATCH': 'Detected — Invalid Signature',
+                'DATE_MISMATCH': 'Detected — Date Tampering',
+                'DRUG_NOT_FOUND': 'Detected — Fake Drug',
+                'QR_EXPIRED': 'Detected — QR Expired',
+                'MISSING_PARAMS': 'Detected — Missing Data',
+                'NONE': 'QR Code Verified and Valid ✓',
+                'NETWORK_ERROR': 'Connection Error'
             };
 
-            document.getElementById('resultTitle').textContent = titles[type] || ('مجهول: ' + type);
+            document.getElementById('resultTitle').textContent = titles[type] || (ar ? 'مجهول: ' : 'Unknown: ') + type;
             document.getElementById('resultType').textContent = type;
             document.getElementById('resultDetail').innerHTML =
-                '<strong>ردّ السيرفر:</strong> ' + (resp.message || '—');
+                '<strong>' + (ar ? 'ردّ السيرفر:' : 'Server Response:') + '</strong> ' + (resp.message || '—');
 
             if (resp.qrDate && resp.databaseDate) {
                 document.getElementById('resultDetail').innerHTML +=
-                    '<br><strong>تاريخ الـ QR:</strong> ' + resp.qrDate +
-                    ' &nbsp;|&nbsp; <strong>تاريخ قاعدة البيانات:</strong> ' + resp.databaseDate;
+                    '<br><strong>' + (ar ? 'تاريخ الـ QR:' : 'QR Date:') + '</strong> ' + resp.qrDate +
+                    ' &nbsp;|&nbsp; <strong>' + (ar ? 'تاريخ قاعدة البيانات:' : 'Database Date:') + '</strong> ' + resp.databaseDate;
             }
 
+            var explainObj = attackExplains[type];
             document.getElementById('resultExplain').textContent =
-                attackExplains[type] || 'النظام رصد محاولة تلاعب وسجّلها في قاعدة البيانات.';
+                explainObj ? (ar ? explainObj.ar : explainObj.en) : (ar ? 'النظام رصد محاولة تلاعب وسجّلها في قاعدة البيانات.' : 'The system detected a tampering attempt and recorded it in the database.');
 
-            // أزرار الإجراءات
+            // Action buttons
             var actions = '';
             if (!isValid) {
                 actions += '<button class="btn btn-outline" onclick="switchTab(\'logs\', document.querySelectorAll(\'.page-tab\')[3])">'
-                    + '📋 شوف السجل</button>';
+                    + (ar ? '📋 شوف السجل' : '📋 View Log') + '</button>';
             }
             actions += '<a class="btn btn-primary" href="' + API + '/verify.html?id=' + id
                 + '&prod=' + encodeURIComponent(prod)
                 + '&ts=' + encodeURIComponent(ts)
                 + '&sig=' + encodeURIComponent(sig)
-                + '" target="_blank">🔗 فتح verify.html بهذا الـ QR</a>';
+                + '" target="_blank">' + (ar ? '🔗 فتح verify.html بهذا الـ QR' : '🔗 Open verify.html with this QR') + '</a>';
 
             document.getElementById('resultActions').innerHTML = actions;
         }
@@ -2196,7 +2242,7 @@
                 var resp = JSON.parse(xhr.responseText);
                 allDrugs = Array.isArray(resp) ? resp : (resp.drugs || []);
                 var sel = document.getElementById('labDrug');
-                sel.innerHTML = '<option value="">-- اختر دواء --</option>';
+                sel.innerHTML = '<option value="">' + PharmaLang.t('atk_chain_select_ph') + '</option>';
                 allDrugs.forEach(function (d) {
                     var opt = document.createElement('option');
                     opt.value = d.id;
@@ -2486,18 +2532,22 @@
             xhr.open('GET', url, true);
             if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
             xhr.onload = function () {
-                try { var d = JSON.parse(xhr.responseText); showToast('السيرفر: ' + (d.attackType || d.message || '—')); }
-                catch (e) { showToast('تم الإرسال — تحقق من تبويب السجل'); }
+                try { var d = JSON.parse(xhr.responseText); showToast((PharmaLang.get() === 'ar' ? 'السيرفر: ' : 'Server: ') + (d.attackType || d.message || '—')); }
+                catch (e) { showToast(PharmaLang.get() === 'ar' ? 'تم الإرسال — تحقق من تبويب السجل' : 'Sent — check the log tab'); }
                 loadThreatStats();
             };
-            xhr.onerror = function () { showToast('تعذر الاتصال بالسيرفر'); };
+            xhr.onerror = function () { showToast(PharmaLang.t('conn_fail_server')); };
             xhr.send();
         }
 
         // ══════════════════════════════════════════════
         // فحص السلسلة
         // ══════════════════════════════════════════════
-        var roleLabels = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون', Admin: 'المدير' };
+        function getRoleLabels() {
+            return PharmaLang.get() === 'ar'
+                ? { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون', Admin: 'المدير' }
+                : { Factory: 'Factory', Distributor: 'Distributor', Pharmacy: 'Pharmacy', Customer: 'Customer', Admin: 'Admin' };
+        }
 
         function loadDrugsChain() {
             var sel = document.getElementById('drugSelectChain');
@@ -2526,23 +2576,23 @@
             document.getElementById('alertBar').classList.remove('show');
             document.getElementById('statsBar').style.display = 'none';
             if (!drugId) {
-                document.getElementById('mainArea').innerHTML = '<div class="empty"><div class="empty-icon">⛓️</div><div>اختر دواء لبدء الفحص</div></div>';
+                document.getElementById('mainArea').innerHTML = '<div class="empty"><div class="empty-icon">⛓️</div><div>' + PharmaLang.t('atk_chain_empty') + '</div></div>';
                 return;
             }
-            document.getElementById('mainArea').innerHTML = '<div class="loading"><div class="spinner" style="margin:0 auto 12px"></div><div>جاري فحص السلسلة...</div></div>';
+            document.getElementById('mainArea').innerHTML = '<div class="loading"><div class="spinner" style="margin:0 auto 12px"></div><div>' + PharmaLang.t('atk_chain_loading') + '</div></div>';
             var xhr = new XMLHttpRequest();
             xhr.open('GET', API + '/api/transaction/history/' + drugId, true);
             xhr.setRequestHeader('Authorization', 'Bearer ' + token);
             xhr.onload = function () {
-                if (xhr.status !== 200) { document.getElementById('mainArea').innerHTML = '<div class="loading">تعذر الاتصال</div>'; return; }
+                if (xhr.status !== 200) { document.getElementById('mainArea').innerHTML = '<div class="loading">' + PharmaLang.t('conn_fail_server') + '</div>'; return; }
                 var txs = JSON.parse(xhr.responseText);
                 if (!txs || txs.length === 0) {
-                    document.getElementById('mainArea').innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div>لا توجد نقلات مسجلة لهذا الدواء بعد</div></div>';
+                    document.getElementById('mainArea').innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div>' + PharmaLang.t('atk_no_transfers') + '</div></div>';
                     return;
                 }
                 runAnalysis(txs);
             };
-            xhr.onerror = function () { document.getElementById('mainArea').innerHTML = '<div class="loading">تعذر الاتصال</div>'; };
+            xhr.onerror = function () { document.getElementById('mainArea').innerHTML = '<div class="loading">' + PharmaLang.t('conn_fail_server') + '</div>'; };
             xhr.send();
         }
 
@@ -2550,15 +2600,17 @@
             var results = [], countOk = 0, countWarn = 0, countErr = 0, maxDelayH = 0;
             for (var i = 0; i < txs.length; i++) {
                 var t = txs[i], prev = i > 0 ? txs[i - 1] : null, issues = [], status = 'ok', diffH = null;
-                if (prev && t.previousHash !== prev.blockHash) { issues.push('previousHash لا يطابق blockHash السابق — كسر في السلسلة'); status = 'err'; }
+                var _ar = PharmaLang.get() === 'ar';
+                var _hr = _ar ? ' ساعة' : 'h'; var _day = _ar ? ' يوم' : 'd';
+                if (prev && t.previousHash !== prev.blockHash) { issues.push(_ar ? 'previousHash لا يطابق blockHash السابق — كسر في السلسلة' : 'previousHash does not match previous blockHash — chain broken'); status = 'err'; }
                 if (prev) {
                     diffH = Math.round((new Date(t.timestamp) - new Date(prev.timestamp)) / 3600000);
                     if (diffH > maxDelayH) maxDelayH = diffH;
-                    if (diffH > 168) { issues.push('تأخير ' + diffH + ' ساعة (' + Math.round(diffH / 24) + ' يوم) — هجوم تأخير متعمد محتمل'); status = 'err'; }
-                    else if (diffH > 48) { issues.push('تأخير ' + diffH + ' ساعة — يستحق المراجعة'); if (status !== 'err') status = 'warn'; }
+                    if (diffH > 168) { issues.push(_ar ? 'تأخير ' + diffH + _hr + ' (' + Math.round(diffH / 24) + _day + ') — هجوم تأخير متعمد محتمل' : 'Delay ' + diffH + _hr + ' (' + Math.round(diffH / 24) + _day + ') — possible deliberate delay attack'); status = 'err'; }
+                    else if (diffH > 48) { issues.push(_ar ? 'تأخير ' + diffH + _hr + ' — يستحق المراجعة' : 'Delay ' + diffH + _hr + ' — worth reviewing'); if (status !== 'err') status = 'warn'; }
                 }
-                if (prev && t.fromRole !== prev.toRole) { issues.push('الراسل لا يطابق مستلم السابق — تخطّي في السلسلة'); status = 'err'; }
-                if (t.blockHash && !t.blockHash.startsWith('00')) { issues.push('blockHash لا يبدأ بـ 00 — Proof of Work غير مستوفى'); if (status === 'ok') status = 'warn'; }
+                if (prev && t.fromRole !== prev.toRole) { issues.push(_ar ? 'الراسل لا يطابق مستلم السابق — تخطّي في السلسلة' : 'Sender does not match previous recipient — chain skip'); status = 'err'; }
+                if (t.blockHash && !t.blockHash.startsWith('00')) { issues.push(_ar ? 'blockHash لا يبدأ بـ 00 — Proof of Work غير مستوفى' : 'blockHash does not start with 00 — Proof of Work not satisfied'); if (status === 'ok') status = 'warn'; }
                 if (status === 'ok') countOk++; else if (status === 'warn') countWarn++; else countErr++;
                 results.push({ tx: t, issues: issues, status: status, diffH: diffH });
             }
@@ -2566,24 +2618,29 @@
             document.getElementById('sOk').textContent = countOk;
             document.getElementById('sWarn').textContent = countWarn;
             document.getElementById('sErr').textContent = countErr;
-            document.getElementById('sDelay').textContent = maxDelayH > 0 ? maxDelayH + ' ساعة' : '—';
+            var _isAr = PharmaLang.get() === 'ar';
+            document.getElementById('sDelay').textContent = maxDelayH > 0 ? maxDelayH + (_isAr ? ' ساعة' : 'h') : '—';
             document.getElementById('statsBar').style.display = 'flex';
             var ab = document.getElementById('alertBar');
-            if (countErr > 0) { ab.className = 'alert-bar show err'; ab.innerHTML = '🚨 <strong>تم رصد ' + countErr + ' مخالفة أمنية</strong> في السلسلة'; }
-            else if (countWarn > 0) { ab.className = 'alert-bar show warn'; ab.innerHTML = '⚠️ <strong>' + countWarn + ' تحذير</strong> يستحق المراجعة'; }
-            else { ab.className = 'alert-bar show ok'; ab.innerHTML = '✅ <strong>السلسلة سليمة</strong> — جميع النقلات الـ ' + txs.length + ' مرّت بنجاح'; }
+            if (countErr > 0) { ab.className = 'alert-bar show err'; ab.innerHTML = _isAr ? '🚨 <strong>تم رصد ' + countErr + ' مخالفة أمنية</strong> في السلسلة' : '🚨 <strong>' + countErr + ' security violation(s) detected</strong> in the chain'; }
+            else if (countWarn > 0) { ab.className = 'alert-bar show warn'; ab.innerHTML = _isAr ? '⚠️ <strong>' + countWarn + ' تحذير</strong> يستحق المراجعة' : '⚠️ <strong>' + countWarn + ' warning(s)</strong> worth reviewing'; }
+            else { ab.className = 'alert-bar show ok'; ab.innerHTML = _isAr ? '✅ <strong>السلسلة سليمة</strong> — جميع النقلات الـ ' + txs.length + ' مرّت بنجاح' : '✅ <strong>Chain is intact</strong> — all ' + txs.length + ' transfers passed'; }
             renderResults(results, countOk, countWarn, countErr, maxDelayH);
         }
 
         function renderResults(results, ok, warn, err, maxDelay) {
+            var rl = getRoleLabels();
+            var _a = PharmaLang.get() === 'ar';
+            var locale = _a ? 'ar-JO' : 'en-GB';
+            var hUnit = _a ? ' ساعة' : 'h';
             var rows = '';
             results.forEach(function (r, i) {
-                var t = r.tx, from = roleLabels[t.fromRole] || t.fromRole, to = roleLabels[t.toRole] || t.toRole;
+                var t = r.tx, from = rl[t.fromRole] || t.fromRole, to = rl[t.toRole] || t.toRole;
                 var bc = r.status === 'ok' ? 'badge-ok' : r.status === 'warn' ? 'badge-warn' : 'badge-err';
-                var bt = r.status === 'ok' ? '✓ سليم' : r.status === 'warn' ? '⚠ تحذير' : '✗ مخالفة';
+                var bt = r.status === 'ok' ? (_a ? '✓ سليم' : '✓ OK') : r.status === 'warn' ? (_a ? '⚠ تحذير' : '⚠ Warning') : (_a ? '✗ مخالفة' : '✗ Violation');
                 var hash = t.blockHash ? t.blockHash.substring(0, 14) + '...' : '—';
-                var date = new Date(t.timestamp).toLocaleDateString('ar-JO');
-                var delayTxt = r.diffH !== null ? r.diffH + ' ساعة' : '—';
+                var date = new Date(t.timestamp).toLocaleDateString(locale);
+                var delayTxt = r.diffH !== null ? r.diffH + hUnit : '—';
                 var delayColor = r.diffH > 168 ? 'color:#c53030' : r.diffH > 48 ? 'color:#c05621' : 'color:#276749';
                 rows += '<tr><td style="color:#a0aec0;font-size:12px">' + (i + 1) + '</td>'
                     + '<td><div style="font-weight:500">' + (t.drugName || '—') + '</div>'
@@ -2595,34 +2652,34 @@
                     + '<td style="font-family:monospace;font-size:11px;color:#a0aec0">' + hash + '</td>'
                     + '<td><span class="badge ' + bc + '">' + bt + '</span></td></tr>';
             });
-            var tableCard = '<div class="card"><div class="card-header">📋 نتائج فحص كل نقلة</div>'
-                + '<table><thead><tr><th>#</th><th>الدواء / المسار</th><th>التاريخ</th><th>التأخير</th><th>Block Hash</th><th>الحالة</th></tr></thead>'
+            var tableCard = '<div class="card"><div class="card-header">📋 ' + (_a ? 'نتائج فحص كل نقلة' : 'Transfer Inspection Results') + '</div>'
+                + '<table><thead><tr><th>#</th><th>' + (_a ? 'الدواء / المسار' : 'Drug / Path') + '</th><th>' + (_a ? 'التاريخ' : 'Date') + '</th><th>' + (_a ? 'التأخير' : 'Delay') + '</th><th>Block Hash</th><th>' + (_a ? 'الحالة' : 'Status') + '</th></tr></thead>'
                 + '<tbody>' + rows + '</tbody></table></div>';
             var ft = results[0].tx;
-            var hashCard = '<div class="card"><div class="card-header">🔗 تفاصيل Hash — أول Block</div><div class="card-body"><div class="hash-box">'
+            var hashCard = '<div class="card"><div class="card-header">🔗 ' + (_a ? 'تفاصيل Hash — أول Block' : 'Hash Details — First Block') + '</div><div class="card-body"><div class="hash-box">'
                 + '<div class="hash-row"><span class="hash-label">Block #</span><span class="hash-val">' + (ft.blockNumber || 1) + '</span></div>'
                 + '<div class="hash-row"><span class="hash-label">Previous Hash</span><span class="hash-val">' + (ft.previousHash || '—') + '</span></div>'
                 + '<div class="hash-row"><span class="hash-label">Block Hash</span><span class="hash-val">' + (ft.blockHash || '—') + '</span></div>'
                 + '<div class="hash-row"><span class="hash-label">Nonce</span><span class="hash-val">' + (ft.nonce || '0') + '</span></div>'
                 + '<div class="hash-row"><span class="hash-label">Merkle Root</span><span class="hash-val">' + (ft.merkleRoot || '—') + '</span></div>'
-                + '<div class="hash-row"><span class="hash-label">Timestamp</span><span class="hash-val">' + new Date(ft.timestamp).toLocaleString('ar-JO') + '</span></div>'
+                + '<div class="hash-row"><span class="hash-label">Timestamp</span><span class="hash-val">' + new Date(ft.timestamp).toLocaleString(locale) + '</span></div>'
                 + '</div></div></div>';
             var checks = [
-                { label: 'Hash Chain مترابط', st: err === 0 ? 'ok' : 'err' },
-                { label: 'ترتيب الأدوار صحيح', st: err === 0 ? 'ok' : 'err' },
+                { label: _a ? 'Hash Chain مترابط' : 'Hash Chain linked', st: err === 0 ? 'ok' : 'err' },
+                { label: _a ? 'ترتيب الأدوار صحيح' : 'Role order correct', st: err === 0 ? 'ok' : 'err' },
                 { label: 'Proof of Work (00...)', st: warn === 0 && err === 0 ? 'ok' : 'warn' },
-                { label: 'تأخير < 48 ساعة', st: maxDelay <= 48 ? 'ok' : maxDelay <= 168 ? 'warn' : 'err' },
-                { label: 'تسلسل النقلات مستمر', st: err === 0 ? 'ok' : 'err' }
+                { label: _a ? 'تأخير < 48 ساعة' : 'Delay < 48h', st: maxDelay <= 48 ? 'ok' : maxDelay <= 168 ? 'warn' : 'err' },
+                { label: _a ? 'تسلسل النقلات مستمر' : 'Transfer sequence continuous', st: err === 0 ? 'ok' : 'err' }
             ];
-            var checksHtml = '<div class="panel-card"><div class="panel-card-header">🔐 الفحوصات الأمنية</div><div class="panel-card-body">';
-            checks.forEach(function (c) { var cls = c.st === 'ok' ? 'cs-ok' : c.st === 'warn' ? 'cs-warn' : 'cs-err'; var txt = c.st === 'ok' ? 'سليم ✓' : c.st === 'warn' ? 'تحذير ⚠' : 'خطأ ✗'; checksHtml += '<div class="check-row"><span class="check-label">' + c.label + '</span><span class="check-st ' + cls + '">' + txt + '</span></div>'; });
+            var checksHtml = '<div class="panel-card"><div class="panel-card-header">🔐 ' + (_a ? 'الفحوصات الأمنية' : 'Security Checks') + '</div><div class="panel-card-body">';
+            checks.forEach(function (c) { var cls = c.st === 'ok' ? 'cs-ok' : c.st === 'warn' ? 'cs-warn' : 'cs-err'; var txt = c.st === 'ok' ? (_a ? 'سليم ✓' : 'OK ✓') : c.st === 'warn' ? (_a ? 'تحذير ⚠' : 'Warning ⚠') : (_a ? 'خطأ ✗' : 'Error ✗'); checksHtml += '<div class="check-row"><span class="check-label">' + c.label + '</span><span class="check-st ' + cls + '">' + txt + '</span></div>'; });
             checksHtml += '</div></div>';
-            var summaryHtml = '<div class="panel-card"><div class="panel-card-header">📊 ملخص</div><div class="panel-card-body">'
-                + '<div class="mini-stat"><span class="mini-stat-lbl">إجمالي النقلات</span><span class="mini-stat-val">' + results.length + '</span></div>'
-                + '<div class="mini-stat"><span class="mini-stat-lbl">سليمة</span><span class="mini-stat-val green">' + ok + '</span></div>'
-                + '<div class="mini-stat"><span class="mini-stat-lbl">تحذيرات</span><span class="mini-stat-val orange">' + warn + '</span></div>'
-                + '<div class="mini-stat"><span class="mini-stat-lbl">مخالفات</span><span class="mini-stat-val red">' + err + '</span></div>'
-                + '<div class="mini-stat"><span class="mini-stat-lbl">أطول تأخير</span><span class="mini-stat-val ' + (maxDelay > 48 ? 'orange' : 'green') + '">' + (maxDelay > 0 ? maxDelay + ' ساعة' : '—') + '</span></div>'
+            var summaryHtml = '<div class="panel-card"><div class="panel-card-header">📊 ' + (_a ? 'ملخص' : 'Summary') + '</div><div class="panel-card-body">'
+                + '<div class="mini-stat"><span class="mini-stat-lbl">' + (_a ? 'إجمالي النقلات' : 'Total Transfers') + '</span><span class="mini-stat-val">' + results.length + '</span></div>'
+                + '<div class="mini-stat"><span class="mini-stat-lbl">' + (_a ? 'سليمة' : 'OK') + '</span><span class="mini-stat-val green">' + ok + '</span></div>'
+                + '<div class="mini-stat"><span class="mini-stat-lbl">' + (_a ? 'تحذيرات' : 'Warnings') + '</span><span class="mini-stat-val orange">' + warn + '</span></div>'
+                + '<div class="mini-stat"><span class="mini-stat-lbl">' + (_a ? 'مخالفات' : 'Violations') + '</span><span class="mini-stat-val red">' + err + '</span></div>'
+                + '<div class="mini-stat"><span class="mini-stat-lbl">' + (_a ? 'أطول تأخير' : 'Longest Delay') + '</span><span class="mini-stat-val ' + (maxDelay > 48 ? 'orange' : 'green') + '">' + (maxDelay > 0 ? maxDelay + hUnit : '—') + '</span></div>'
                 + '</div></div>';
             document.getElementById('mainArea').innerHTML =
                 '<div class="main-grid"><div>' + tableCard + hashCard + '</div>'
@@ -2631,18 +2688,18 @@
 
         function demoTamper() {
             var drugId = document.getElementById('drugSelectChain').value;
-            if (!drugId) { showToast('اختر دواء أولاً'); return; }
-            if (!confirm('هذا سيكسر أول block للدواء #' + drugId + ' — هل تكمل؟')) return;
+            if (!drugId) { showToast(PharmaLang.t('atk_toast_select_drug')); return; }
+            if (!confirm(PharmaLang.get() === 'ar' ? 'هذا سيكسر أول block للدواء #' + drugId + ' — هل تكمل؟' : 'This will break the first block for drug #' + drugId + ' — continue?')) return;
             var xhr = new XMLHttpRequest();
             xhr.open('GET', API + '/api/transaction/history/' + drugId, true);
             xhr.setRequestHeader('Authorization', 'Bearer ' + token);
             xhr.onload = function () {
                 var txs = JSON.parse(xhr.responseText);
-                if (!txs || txs.length === 0) { showToast('لا توجد نقلات'); return; }
+                if (!txs || txs.length === 0) { showToast(PharmaLang.t('atk_no_transfers')); return; }
                 var xhr2 = new XMLHttpRequest();
                 xhr2.open('POST', API + '/api/transaction/demo-tamper/' + txs[0].id, true);
                 xhr2.setRequestHeader('Authorization', 'Bearer ' + token);
-                xhr2.onload = function () { showToast('💥 تم كسر السلسلة'); analyze(); };
+                xhr2.onload = function () { showToast(PharmaLang.get() === 'ar' ? '💥 تم كسر السلسلة' : '💥 Chain broken'); analyze(); };
                 xhr2.send();
             };
             xhr.send();
@@ -2652,41 +2709,51 @@
             var xhr = new XMLHttpRequest();
             xhr.open('POST', API + '/api/transaction/demo-restore', true);
             xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-            xhr.onload = function () { showToast('✅ تم استعادة السلسلة'); analyze(); };
+            xhr.onload = function () { showToast(PharmaLang.get() === 'ar' ? '✅ تم استعادة السلسلة' : '✅ Chain restored'); analyze(); };
             xhr.send();
         }
 
         // ══════════════════════════════════════════════
         // سجل المحاولات
         // ══════════════════════════════════════════════
-        var attackLabels = {
-            'NONE': { text: 'مسح سليم', cls: 'tag-none' },
-            'SIGNATURE_MISMATCH': { text: 'تبديل ملصق QR', cls: 'tag-sig' },
-            'DATE_MISMATCH': { text: 'تلاعب بالتاريخ', cls: 'tag-date' },
-            'DRUG_NOT_FOUND': { text: 'كود مزيف', cls: 'tag-fake' },
-            'QR_EXPIRED': { text: 'QR منتهي', cls: 'tag-exp' },
-            'MISSING_PARAMS': { text: 'بيانات ناقصة', cls: 'tag-other' }
-        };
+        function getAttackLabels() {
+            return PharmaLang.get() === 'ar' ? {
+                'NONE': { text: 'مسح سليم', cls: 'tag-none' },
+                'SIGNATURE_MISMATCH': { text: 'تبديل ملصق QR', cls: 'tag-sig' },
+                'DATE_MISMATCH': { text: 'تلاعب بالتاريخ', cls: 'tag-date' },
+                'DRUG_NOT_FOUND': { text: 'كود مزيف', cls: 'tag-fake' },
+                'QR_EXPIRED': { text: 'QR منتهي', cls: 'tag-exp' },
+                'MISSING_PARAMS': { text: 'بيانات ناقصة', cls: 'tag-other' }
+            } : {
+                'NONE': { text: 'Valid Scan', cls: 'tag-none' },
+                'SIGNATURE_MISMATCH': { text: 'QR Label Swap', cls: 'tag-sig' },
+                'DATE_MISMATCH': { text: 'Date Tampering', cls: 'tag-date' },
+                'DRUG_NOT_FOUND': { text: 'Fake Code', cls: 'tag-fake' },
+                'QR_EXPIRED': { text: 'QR Expired', cls: 'tag-exp' },
+                'MISSING_PARAMS': { text: 'Missing Params', cls: 'tag-other' }
+            };
+        }
 
         function loadLogs() {
             var filter = document.getElementById('logFilter').value;
-            document.getElementById('logsArea').innerHTML = '<div class="loading"><div class="spinner" style="margin:0 auto 12px"></div><div>جاري تحميل السجل...</div></div>';
+            document.getElementById('logsArea').innerHTML = '<div class="loading"><div class="spinner" style="margin:0 auto 12px"></div><div>' + PharmaLang.t('atk_log_loading') + '</div></div>';
             var url = API + '/api/qr/scan-logs?limit=200';
             if (filter && filter !== 'ALL') url += '&attackType=' + filter;
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
             xhr.setRequestHeader('Authorization', 'Bearer ' + token);
             xhr.onload = function () {
-                if (xhr.status === 403) { document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">🔒</div><div>هذا السجل متاح للأدمن فقط</div></div>'; return; }
-                if (xhr.status !== 200) { document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div>تعذر تحميل السجل</div></div>'; return; }
+                if (xhr.status === 403) { document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">🔒</div><div>' + PharmaLang.t('atk_log_admin_only') + '</div></div>'; return; }
+                if (xhr.status !== 200) { document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div>' + PharmaLang.t('atk_log_load_fail') + '</div></div>'; return; }
                 var data = JSON.parse(xhr.responseText);
                 renderLogs(data.stats, data.logs);
             };
-            xhr.onerror = function () { document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div>تعذر الاتصال</div></div>'; };
+            xhr.onerror = function () { document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div>' + PharmaLang.t('conn_fail_server') + '</div></div>'; };
             xhr.send();
         }
 
         function renderLogs(stats, logs) {
+            var attackLabels = getAttackLabels();
             if (stats) {
                 document.getElementById('ls-total').textContent = stats.total || 0;
                 document.getElementById('ls-valid').textContent = stats.valid || 0;
@@ -2696,13 +2763,13 @@
                 document.getElementById('logStats').style.display = 'grid';
             }
             if (!logs || logs.length === 0) {
-                document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">✅</div><div>لا توجد محاولات مسجلة — جرّب مختبر الـ QR!</div></div>';
+                document.getElementById('logsArea').innerHTML = '<div class="empty"><div class="empty-icon">✅</div><div>' + PharmaLang.t('atk_log_empty') + '</div></div>';
                 return;
             }
             var rows = logs.map(function (l, i) {
                 var atk = attackLabels[l.attackType] || { text: l.attackType, cls: 'tag-other' };
                 var rowStyle = l.isValid ? '' : 'background:#fffafa';
-                var timeStr = l.scannedAt ? new Date(l.scannedAt).toLocaleString('ar-JO') : '—';
+                var timeStr = l.scannedAt ? new Date(l.scannedAt).toLocaleString(PharmaLang.get() === 'ar' ? 'ar-JO' : 'en-GB') : '—';
                 return '<tr style="' + rowStyle + '">'
                     + '<td style="color:#a0aec0;font-size:12px">' + (i + 1) + '</td>'
                     + '<td style="font-weight:500">' + l.drugId + '</td>'
@@ -2712,12 +2779,30 @@
                     + '<td style="font-size:12px;color:#718096;white-space:nowrap">' + timeStr + '</td>'
                     + '</tr>';
             }).join('');
+            var _la = PharmaLang.get() === 'ar';
             document.getElementById('logsArea').innerHTML =
-                '<div class="card"><div class="card-header">📋 سجل عمليات مسح QR — ' + logs.length + ' سجل'
-                + '<button class="btn btn-outline" style="font-size:12px;padding:4px 10px" onclick="loadLogs()">🔄 تحديث</button></div>'
-                + '<table><thead><tr><th>#</th><th>Drug ID</th><th>نوع الهجوم</th><th>التفاصيل</th><th>IP</th><th>وقت المسح</th></tr></thead>'
+                '<div class="card"><div class="card-header">📋 ' + (_la ? 'سجل عمليات مسح QR — ' + logs.length + ' سجل' : 'QR Scan Log — ' + logs.length + ' records')
+                + '<button class="btn btn-outline" style="font-size:12px;padding:4px 10px" onclick="loadLogs()" data-i18n="btn_refresh">🔄 ' + (_la ? 'تحديث' : 'Refresh') + '</button></div>'
+                + '<table><thead><tr><th>#</th><th>Drug ID</th><th>' + (_la ? 'نوع الهجوم' : 'Attack Type') + '</th><th>' + (_la ? 'التفاصيل' : 'Details') + '</th><th>IP</th><th>' + (_la ? 'وقت المسح' : 'Scan Time') + '</th></tr></thead>'
                 + '<tbody>' + rows + '</tbody></table></div>';
         }
+
+        // ══════════════════════════════════════════════
+        // Language change → re-render dynamic content
+        // ══════════════════════════════════════════════
+        window.addEventListener('pharmaLangChanged', function () {
+            // Re-render attack description if one is selected
+            if (attackMode) selectAttack(attackMode);
+            // Re-render chain analysis if data is showing
+            var mainArea = document.getElementById('mainArea');
+            if (mainArea && !mainArea.querySelector('.empty') && !mainArea.querySelector('.loading')) {
+                var drugId = document.getElementById('drugSelectChain').value;
+                if (drugId) analyze();
+            }
+            // Reload logs if that tab is active
+            var logsPanel = document.getElementById('tab-logs');
+            if (logsPanel && logsPanel.classList.contains('active')) loadLogs();
+        });
 
         // ══════════════════════════════════════════════
         // Init
