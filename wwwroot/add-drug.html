@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>PharmaChain — إضافة دواء</title>
+    <script src="/pharma-lang.js"></script>
     <style>
         * {
             margin: 0;
@@ -118,6 +119,10 @@
             flex: 1;
             padding: 28px;
         }
+        [dir="ltr"] .main { margin-right: 0; margin-left: 220px; }
+        [dir="ltr"] .sidebar { right: auto; left: 0; }
+        [dir="ltr"] .input-icon { left: 12px; right: auto; }
+        [dir="ltr"] .input-wrap input { padding-left: 36px; padding-right: 14px; }
 
         .page-header {
             margin-bottom: 24px;
@@ -848,33 +853,34 @@
 
         <!-- Sidebar -->
         <div class="sidebar">
-            <div class="sidebar-logo"><h2>PharmaChain</h2><p>نظام تتبع الأدوية</p></div>
-            <a class="nav-item" onclick="goTo('dashboard.html')"><div class="nav-dot"></div> لوحة التحكم</a>
-            <a class="nav-item active"><div class="nav-dot"></div> إضافة دواء</a>
-            <a class="nav-item" onclick="goTo('transfer.html')"><div class="nav-dot"></div> نقل دواء</a>
-            <a class="nav-item" onclick="goTo('blockchain.html')"><div class="nav-dot"></div> Blockchain</a>
-            <a class="nav-item" onclick="goTo('verify.html')"><div class="nav-dot"></div> التحقق من دواء</a>
-            <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><div class="nav-dot"></div> سجل العمليات</a>
-            <div class="nav-section" id="navAISection" style="display:none">الذكاء الاصطناعي</div>
-            <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><div class="nav-dot"></div> محلل المخاطر AI</a>
-            <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><div class="nav-dot"></div> تحليلات الأداء AI</a>
-            <a class="nav-item" onclick="goTo('qr-control.html')"><div class="nav-dot"></div> إدارة QR Code</a>
+            <div class="sidebar-logo"><h2>PharmaChain</h2><p data-i18n="sidebar_sub">نظام تتبع الأدوية</p></div>
+            <button class="lang-toggle-btn" onclick="PharmaLang.toggle()" style="margin:8px 14px;padding:7px 12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#99f6e4;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">🇬🇧 EN</button>
+            <a class="nav-item" onclick="goTo('dashboard.html')"><div class="nav-dot"></div> <span data-i18n="nav_dashboard">لوحة التحكم</span></a>
+            <a class="nav-item active"><div class="nav-dot"></div> <span data-i18n="nav_add_drug">إضافة دواء</span></a>
+            <a class="nav-item" onclick="goTo('transfer.html')"><div class="nav-dot"></div> <span data-i18n="nav_transfer">نقل دواء</span></a>
+            <a class="nav-item" onclick="goTo('blockchain.html')"><div class="nav-dot"></div> <span data-i18n="nav_blockchain">Blockchain</span></a>
+            <a class="nav-item" onclick="goTo('verify.html')"><div class="nav-dot"></div> <span data-i18n="nav_verify">التحقق من دواء</span></a>
+            <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><div class="nav-dot"></div> <span data-i18n="nav_audit">سجل العمليات</span></a>
+            <div class="nav-section" id="navAISection" style="display:none" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
+            <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><div class="nav-dot"></div> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
+            <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><div class="nav-dot"></div> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
+            <a class="nav-item" onclick="goTo('qr-control.html')"><div class="nav-dot"></div> <span data-i18n="nav_qr_control">إدارة QR Code</span></a>
             <div class="user-info">
                 <div class="name" id="sidebarUsername">...</div>
                 <div class="role" id="sidebarRole">...</div>
-                <button class="logout-btn" onclick="logout()">تسجيل خروج</button>
+                <button class="logout-btn" onclick="logout()" data-i18n="btn_logout">🚪 تسجيل خروج</button>
             </div>
         </div>
 
         <!-- Main -->
         <div class="main">
             <div class="page-header">
-                <div class="page-title">إضافة دواء جديد</div>
-                <div class="page-sub">أدخل بيانات الدواء — سيتم تسجيله في الـ Blockchain تلقائياً</div>
+                <div class="page-title" data-i18n="add_title">إضافة دواء جديد</div>
+                <div class="page-sub" data-i18n="add_subtitle">أدخل بيانات الدواء — سيتم تسجيله في الـ Blockchain تلقائياً</div>
             </div>
 
             <div id="noAccessMsg" style="display:none">
-                <div class="card"><div class="card-body"><div class="no-access">ليس لديك صلاحية إضافة الأدوية<br><small>هذه الصفحة للمصنع والمدير فقط</small></div></div></div>
+                <div class="card"><div class="card-body"><div class="no-access"><span data-i18n="add_no_access">ليس لديك صلاحية إضافة الأدوية</span><br><small data-i18n="add_no_access_sub">هذه الصفحة للمصنع والمدير فقط</small></div></div></div>
             </div>
 
             <div id="formContent">
@@ -886,8 +892,8 @@
                         <div class="security-strip">
                             <div class="security-icon">🔐</div>
                             <div class="security-text">
-                                <strong>الحماية الأمنية مفعّلة</strong>
-                                رقم الدفعة سيُشفَّر بـ SHA-256 · الـ Checksum يُحسب تلقائياً · كل عملية مسجلة في Audit Log
+                                <strong data-i18n="add_security_title">الحماية الأمنية مفعّلة</strong>
+                                <span data-i18n="add_security_body">رقم الدفعة سيُشفَّر بـ SHA-256 · الـ Checksum يُحسب تلقائياً · كل عملية مسجلة في Audit Log</span>
                             </div>
                         </div>
 
@@ -896,12 +902,12 @@
                             <div class="card-header">
                                 <div class="card-icon blue">💊</div>
                                 <div>
-                                    <div class="card-title">معلومات الدواء الأساسية</div>
-                                    <div class="card-sub">الاسم التجاري والتصنيف</div>
+                                    <div class="card-title" data-i18n="add_card_basic">معلومات الدواء الأساسية</div>
+                                    <div class="card-sub" data-i18n="add_card_basic_sub">الاسم التجاري والتصنيف</div>
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="section-label">تصنيف الدواء</div>
+                                <div class="section-label" data-i18n="add_category_hdr">تصنيف الدواء</div>
                                 <div class="category-grid" id="categoryGrid">
                                     <span class="cat-pill" onclick="selectCategory(this, 'مضاد حيوي')">💊 مضاد حيوي</span>
                                     <span class="cat-pill" onclick="selectCategory(this, 'مسكن ألم')">🩹 مسكن ألم</span>
@@ -917,14 +923,14 @@
 
                                 <div class="form-grid">
                                     <div class="form-group full">
-                                        <label>اسم الدواء <span class="label-required">*</span> <span class="label-badge">يظهر في الـ Blockchain</span></label>
-                                        <input type="text" id="name" placeholder="مثال: Panadol Extra 500mg" oninput="onNameInput()" maxlength="100">
-                                        <div class="field-error" id="nameError">⚠️ اسم الدواء مطلوب</div>
+                                        <label><span data-i18n="add_name_lbl">اسم الدواء</span> <span class="label-required">*</span> <span class="label-badge">Blockchain</span></label>
+                                        <input type="text" id="name" placeholder="e.g. Panadol Extra 500mg" oninput="onNameInput()" maxlength="100">
+                                        <div class="field-error" id="nameError" data-i18n="add_name_err">⚠️ اسم الدواء مطلوب</div>
                                     </div>
                                     <div class="form-group full">
-                                        <label>الاسم العلمي (المادة الفعالة) <span class="label-badge">اختياري</span></label>
-                                        <input type="text" id="scientificName" placeholder="مثال: Paracetamol + Caffeine">
-                                        <div class="field-hint">المادة الفعالة — للمرجعية الطبية</div>
+                                        <label><span data-i18n="add_scientific_lbl">الاسم العلمي (المادة الفعالة)</span> <span class="label-badge" data-i18n="add_scientific_opt">اختياري</span></label>
+                                        <input type="text" id="scientificName" placeholder="e.g. Paracetamol + Caffeine">
+                                        <div class="field-hint" data-i18n="add_scientific_hint">المادة الفعالة — للمرجعية الطبية</div>
                                     </div>
                                 </div>
                             </div>
@@ -935,25 +941,25 @@
                             <div class="card-header">
                                 <div class="card-icon green">🏭</div>
                                 <div>
-                                    <div class="card-title">بيانات الإنتاج والتتبع</div>
-                                    <div class="card-sub">رقم الدفعة والشركة المصنعة</div>
+                                    <div class="card-title" data-i18n="add_card_prod">بيانات الإنتاج والتتبع</div>
+                                    <div class="card-sub" data-i18n="add_card_prod_sub">رقم الدفعة والشركة المصنعة</div>
                                 </div>
                             </div>
                             <div class="card-body">
                                 <div class="form-grid">
                                     <div class="form-group">
-                                        <label>رقم الدفعة (Batch Number) <span class="label-required">*</span></label>
-                                        <input type="text" id="batchNumber" placeholder="مثال: A-2024-001" oninput="onBatchInput()" style="font-family:monospace;">
-                                        <div class="field-error" id="batchNumberError">⚠️ رقم الدفعة مطلوب</div>
-                                        <div class="field-hint">سيُشفَّر بـ SHA-256 قبل الحفظ</div>
+                                        <label><span data-i18n="add_batch_lbl">رقم الدفعة (Batch Number)</span> <span class="label-required">*</span></label>
+                                        <input type="text" id="batchNumber" placeholder="e.g. A-2024-001" oninput="onBatchInput()" style="font-family:monospace;">
+                                        <div class="field-error" id="batchNumberError" data-i18n="add_batch_err">⚠️ رقم الدفعة مطلوب</div>
+                                        <div class="field-hint" data-i18n="add_batch_hint">سيُشفَّر بـ SHA-256 قبل الحفظ</div>
                                     </div>
                                     <div class="form-group">
-                                        <label>الشركة المصنعة <span class="label-required">*</span></label>
-                                        <input type="text" id="manufacturer" placeholder="مثال: GSK Jordan" oninput="clearErr('manufacturer')">
-                                        <div class="field-error" id="manufacturerError">⚠️ الشركة المصنعة مطلوبة</div>
+                                        <label><span data-i18n="add_mfr_lbl">الشركة المصنعة</span> <span class="label-required">*</span></label>
+                                        <input type="text" id="manufacturer" placeholder="e.g. GSK Jordan" oninput="clearErr('manufacturer')">
+                                        <div class="field-error" id="manufacturerError" data-i18n="add_mfr_err">⚠️ الشركة المصنعة مطلوبة</div>
                                     </div>
                                     <div class="form-group">
-                                        <label>بلد المنشأ <span class="label-badge">اختياري</span></label>
+                                        <label><span data-i18n="add_country_lbl">بلد المنشأ</span> <span class="label-badge" data-i18n="add_scientific_opt">اختياري</span></label>
                                         <select id="country">
                                             <option value="">اختر البلد</option>
                                             <option>الأردن</option>
@@ -969,7 +975,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>شكل الدواء <span class="label-badge">اختياري</span></label>
+                                        <label><span data-i18n="add_form_lbl">شكل الدواء</span> <span class="label-badge" data-i18n="add_scientific_opt">اختياري</span></label>
                                         <select id="drugForm">
                                             <option value="">اختر الشكل</option>
                                             <option>أقراص (Tablets)</option>
@@ -991,42 +997,42 @@
                             <div class="card-header">
                                 <div class="card-icon orange">📦</div>
                                 <div>
-                                    <div class="card-title">الصلاحية والكمية</div>
-                                    <div class="card-sub">تواريخ الإنتاج والانتهاء وعدد الوحدات</div>
+                                    <div class="card-title" data-i18n="add_card_qty">الصلاحية والكمية</div>
+                                    <div class="card-sub" data-i18n="add_card_qty_sub">تواريخ الإنتاج والانتهاء وعدد الوحدات</div>
                                 </div>
                             </div>
                             <div class="card-body">
                                 <div class="form-grid">
                                     <div class="form-group">
-                                        <label>تاريخ الإنتاج <span class="label-badge">اختياري</span></label>
+                                        <label><span data-i18n="add_prod_date_lbl">تاريخ الإنتاج</span> <span class="label-badge" data-i18n="add_scientific_opt">اختياري</span></label>
                                         <input type="date" id="productionDate">
                                     </div>
                                     <div class="form-group">
-                                        <label>تاريخ انتهاء الصلاحية <span class="label-required">*</span></label>
+                                        <label><span data-i18n="add_expiry_lbl">تاريخ انتهاء الصلاحية</span> <span class="label-required">*</span></label>
                                         <input type="date" id="expiryDate" oninput="onExpiryInput()">
-                                        <div class="field-error" id="expiryDateError">⚠️ تاريخ الانتهاء مطلوب</div>
+                                        <div class="field-error" id="expiryDateError" data-i18n="add_expiry_err">⚠️ تاريخ الانتهاء مطلوب</div>
                                         <div class="expiry-preview" id="expiryPreview"></div>
                                     </div>
                                     <div class="form-group">
-                                        <label>الكمية (وحدة) <span class="label-required">*</span></label>
-                                        <input type="number" id="quantity" placeholder="مثال: 500" min="1" oninput="onQtyInput()">
-                                        <div class="field-error" id="quantityError">⚠️ الكمية يجب أن تكون أكبر من صفر</div>
+                                        <label><span data-i18n="add_qty_lbl">الكمية (وحدة)</span> <span class="label-required">*</span></label>
+                                        <input type="number" id="quantity" placeholder="500" min="1" oninput="onQtyInput()">
+                                        <div class="field-error" id="quantityError" data-i18n="add_qty_err">⚠️ الكمية يجب أن تكون أكبر من صفر</div>
                                         <div class="qty-meter" id="qtyMeter">
                                             <div class="qty-bar-bg"><div class="qty-bar" id="qtyBar"></div></div>
                                             <div class="qty-label" id="qtyLabel"></div>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label>سعر الوحدة (JD) <span class="label-badge">اختياري</span></label>
-                                        <input type="number" id="price" placeholder="مثال: 2.500" min="0" step="0.001">
+                                        <label><span data-i18n="add_price_lbl">سعر الوحدة (JD)</span> <span class="label-badge" data-i18n="add_scientific_opt">اختياري</span></label>
+                                        <input type="number" id="price" placeholder="2.500" min="0" step="0.001">
                                     </div>
                                 </div>
 
                                 <div class="section-divider"></div>
 
                                 <div class="form-group">
-                                    <label>ملاحظات إضافية <span class="label-badge">اختياري</span></label>
-                                    <textarea id="notes" placeholder="أي معلومات إضافية عن الدواء، شروط التخزين الخاصة، تحذيرات..."></textarea>
+                                    <label><span data-i18n="add_notes_lbl">ملاحظات إضافية</span> <span class="label-badge" data-i18n="add_scientific_opt">اختياري</span></label>
+                                    <textarea id="notes" placeholder="..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -1035,13 +1041,13 @@
                         <div class="submit-section">
                             <button class="btn-submit" id="submitBtn" onclick="submitDrug()">
                                 <span id="submitIcon">➕</span>
-                                <span id="submitText">إضافة الدواء وتسجيله في النظام</span>
+                                <span id="submitText" data-i18n="add_btn">إضافة الدواء وتسجيله في النظام</span>
                             </button>
-                            <button class="btn-reset" onclick="resetForm()">🔄 مسح الحقول</button>
+                            <button class="btn-reset" onclick="resetForm()" data-i18n="add_reset">🔄 مسح الحقول</button>
 
                             <div class="alert alert-success" id="successMsg">
                                 <span>✅</span>
-                                <span id="successText">تم إضافة الدواء بنجاح! جاري التحويل...</span>
+                                <span id="successText" data-i18n="add_success_msg">تم إضافة الدواء بنجاح! جاري التحويل...</span>
                             </div>
                             <div class="alert alert-error" id="errorMsg">
                                 <span>❌</span>
@@ -1058,8 +1064,8 @@
                             <div class="card-header">
                                 <div class="card-icon blue">📋</div>
                                 <div>
-                                    <div class="card-title">تقدم الإدخال</div>
-                                    <div class="card-sub">الحقول المطلوبة</div>
+                                    <div class="card-title" data-i18n="add_card_progress">تقدم الإدخال</div>
+                                    <div class="card-sub" data-i18n="add_card_prog_sub">الحقول المطلوبة</div>
                                 </div>
                             </div>
                             <div class="card-body" style="padding:12px 20px;">
@@ -1067,36 +1073,36 @@
                                     <div class="step" id="step-name">
                                         <div class="step-dot pending" id="dot-name">1</div>
                                         <div class="step-info">
-                                            <div class="step-title">اسم الدواء</div>
-                                            <div class="step-desc" id="desc-name">لم يُدخل بعد</div>
+                                            <div class="step-title" data-i18n="add_step_name">اسم الدواء</div>
+                                            <div class="step-desc" id="desc-name" data-i18n="add_step_pending">لم يُدخل بعد</div>
                                         </div>
                                     </div>
                                     <div class="step" id="step-batch">
                                         <div class="step-dot pending" id="dot-batch">2</div>
                                         <div class="step-info">
-                                            <div class="step-title">رقم الدفعة</div>
-                                            <div class="step-desc" id="desc-batch">لم يُدخل بعد</div>
+                                            <div class="step-title" data-i18n="add_step_batch">رقم الدفعة</div>
+                                            <div class="step-desc" id="desc-batch" data-i18n="add_step_pending">لم يُدخل بعد</div>
                                         </div>
                                     </div>
                                     <div class="step" id="step-expiry">
                                         <div class="step-dot pending" id="dot-expiry">3</div>
                                         <div class="step-info">
-                                            <div class="step-title">تاريخ الانتهاء</div>
-                                            <div class="step-desc" id="desc-expiry">لم يُحدد بعد</div>
+                                            <div class="step-title" data-i18n="add_step_expiry">تاريخ الانتهاء</div>
+                                            <div class="step-desc" id="desc-expiry" data-i18n="add_step_pending">لم يُحدد بعد</div>
                                         </div>
                                     </div>
                                     <div class="step" id="step-mfr">
                                         <div class="step-dot pending" id="dot-mfr">4</div>
                                         <div class="step-info">
-                                            <div class="step-title">الشركة المصنعة</div>
-                                            <div class="step-desc" id="desc-mfr">لم تُدخل بعد</div>
+                                            <div class="step-title" data-i18n="add_step_mfr">الشركة المصنعة</div>
+                                            <div class="step-desc" id="desc-mfr" data-i18n="add_step_pending">لم تُدخل بعد</div>
                                         </div>
                                     </div>
                                     <div class="step" id="step-qty">
                                         <div class="step-dot pending" id="dot-qty">5</div>
                                         <div class="step-info">
-                                            <div class="step-title">الكمية</div>
-                                            <div class="step-desc" id="desc-qty">لم تُدخل بعد</div>
+                                            <div class="step-title" data-i18n="add_step_qty">الكمية</div>
+                                            <div class="step-desc" id="desc-qty" data-i18n="add_step_pending">لم تُدخل بعد</div>
                                         </div>
                                     </div>
                                 </div>
@@ -1109,14 +1115,14 @@
                                 <div class="card-icon purple">🔒</div>
                                 <div>
                                     <div class="card-title">SHA-256 Preview</div>
-                                    <div class="card-sub">هاش رقم الدفعة</div>
+                                    <div class="card-sub" data-i18n="add_hash_sub">هاش رقم الدفعة</div>
                                 </div>
                             </div>
                             <div class="card-body">
                                 <div class="hash-preview" id="hashPreview">
-                                    <span class="hash-placeholder">أدخل رقم الدفعة لرؤية الـ Hash...</span>
+                                    <span class="hash-placeholder" data-i18n="add_hash_ph">أدخل رقم الدفعة لرؤية الـ Hash...</span>
                                 </div>
-                                <div style="font-size:11px;color:#a0aec0;margin-top:8px;">هاذا هو الـ Hash الفعلي الذي سيُحفظ في قاعدة البيانات</div>
+                                <div style="font-size:11px;color:#a0aec0;margin-top:8px;" data-i18n="add_hash_note">هاذا هو الـ Hash الفعلي الذي سيُحفظ في قاعدة البيانات</div>
                             </div>
                         </div>
 
@@ -1125,14 +1131,14 @@
                             <div class="card-header">
                                 <div class="card-icon orange">💡</div>
                                 <div>
-                                    <div class="card-title">نصائح مهمة</div>
+                                    <div class="card-title" data-i18n="add_tips_title">نصائح مهمة</div>
                                 </div>
                             </div>
                             <div class="card-body" style="padding:12px 20px;">
-                                <div class="tip-item"><span class="tip-icon">📝</span><span>تأكد من صحة رقم الدفعة قبل الإدخال — لا يمكن تعديله لاحقاً</span></div>
-                                <div class="tip-item"><span class="tip-icon">📅</span><span>تاريخ الانتهاء يجب أن يكون في المستقبل</span></div>
-                                <div class="tip-item"><span class="tip-icon">⚠️</span><span>الكمية أقل من 10 تعتبر مخزوناً منخفضاً</span></div>
-                                <div class="tip-item"><span class="tip-icon">🔗</span><span>بعد الإضافة يمكن نقل الدواء للموزع مباشرة</span></div>
+                                <div class="tip-item"><span class="tip-icon">📝</span><span data-i18n="add_tip1">تأكد من صحة رقم الدفعة قبل الإدخال — لا يمكن تعديله لاحقاً</span></div>
+                                <div class="tip-item"><span class="tip-icon">📅</span><span data-i18n="add_tip2">تاريخ الانتهاء يجب أن يكون في المستقبل</span></div>
+                                <div class="tip-item"><span class="tip-icon">⚠️</span><span data-i18n="add_tip3">الكمية أقل من 10 تعتبر مخزوناً منخفضاً</span></div>
+                                <div class="tip-item"><span class="tip-icon">🔗</span><span data-i18n="add_tip4">بعد الإضافة يمكن نقل الدواء للموزع مباشرة</span></div>
                             </div>
                         </div>
 
@@ -1146,26 +1152,26 @@
     <div class="ai-success-overlay" id="aiSuccessOverlay">
         <div class="ai-success-card">
             <div class="ai-success-icon">🤖</div>
-            <div class="ai-success-title">تم إضافة الدواء بنجاح!</div>
-            <div class="ai-success-sub">الذكاء الاصطناعي ولّد Token فريد وغير قابل للتكرار</div>
+            <div class="ai-success-title" data-i18n="add_ai_title">تم إضافة الدواء بنجاح!</div>
+            <div class="ai-success-sub" data-i18n="add_ai_sub">الذكاء الاصطناعي ولّد Token فريد وغير قابل للتكرار</div>
 
-            <!-- خطوات التوليد -->
+            <!-- Steps -->
             <div class="ai-steps" id="aiSteps">
                 <div class="ai-step-row">
                     <div class="ai-step-dot done">✓</div>
-                    <span>تسجيل الدواء في قاعدة البيانات</span>
+                    <span data-i18n="add_ai_step1">تسجيل الدواء في قاعدة البيانات</span>
                 </div>
                 <div class="ai-step-row">
                     <div class="ai-step-dot done">✓</div>
-                    <span>حساب SHA-256 Checksum للحماية من التلاعب</span>
+                    <span data-i18n="add_ai_step2">حساب SHA-256 Checksum للحماية من التلاعب</span>
                 </div>
                 <div class="ai-step-row" id="aiStepRow">
                     <div class="ai-step-dot done" id="aiStepDot">✓</div>
-                    <span id="aiStepText">توليد AI Token الفريد عبر Claude AI</span>
+                    <span id="aiStepText" data-i18n="add_ai_step3">توليد AI Token الفريد عبر Claude AI</span>
                 </div>
                 <div class="ai-step-row">
                     <div class="ai-step-dot done">✓</div>
-                    <span>دمج Token في HMAC-SHA256 للـ QR Code</span>
+                    <span data-i18n="add_ai_step4">دمج Token في HMAC-SHA256 للـ QR Code</span>
                 </div>
             </div>
 
@@ -1173,21 +1179,21 @@
             <div class="ai-token-box">
                 <div class="ai-token-label">🔑 AI UNIQUE TOKEN</div>
                 <div class="ai-token-value" id="aiTokenDisplay">--------  --------  --------  --------</div>
-                <div class="ai-token-method" id="aiMethodDisplay">جاري التوليد...</div>
+                <div class="ai-token-method" id="aiMethodDisplay" data-i18n="add_ai_generating">جاري التوليد...</div>
             </div>
 
             <!-- QR Info -->
             <div class="ai-qr-info" id="aiQrInfo" style="display:none">
-                <div class="ai-qr-info-title">📱 رابط QR Code الخاص بهذا الدواء</div>
+                <div class="ai-qr-info-title" data-i18n="add_ai_qr_title">📱 رابط QR Code الخاص بهذا الدواء</div>
                 <div class="ai-qr-url" id="aiQrUrl"></div>
             </div>
 
             <!-- Buttons -->
             <div class="ai-action-btns">
-                <button class="ai-btn ai-btn-outline" onclick="copyToken()">📋 نسخ Token</button>
-                <button class="ai-btn ai-btn-primary" onclick="goTo('dashboard.html')">🏠 لوحة التحكم</button>
+                <button class="ai-btn ai-btn-outline" onclick="copyToken()" data-i18n="add_ai_copy_btn">📋 نسخ Token</button>
+                <button class="ai-btn ai-btn-primary" onclick="goTo('dashboard.html')" data-i18n="add_ai_dash_btn">🏠 لوحة التحكم</button>
             </div>
-            <div class="ai-countdown" id="aiCountdown">سيتم التحويل تلقائياً خلال <span id="countdownNum">8</span> ثوانٍ</div>
+            <div class="ai-countdown" id="aiCountdown"><span data-i18n="add_ai_countdown_pre">سيتم التحويل تلقائياً خلال</span> <span id="countdownNum">8</span> <span data-i18n="add_ai_countdown_suf">ثوانٍ</span></div>
         </div>
     </div>
 
@@ -1286,13 +1292,17 @@
 
             if (expiry <= now) {
                 prev.className = 'expiry-preview show expired';
-                prev.innerHTML = '❌ منتهي الصلاحية — لا يمكن إضافته';
+                prev.innerHTML = PharmaLang.t('add_exp_expired');
             } else if (expiry <= soon) {
                 prev.className = 'expiry-preview show soon';
-                prev.innerHTML = '⚠️ ينتهي خلال ' + diffDays + ' يوم — مخزون قصير الأمد';
+                prev.innerHTML = PharmaLang.get() === 'ar'
+                    ? '⚠️ ينتهي خلال ' + diffDays + ' يوم — مخزون قصير الأمد'
+                    : '⚠️ Expires in ' + diffDays + ' days — short-term stock';
             } else {
                 prev.className = 'expiry-preview show ok';
-                prev.innerHTML = '✅ صالح لـ ' + diffDays + ' يوم (' + Math.round(diffDays / 30) + ' شهر تقريباً)';
+                prev.innerHTML = PharmaLang.get() === 'ar'
+                    ? '✅ صالح لـ ' + diffDays + ' يوم (' + Math.round(diffDays / 30) + ' شهر تقريباً)'
+                    : '✅ Valid for ' + diffDays + ' days (' + Math.round(diffDays / 30) + ' months approx.)';
             }
         }
 
@@ -1305,15 +1315,15 @@
             meter.classList.add('show');
             var pct = Math.min(qty / 1000 * 100, 100);
             bar.style.width = pct + '%';
-            if (qty <= 10) { bar.style.background = '#fc8181'; label.style.color = '#c53030'; label.textContent = '⚠️ كمية منخفضة جداً — يُنصح بإضافة أكثر'; }
-            else if (qty <= 50) { bar.style.background = '#f6ad55'; label.style.color = '#744210'; label.textContent = 'كمية منخفضة — ' + qty + ' وحدة'; }
-            else { bar.style.background = '#68d391'; label.style.color = '#276749'; label.textContent = 'كمية جيدة — ' + qty + ' وحدة'; }
+            if (qty <= 10) { bar.style.background = '#fc8181'; label.style.color = '#c53030'; label.textContent = PharmaLang.t('add_qty_very_low'); }
+            else if (qty <= 50) { bar.style.background = '#f6ad55'; label.style.color = '#744210'; label.textContent = PharmaLang.get() === 'ar' ? 'كمية منخفضة — ' + qty + ' وحدة' : 'Low quantity — ' + qty + ' units'; }
+            else { bar.style.background = '#68d391'; label.style.color = '#276749'; label.textContent = PharmaLang.get() === 'ar' ? 'كمية جيدة — ' + qty + ' وحدة' : 'Good quantity — ' + qty + ' units'; }
         }
 
         // ── Hash preview (simulated) ──
         function updateHashPreview(val) {
             var prev = document.getElementById('hashPreview');
-            if (!val) { prev.innerHTML = '<span class="hash-placeholder">أدخل رقم الدفعة لرؤية الـ Hash...</span>'; return; }
+            if (!val) { prev.innerHTML = '<span class="hash-placeholder">' + PharmaLang.t('add_hash_ph') + '</span>'; return; }
             // Simple visual hash simulation
             var hash = simpleHash(val);
             prev.innerHTML = '<span style="color:#68d391">' + hash.substring(0, 8) + '</span>' +
@@ -1347,13 +1357,13 @@
             if (hasVal) {
                 dot.className = 'step-dot done'; dot.textContent = '✓';
                 if (key === 'name') desc.textContent = val.substring(0, 20) + (val.length > 20 ? '...' : '');
-                else if (key === 'batch') desc.textContent = 'تم الإدخال ← سيُشفَّر';
-                else if (key === 'expiry') desc.textContent = new Date(val).toLocaleDateString('ar-JO');
+                else if (key === 'batch') desc.textContent = PharmaLang.get() === 'ar' ? 'تم الإدخال ← سيُشفَّر' : 'Entered ← will be encrypted';
+                else if (key === 'expiry') desc.textContent = new Date(val).toLocaleDateString(PharmaLang.get() === 'ar' ? 'ar-JO' : 'en-GB');
                 else if (key === 'mfr') desc.textContent = val.substring(0, 20);
-                else if (key === 'qty') desc.textContent = val + ' وحدة';
+                else if (key === 'qty') desc.textContent = PharmaLang.get() === 'ar' ? val + ' وحدة' : val + ' units';
             } else {
                 dot.className = 'step-dot pending'; dot.textContent = { name: '1', batch: '2', expiry: '3', mfr: '4', qty: '5' }[key] || '?';
-                desc.textContent = 'لم يُدخل بعد';
+                desc.textContent = PharmaLang.t('add_step_pending');
             }
         }
 
@@ -1385,7 +1395,7 @@
             var btn = document.getElementById('submitBtn');
             btn.disabled = true;
             document.getElementById('submitIcon').textContent = '⏳';
-            document.getElementById('submitText').textContent = 'جاري الإضافة والتسجيل...';
+            document.getElementById('submitText').textContent = PharmaLang.t('add_submitting');
             document.getElementById('errorMsg').classList.remove('show');
 
             var payload = {
@@ -1404,7 +1414,7 @@
             xhr.onload = function () {
                 btn.disabled = false;
                 document.getElementById('submitIcon').textContent = '➕';
-                document.getElementById('submitText').textContent = 'إضافة الدواء وتسجيله في النظام';
+                document.getElementById('submitText').textContent = PharmaLang.t('add_submit_btn');
 
                 if (xhr.status === 200 || xhr.status === 201) {
                     try {
@@ -1420,15 +1430,15 @@
                     localStorage.clear(); window.location.replace(API + '/login.html');
                 } else {
                     var errEl = document.getElementById('errorMsg');
-                    document.getElementById('errorText').textContent = xhr.responseText || 'حدث خطأ غير متوقع';
+                    document.getElementById('errorText').textContent = xhr.responseText || PharmaLang.t('add_err_unexpected');
                     errEl.classList.add('show');
                 }
             };
             xhr.onerror = function () {
                 btn.disabled = false;
                 document.getElementById('submitIcon').textContent = '➕';
-                document.getElementById('submitText').textContent = 'إضافة الدواء وتسجيله في النظام';
-                document.getElementById('errorText').textContent = 'تعذر الاتصال بالسيرفر';
+                document.getElementById('submitText').textContent = PharmaLang.t('add_submit_btn');
+                document.getElementById('errorText').textContent = PharmaLang.t('conn_fail_server');
                 document.getElementById('errorMsg').classList.add('show');
             };
             xhr.send(JSON.stringify(payload));
@@ -1482,14 +1492,34 @@
             if (!_aiToken) return;
             navigator.clipboard.writeText(_aiToken).then(function () {
                 var btn = document.querySelector('.ai-btn-outline');
-                btn.textContent = '✅ تم النسخ!';
-                setTimeout(function () { btn.textContent = '📋 نسخ Token'; }, 2000);
+                btn.textContent = PharmaLang.t('add_ai_copied');
+                setTimeout(function () { btn.textContent = PharmaLang.t('add_ai_copy_btn'); }, 2000);
             });
         }
 
+        // ── Language change → re-render dynamic content ──
+        window.addEventListener('pharmaLangChanged', function () {
+            // Re-run expiry preview if a value is set
+            var expiryVal = document.getElementById('expiryDate').value;
+            if (expiryVal) updateExpiryPreview(expiryVal);
+            // Re-run qty meter if a value is set
+            var qtyVal = parseInt(document.getElementById('quantity').value);
+            if (qtyVal > 0) updateQtyMeter(qtyVal);
+            // Re-run hash preview if a value is set
+            var batchVal = document.getElementById('batchNumber').value.trim();
+            if (batchVal) updateHashPreview(batchVal); else {
+                document.getElementById('hashPreview').innerHTML = '<span class="hash-placeholder">' + PharmaLang.t('add_hash_ph') + '</span>';
+            }
+            // Re-run step tracker for all fields
+            ['name', 'batchNumber', 'expiryDate', 'manufacturer', 'quantity'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) updateStep(id, el.value);
+            });
+        });
+
         // ── Reset ──
         function resetForm() {
-            if (!confirm('هل تريد مسح جميع الحقول؟')) return;
+            if (!confirm(PharmaLang.t('add_reset_confirm'))) return;
             ['name', 'scientificName', 'batchNumber', 'manufacturer', 'country', 'drugForm', 'productionDate', 'expiryDate', 'quantity', 'price', 'notes'].forEach(function (id) {
                 var el = document.getElementById(id);
                 if (el) el.value = '';
@@ -1498,14 +1528,14 @@
             selectedCategory = '';
             document.getElementById('expiryPreview').className = 'expiry-preview';
             document.getElementById('qtyMeter').classList.remove('show');
-            document.getElementById('hashPreview').innerHTML = '<span class="hash-placeholder">أدخل رقم الدفعة لرؤية الـ Hash...</span>';
+            document.getElementById('hashPreview').innerHTML = '<span class="hash-placeholder">' + PharmaLang.t('add_hash_ph') + '</span>';
             document.getElementById('successMsg').classList.remove('show');
             document.getElementById('errorMsg').classList.remove('show');
             ['name', 'batch', 'expiry', 'mfr', 'qty'].forEach(function (k) {
                 var dot = document.getElementById('dot-' + k);
                 var desc = document.getElementById('desc-' + k);
                 if (dot) { dot.className = 'step-dot pending'; dot.textContent = { name: '1', batch: '2', expiry: '3', mfr: '4', qty: '5' }[k]; }
-                if (desc) desc.textContent = 'لم يُدخل بعد';
+                if (desc) desc.textContent = PharmaLang.t('add_step_pending');
             });
         }
     </script>
