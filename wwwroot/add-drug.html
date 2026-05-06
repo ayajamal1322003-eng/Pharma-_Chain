@@ -909,14 +909,14 @@
                             <div class="card-body">
                                 <div class="section-label" data-i18n="add_category_hdr">تصنيف الدواء</div>
                                 <div class="category-grid" id="categoryGrid">
-                                    <span class="cat-pill" onclick="selectCategory(this, 'مضاد حيوي')">💊 مضاد حيوي</span>
-                                    <span class="cat-pill" onclick="selectCategory(this, 'مسكن ألم')">🩹 مسكن ألم</span>
-                                    <span class="cat-pill" onclick="selectCategory(this, 'خافض حرارة')">🌡️ خافض حرارة</span>
-                                    <span class="cat-pill" onclick="selectCategory(this, 'فيتامينات')">🍊 فيتامينات</span>
-                                    <span class="cat-pill" onclick="selectCategory(this, 'أمراض مزمنة')">❤️ أمراض مزمنة</span>
-                                    <span class="cat-pill" onclick="selectCategory(this, 'أدوية قلب')">🫀 أدوية قلب</span>
-                                    <span class="cat-pill" onclick="selectCategory(this, 'جهاز هضمي')">🫁 جهاز هضمي</span>
-                                    <span class="cat-pill" onclick="selectCategory(this, 'أخرى')">📦 أخرى</span>
+                                    <span class="cat-pill" data-cat="antibiotic" onclick="selectCategory(this, 'antibiotic')" data-i18n="cat_antibiotic">💊 مضاد حيوي</span>
+                                    <span class="cat-pill" data-cat="painkiller" onclick="selectCategory(this, 'painkiller')" data-i18n="cat_painkiller">🩹 مسكن ألم</span>
+                                    <span class="cat-pill" data-cat="antipyretic" onclick="selectCategory(this, 'antipyretic')" data-i18n="cat_antipyretic">🌡️ خافض حرارة</span>
+                                    <span class="cat-pill" data-cat="vitamins" onclick="selectCategory(this, 'vitamins')" data-i18n="cat_vitamins">🍊 فيتامينات</span>
+                                    <span class="cat-pill" data-cat="chronic" onclick="selectCategory(this, 'chronic')" data-i18n="cat_chronic">❤️ أمراض مزمنة</span>
+                                    <span class="cat-pill" data-cat="cardiac" onclick="selectCategory(this, 'cardiac')" data-i18n="cat_cardiac">🫀 أدوية قلب</span>
+                                    <span class="cat-pill" data-cat="digestive" onclick="selectCategory(this, 'digestive')" data-i18n="cat_digestive">🫁 جهاز هضمي</span>
+                                    <span class="cat-pill" data-cat="other" onclick="selectCategory(this, 'other')" data-i18n="cat_other">📦 أخرى</span>
                                 </div>
 
                                 <div class="section-divider"></div>
@@ -962,30 +962,12 @@
                                         <label><span data-i18n="add_country_lbl">بلد المنشأ</span> <span class="label-badge" data-i18n="add_scientific_opt">اختياري</span></label>
                                         <select id="country">
                                             <option value="">اختر البلد</option>
-                                            <option>الأردن</option>
-                                            <option>مصر</option>
-                                            <option>السعودية</option>
-                                            <option>الإمارات</option>
-                                            <option>ألمانيا</option>
-                                            <option>المملكة المتحدة</option>
-                                            <option>الولايات المتحدة</option>
-                                            <option>فرنسا</option>
-                                            <option>سويسرا</option>
-                                            <option>الهند</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label><span data-i18n="add_form_lbl">شكل الدواء</span> <span class="label-badge" data-i18n="add_scientific_opt">اختياري</span></label>
                                         <select id="drugForm">
                                             <option value="">اختر الشكل</option>
-                                            <option>أقراص (Tablets)</option>
-                                            <option>كبسولات (Capsules)</option>
-                                            <option>شراب (Syrup)</option>
-                                            <option>حقن (Injection)</option>
-                                            <option>كريم (Cream)</option>
-                                            <option>قطرات (Drops)</option>
-                                            <option>بخاخ (Spray)</option>
-                                            <option>مسحوق (Powder)</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1221,6 +1203,8 @@
                 document.getElementById('formContent').style.display = 'none';
                 return;
             }
+
+            rebuildSelects();
 
             var today = new Date().toISOString().split('T')[0];
             document.getElementById('expiryDate').min = today;
@@ -1497,8 +1481,41 @@
             });
         }
 
+        // ── Rebuild translated selects (country + drug form) ──
+        var _COUNTRIES = ['jordan','egypt','saudi','uae','germany','uk','usa','france','swiss','india'];
+        var _FORMS     = ['tablets','capsules','syrup','injection','cream','drops','spray','powder'];
+
+        function rebuildSelects() {
+            var cSel = document.getElementById('country');
+            var savedC = cSel ? cSel.value : '';
+            if (cSel) {
+                cSel.innerHTML = '<option value="">' + PharmaLang.t('select_country_ph') + '</option>';
+                _COUNTRIES.forEach(function (k) {
+                    var opt = document.createElement('option');
+                    opt.value = k;
+                    opt.textContent = PharmaLang.t('country_' + k);
+                    cSel.appendChild(opt);
+                });
+                cSel.value = savedC;
+            }
+            var fSel = document.getElementById('drugForm');
+            var savedF = fSel ? fSel.value : '';
+            if (fSel) {
+                fSel.innerHTML = '<option value="">' + PharmaLang.t('select_form_ph') + '</option>';
+                _FORMS.forEach(function (k) {
+                    var opt = document.createElement('option');
+                    opt.value = k;
+                    opt.textContent = PharmaLang.t('form_' + k);
+                    fSel.appendChild(opt);
+                });
+                fSel.value = savedF;
+            }
+        }
+
         // ── Language change → re-render dynamic content ──
         window.addEventListener('pharmaLangChanged', function () {
+            // Rebuild translated dropdowns
+            rebuildSelects();
             // Re-run expiry preview if a value is set
             var expiryVal = document.getElementById('expiryDate').value;
             if (expiryVal) updateExpiryPreview(expiryVal);
