@@ -62,7 +62,7 @@
                 <div class="page-subtitle" data-i18n="audit_subtitle">Audit Log — جميع العمليات الأمنية والإدارية مسجلة هنا</div>
             </div>
             <div class="header-actions">
-                <button class="btn btn-outline" onclick="loadLogs()">🔄 تحديث</button>
+                <button class="btn btn-outline" onclick="loadLogs()" data-i18n="btn_refresh">🔄 تحديث</button>
             </div>
         </div>
 
@@ -112,7 +112,7 @@
 
     function loadLogs() {
         if (role !== 'Admin') {
-            document.getElementById('logsTable').innerHTML = '<div class="no-access" style="text-align:center;padding:60px;color:#881337;font-size:15px;">⛔ سجل العمليات متاح للمدير فقط</div>';
+            document.getElementById('logsTable').innerHTML = '<div class="no-access" style="text-align:center;padding:60px;color:#881337;font-size:15px;">⛔ ' + (PharmaLang.get() === 'ar' ? 'سجل العمليات متاح للمدير فقط' : 'Audit Log is available for Admin only') + '</div>';
             return;
         }
         document.getElementById('logsTable').innerHTML = '<div class="loading-state"><div class="spinner"></div><span>' + PharmaLang.t('loading_log') + '</span></div>';
@@ -139,7 +139,7 @@
 
             renderLogs(allLogs);
         };
-        xhr.onerror = function () { document.getElementById('logsTable').innerHTML = '<div class="loading-state">⚠️ تعذر تحميل السجل</div>'; };
+        xhr.onerror = function () { document.getElementById('logsTable').innerHTML = '<div class="loading-state">⚠️ ' + (PharmaLang.get() === 'ar' ? 'تعذر تحميل السجل' : 'Failed to load audit log') + '</div>'; };
         xhr.send();
     }
 
@@ -164,7 +164,7 @@
     function renderLogs(logs) {
         document.getElementById('logCount').textContent = logs.length;
         if (logs.length === 0) {
-            document.getElementById('logsTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">لا توجد عمليات مسجلة</div></div>';
+            document.getElementById('logsTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">' + (PharmaLang.get() === 'ar' ? 'لا توجد عمليات مسجلة' : 'No operations recorded') + '</div></div>';
             return;
         }
         var labelMap = getLabelMap();
@@ -200,6 +200,10 @@
     }
 
     loadLogs();
+
+    window.addEventListener('pharmaLangChanged', function () {
+        loadLogs();
+    });
 </script>
 </body>
 </html>

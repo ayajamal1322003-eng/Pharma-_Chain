@@ -524,21 +524,61 @@
         }
 
         var drugDatabase = {
-            'paracetamol': { name: 'Paracetamol (باراسيتامول)', scientific: 'Acetaminophen', category: 'مسكن ألم وخافض حرارة', use: 'يستخدم لتخفيف الألم الخفيف إلى المتوسط وخفض الحرارة، مثل صداع الرأس وآلام الأسنان والحمى.', dose: 'للبالغين: 500-1000 ملغ كل 4-6 ساعات، الحد الأقصى 4 غرام يومياً. للأطفال: حسب الوزن بإشراف طبيب.', warnings: ['لا تتجاوز الجرعة القصوى تجنباً لتلف الكبد', 'تجنب مع الكحول أو أمراض الكبد', 'راجع الطبيب إذا استمرت الحمى أكثر من 3 أيام'], interactions: 'يتفاعل مع مميعات الدم (Warfarin) — راجع طبيبك إذا كنت تأخذها.', storage: 'يحفظ في درجة حرارة الغرفة (15-25 درجة)، بعيداً عن الرطوبة والضوء المباشر.', sideEffects: ['نادراً: طفح جلدي', 'نادراً جداً: تلف الكبد عند الجرعات الزائدة', 'عموماً آمن جداً عند الاستخدام الصحيح'] },
-            'باراسيتامول': { name: 'باراسيتامول (Paracetamol)', scientific: 'Acetaminophen', category: 'مسكن ألم وخافض حرارة', use: 'يستخدم لتخفيف الألم الخفيف إلى المتوسط وخفض الحرارة.', dose: 'للبالغين: 500-1000 ملغ كل 4-6 ساعات. الحد الأقصى 4 غرام يومياً.', warnings: ['لا تتجاوز الجرعة القصوى', 'تجنب مع أمراض الكبد', 'راجع الطبيب إذا استمرت الحمى أكثر من 3 أيام'], interactions: 'يتفاعل مع مميعات الدم — استشر طبيبك.', storage: 'يحفظ في درجة حرارة الغرفة بعيداً عن الرطوبة.', sideEffects: ['نادراً: طفح جلدي', 'نادراً جداً: تلف الكبد عند الجرعات الزائدة'] },
-            'amoxicillin': { name: 'Amoxicillin (أموكسيسيلين)', scientific: 'Amoxicillin Trihydrate', category: 'مضاد حيوي — بنسيلين', use: 'يستخدم لعلاج العدوى البكتيرية مثل التهاب الحلق والأذن والجيوب الأنفية والجهاز البولي والالتهاب الرئوي.', dose: 'للبالغين: 250-500 ملغ 3 مرات يومياً. المدة عادة 7-10 أيام.', warnings: ['أخبر طبيبك إذا كنت تعاني من حساسية للبنسيلين', 'أكمل الجرعة كاملة حتى لو تحسنت', 'قد يسبب إسهالاً'], interactions: 'يضعف فعالية حبوب منع الحمل — استخدمي وسيلة حماية إضافية.', storage: 'الكبسولات: درجة حرارة الغرفة. الشراب: في الثلاجة بعد التحضير.', sideEffects: ['إسهال وغثيان شائعان', 'طفح جلدي', 'نادراً: حساسية شديدة'] },
-            'أموكسيسيلين': { name: 'أموكسيسيلين (Amoxicillin)', scientific: 'Amoxicillin Trihydrate', category: 'مضاد حيوي', use: 'يعالج العدوى البكتيرية في الحلق والأذن والجيوب الأنفية والجهاز البولي.', dose: 'للبالغين: 250-500 ملغ 3 مرات يومياً لمدة 7-10 أيام.', warnings: ['أخبر طبيبك عن حساسية البنسيلين', 'أكمل الجرعة كاملة', 'قد يسبب إسهالاً'], interactions: 'يضعف فعالية حبوب منع الحمل.', storage: 'الكبسولات في درجة حرارة الغرفة، الشراب في الثلاجة.', sideEffects: ['إسهال وغثيان', 'طفح جلدي', 'نادراً: حساسية شديدة'] },
-            'ibuprofen': { name: 'Ibuprofen (إيبوبروفين)', scientific: 'Ibuprofen', category: 'مضاد التهاب لاستيرويدي (NSAID)', use: 'يخفف الألم والالتهاب والحمى. فعال لآلام الدورة الشهرية والمفاصل والصداع والإصابات.', dose: 'للبالغين: 200-400 ملغ كل 4-6 ساعات مع الطعام. الحد الأقصى 1200 ملغ يومياً بدون وصفة.', warnings: ['تناوله دائماً مع الطعام لحماية المعدة', 'تجنب مع قرحة المعدة أو أمراض الكلى', 'تجنب في الثلث الثالث من الحمل'], interactions: 'يتفاعل مع مميعات الدم والأسبرين وأدوية ضغط الدم.', storage: 'يحفظ في درجة حرارة الغرفة بعيداً عن الرطوبة.', sideEffects: ['آلام المعدة شائعة', 'دوار', 'نادراً: مشاكل في الكلى أو القلب'] },
-            'إيبوبروفين': { name: 'إيبوبروفين (Ibuprofen)', scientific: 'Ibuprofen', category: 'مضاد التهاب', use: 'يخفف الألم والالتهاب والحمى.', dose: '200-400 ملغ كل 4-6 ساعات مع الطعام.', warnings: ['تناوله مع الطعام', 'تجنب مع قرحة المعدة', 'تجنب في الحمل'], interactions: 'يتفاعل مع مميعات الدم وأدوية ضغط الدم.', storage: 'درجة حرارة الغرفة بعيداً عن الرطوبة.', sideEffects: ['آلام المعدة', 'دوار'] },
-            'metformin': { name: 'Metformin (ميتفورمين)', scientific: 'Metformin Hydrochloride', category: 'دواء السكري النوع الثاني', use: 'يستخدم لخفض سكر الدم في مرضى السكري النوع الثاني، غالباً مع النظام الغذائي والرياضة.', dose: 'يبدأ عادة بـ 500 ملغ مرة أو مرتين يومياً مع الطعام، وتزاد تدريجياً بإشراف الطبيب.', warnings: ['لا تأخذه إذا كنت تعاني من أمراض الكلى الشديدة', 'أوقفه قبل أي عملية جراحية', 'أخبر طبيبك قبل التصوير بالصبغة'], interactions: 'يتفاعل مع الكحول وبعض أدوية الكلى — راجع طبيبك.', storage: 'يحفظ في درجة حرارة الغرفة بعيداً عن الرطوبة.', sideEffects: ['غثيان وإسهال شائعان في البداية وتتحسن مع الوقت', 'فقدان الشهية', 'نادراً: الحماض اللاكتيكي'] },
-            'omeprazole': { name: 'Omeprazole (أوميبرازول)', scientific: 'Omeprazole', category: 'مثبط مضخة البروتون — علاج حموضة المعدة', use: 'يعالج حرقة المعدة والقرحة والارتجاع الحمضي عن طريق تقليل إنتاج حمض المعدة.', dose: 'عادة 20 ملغ مرة واحدة يومياً قبل الإفطار بـ 30-60 دقيقة.', warnings: ['الاستخدام طويل الأمد قد يسبب نقص المغنيسيوم وفيتامين B12', 'راجع طبيبك إذا استمرت الأعراض', 'تجنب إذا كنت تأخذ Clopidogrel'], interactions: 'يؤثر على امتصاص بعض الأدوية مثل Clopidogrel وKetoconazole.', storage: 'يحفظ في درجة حرارة الغرفة بعيداً عن الرطوبة والحرارة.', sideEffects: ['صداع وغثيان', 'إسهال أو إمساك', 'نادراً: طفح جلدي'] },
-            'aspirin': { name: 'Aspirin (أسبرين)', scientific: 'Acetylsalicylic Acid', category: 'مسكن ألم ومضاد التهاب ومميع دم', use: 'يستخدم لتسكين الألم وخفض الحرارة، وبجرعات منخفضة لمنع جلطات الدم.', dose: 'للألم: 325-650 ملغ كل 4-6 ساعات. للقلب: 75-100 ملغ يومياً بوصفة طبية.', warnings: ['لا يُعطى للأطفال أقل من 16 عاماً (خطر متلازمة راي)', 'تجنب مع قرحة المعدة', 'توقف عنه قبل الجراحة بأسبوع'], interactions: 'يتفاعل مع مميعات الدم الأخرى والإيبوبروفين وأدوية السكري.', storage: 'يحفظ في درجة حرارة الغرفة جافاً.', sideEffects: ['تهيج المعدة', 'نزيف', 'طنين في الأذن بالجرعات العالية'] },
-            'augmentin': { name: 'Augmentin (أوغمنتين)', scientific: 'Amoxicillin + Clavulanic Acid', category: 'مضاد حيوي مركب', use: 'مضاد حيوي قوي يعالج العدوى البكتيرية المقاومة مثل التهابات الجهاز التنفسي والأذن والجلد والجهاز البولي.', dose: 'للبالغين: 625 ملغ كل 8 ساعات أو 1 غرام كل 12 ساعة مع الطعام.', warnings: ['أخبر طبيبك عن حساسية البنسيلين', 'أكمل الجرعة الكاملة', 'قد يسبب إسهالاً'], interactions: 'يضعف فعالية حبوب منع الحمل — استخدمي وسيلة حماية إضافية.', storage: 'الأقراص في درجة حرارة الغرفة، الشراب في الثلاجة.', sideEffects: ['إسهال وغثيان شائعان', 'طفح جلدي', 'ألم في المعدة'] }
+            'paracetamol': {
+                scientific: 'Acetaminophen',
+                ar: { name: 'Paracetamol (باراسيتامول)', category: 'مسكن ألم وخافض حرارة', use: 'يستخدم لتخفيف الألم الخفيف إلى المتوسط وخفض الحرارة، مثل صداع الرأس وآلام الأسنان والحمى.', dose: 'للبالغين: 500-1000 ملغ كل 4-6 ساعات، الحد الأقصى 4 غرام يومياً. للأطفال: حسب الوزن بإشراف طبيب.', warnings: ['لا تتجاوز الجرعة القصوى تجنباً لتلف الكبد', 'تجنب مع الكحول أو أمراض الكبد', 'راجع الطبيب إذا استمرت الحمى أكثر من 3 أيام'], interactions: 'يتفاعل مع مميعات الدم (Warfarin) — راجع طبيبك.', storage: 'يحفظ في درجة حرارة الغرفة (15-25°C)، بعيداً عن الرطوبة والضوء المباشر.', sideEffects: ['نادراً: طفح جلدي', 'نادراً جداً: تلف الكبد عند الجرعات الزائدة', 'عموماً آمن جداً عند الاستخدام الصحيح'] },
+                en: { name: 'Paracetamol', category: 'Analgesic & Antipyretic', use: 'Used to relieve mild to moderate pain and reduce fever, such as headaches, toothache, and fever.', dose: 'Adults: 500-1000 mg every 4-6 hours, max 4g/day. Children: by weight under medical supervision.', warnings: ['Do not exceed max dose to avoid liver damage', 'Avoid with alcohol or liver disease', 'Consult doctor if fever persists more than 3 days'], interactions: 'Interacts with blood thinners (Warfarin) — consult your doctor.', storage: 'Store at room temperature (15-25°C), away from moisture and direct light.', sideEffects: ['Rarely: skin rash', 'Very rarely: liver damage with overdose', 'Generally very safe when used correctly'] }
+            },
+            'باراسيتامول': {
+                scientific: 'Acetaminophen',
+                ar: { name: 'باراسيتامول (Paracetamol)', category: 'مسكن ألم وخافض حرارة', use: 'يستخدم لتخفيف الألم الخفيف إلى المتوسط وخفض الحرارة.', dose: 'للبالغين: 500-1000 ملغ كل 4-6 ساعات. الحد الأقصى 4 غرام يومياً.', warnings: ['لا تتجاوز الجرعة القصوى', 'تجنب مع أمراض الكبد', 'راجع الطبيب إذا استمرت الحمى أكثر من 3 أيام'], interactions: 'يتفاعل مع مميعات الدم — استشر طبيبك.', storage: 'يحفظ في درجة حرارة الغرفة بعيداً عن الرطوبة.', sideEffects: ['نادراً: طفح جلدي', 'نادراً جداً: تلف الكبد عند الجرعات الزائدة'] },
+                en: { name: 'Paracetamol (باراسيتامول)', category: 'Analgesic & Antipyretic', use: 'Used to relieve mild to moderate pain and reduce fever.', dose: 'Adults: 500-1000 mg every 4-6 hours, max 4g/day.', warnings: ['Do not exceed max dose', 'Avoid with liver disease', 'Consult doctor if fever persists more than 3 days'], interactions: 'Interacts with blood thinners — consult your doctor.', storage: 'Store at room temperature away from moisture.', sideEffects: ['Rarely: skin rash', 'Very rarely: liver damage with overdose'] }
+            },
+            'amoxicillin': {
+                scientific: 'Amoxicillin Trihydrate',
+                ar: { name: 'Amoxicillin (أموكسيسيلين)', category: 'مضاد حيوي — بنسيلين', use: 'يستخدم لعلاج العدوى البكتيرية مثل التهاب الحلق والأذن والجيوب الأنفية والجهاز البولي والالتهاب الرئوي.', dose: 'للبالغين: 250-500 ملغ 3 مرات يومياً. المدة عادة 7-10 أيام.', warnings: ['أخبر طبيبك إذا كنت تعاني من حساسية للبنسيلين', 'أكمل الجرعة كاملة حتى لو تحسنت', 'قد يسبب إسهالاً'], interactions: 'يضعف فعالية حبوب منع الحمل — استخدمي وسيلة حماية إضافية.', storage: 'الكبسولات: درجة حرارة الغرفة. الشراب: في الثلاجة بعد التحضير.', sideEffects: ['إسهال وغثيان شائعان', 'طفح جلدي', 'نادراً: حساسية شديدة'] },
+                en: { name: 'Amoxicillin', category: 'Antibiotic — Penicillin', use: 'Used to treat bacterial infections such as throat, ear, sinus, urinary tract infections, and pneumonia.', dose: 'Adults: 250-500 mg 3 times daily. Duration usually 7-10 days.', warnings: ['Tell your doctor if allergic to penicillin', 'Complete the full course even if you feel better', 'May cause diarrhea'], interactions: 'Reduces efficacy of contraceptive pills — use additional protection.', storage: 'Capsules: room temperature. Suspension: refrigerate after preparation.', sideEffects: ['Diarrhea and nausea are common', 'Skin rash', 'Rarely: severe allergic reaction'] }
+            },
+            'أموكسيسيلين': {
+                scientific: 'Amoxicillin Trihydrate',
+                ar: { name: 'أموكسيسيلين (Amoxicillin)', category: 'مضاد حيوي', use: 'يعالج العدوى البكتيرية في الحلق والأذن والجيوب الأنفية والجهاز البولي.', dose: 'للبالغين: 250-500 ملغ 3 مرات يومياً لمدة 7-10 أيام.', warnings: ['أخبر طبيبك عن حساسية البنسيلين', 'أكمل الجرعة كاملة', 'قد يسبب إسهالاً'], interactions: 'يضعف فعالية حبوب منع الحمل.', storage: 'الكبسولات في درجة حرارة الغرفة، الشراب في الثلاجة.', sideEffects: ['إسهال وغثيان', 'طفح جلدي', 'نادراً: حساسية شديدة'] },
+                en: { name: 'Amoxicillin (أموكسيسيلين)', category: 'Antibiotic', use: 'Treats bacterial infections in the throat, ears, sinuses, and urinary tract.', dose: 'Adults: 250-500 mg 3 times daily for 7-10 days.', warnings: ['Tell your doctor about penicillin allergy', 'Complete the full course', 'May cause diarrhea'], interactions: 'Reduces contraceptive pill efficacy.', storage: 'Capsules at room temperature, suspension in the fridge.', sideEffects: ['Diarrhea and nausea', 'Skin rash', 'Rarely: severe allergic reaction'] }
+            },
+            'ibuprofen': {
+                scientific: 'Ibuprofen',
+                ar: { name: 'Ibuprofen (إيبوبروفين)', category: 'مضاد التهاب لاستيرويدي (NSAID)', use: 'يخفف الألم والالتهاب والحمى. فعال لآلام الدورة الشهرية والمفاصل والصداع والإصابات.', dose: 'للبالغين: 200-400 ملغ كل 4-6 ساعات مع الطعام. الحد الأقصى 1200 ملغ يومياً بدون وصفة.', warnings: ['تناوله دائماً مع الطعام لحماية المعدة', 'تجنب مع قرحة المعدة أو أمراض الكلى', 'تجنب في الثلث الثالث من الحمل'], interactions: 'يتفاعل مع مميعات الدم والأسبرين وأدوية ضغط الدم.', storage: 'يحفظ في درجة حرارة الغرفة بعيداً عن الرطوبة.', sideEffects: ['آلام المعدة شائعة', 'دوار', 'نادراً: مشاكل في الكلى أو القلب'] },
+                en: { name: 'Ibuprofen', category: 'Anti-inflammatory (NSAID)', use: 'Relieves pain, inflammation, and fever. Effective for menstrual pain, joint pain, headaches, and injuries.', dose: 'Adults: 200-400 mg every 4-6 hours with food. Max 1200 mg/day without prescription.', warnings: ['Always take with food to protect stomach', 'Avoid with stomach ulcers or kidney disease', 'Avoid in third trimester of pregnancy'], interactions: 'Interacts with blood thinners, aspirin, and blood pressure medications.', storage: 'Store at room temperature away from moisture.', sideEffects: ['Stomach pain is common', 'Dizziness', 'Rarely: kidney or heart problems'] }
+            },
+            'إيبوبروفين': {
+                scientific: 'Ibuprofen',
+                ar: { name: 'إيبوبروفين (Ibuprofen)', category: 'مضاد التهاب', use: 'يخفف الألم والالتهاب والحمى.', dose: '200-400 ملغ كل 4-6 ساعات مع الطعام.', warnings: ['تناوله مع الطعام', 'تجنب مع قرحة المعدة', 'تجنب في الحمل'], interactions: 'يتفاعل مع مميعات الدم وأدوية ضغط الدم.', storage: 'درجة حرارة الغرفة بعيداً عن الرطوبة.', sideEffects: ['آلام المعدة', 'دوار'] },
+                en: { name: 'Ibuprofen (إيبوبروفين)', category: 'Anti-inflammatory', use: 'Relieves pain, inflammation, and fever.', dose: '200-400 mg every 4-6 hours with food.', warnings: ['Take with food', 'Avoid with stomach ulcers', 'Avoid in pregnancy'], interactions: 'Interacts with blood thinners and blood pressure medications.', storage: 'Store at room temperature away from moisture.', sideEffects: ['Stomach pain', 'Dizziness'] }
+            },
+            'metformin': {
+                scientific: 'Metformin Hydrochloride',
+                ar: { name: 'Metformin (ميتفورمين)', category: 'دواء السكري النوع الثاني', use: 'يستخدم لخفض سكر الدم في مرضى السكري النوع الثاني، غالباً مع النظام الغذائي والرياضة.', dose: 'يبدأ عادة بـ 500 ملغ مرة أو مرتين يومياً مع الطعام، وتزاد تدريجياً بإشراف الطبيب.', warnings: ['لا تأخذه إذا كنت تعاني من أمراض الكلى الشديدة', 'أوقفه قبل أي عملية جراحية', 'أخبر طبيبك قبل التصوير بالصبغة'], interactions: 'يتفاعل مع الكحول وبعض أدوية الكلى — راجع طبيبك.', storage: 'يحفظ في درجة حرارة الغرفة بعيداً عن الرطوبة.', sideEffects: ['غثيان وإسهال شائعان في البداية وتتحسن مع الوقت', 'فقدان الشهية', 'نادراً: الحماض اللاكتيكي'] },
+                en: { name: 'Metformin', category: 'Type 2 Diabetes Medication', use: 'Used to lower blood sugar in type 2 diabetics, usually alongside diet and exercise.', dose: 'Usually starts at 500 mg once or twice daily with food, increased gradually under medical supervision.', warnings: ['Do not take with severe kidney disease', 'Stop before any surgery', 'Tell your doctor before contrast imaging'], interactions: 'Interacts with alcohol and some kidney medications — consult your doctor.', storage: 'Store at room temperature away from moisture.', sideEffects: ['Nausea and diarrhea common at start, improve over time', 'Loss of appetite', 'Rarely: lactic acidosis'] }
+            },
+            'omeprazole': {
+                scientific: 'Omeprazole',
+                ar: { name: 'Omeprazole (أوميبرازول)', category: 'مثبط مضخة البروتون — علاج حموضة المعدة', use: 'يعالج حرقة المعدة والقرحة والارتجاع الحمضي عن طريق تقليل إنتاج حمض المعدة.', dose: 'عادة 20 ملغ مرة واحدة يومياً قبل الإفطار بـ 30-60 دقيقة.', warnings: ['الاستخدام طويل الأمد قد يسبب نقص المغنيسيوم وفيتامين B12', 'راجع طبيبك إذا استمرت الأعراض', 'تجنب إذا كنت تأخذ Clopidogrel'], interactions: 'يؤثر على امتصاص بعض الأدوية مثل Clopidogrel وKetoconazole.', storage: 'يحفظ في درجة حرارة الغرفة بعيداً عن الرطوبة والحرارة.', sideEffects: ['صداع وغثيان', 'إسهال أو إمساك', 'نادراً: طفح جلدي'] },
+                en: { name: 'Omeprazole', category: 'Proton Pump Inhibitor — Acid Reducer', use: 'Treats heartburn, ulcers, and acid reflux by reducing stomach acid production.', dose: 'Usually 20 mg once daily 30-60 minutes before breakfast.', warnings: ['Long-term use may cause magnesium and B12 deficiency', 'Consult doctor if symptoms persist', 'Avoid if taking Clopidogrel'], interactions: 'Affects absorption of some drugs like Clopidogrel and Ketoconazole.', storage: 'Store at room temperature away from moisture and heat.', sideEffects: ['Headache and nausea', 'Diarrhea or constipation', 'Rarely: skin rash'] }
+            },
+            'aspirin': {
+                scientific: 'Acetylsalicylic Acid',
+                ar: { name: 'Aspirin (أسبرين)', category: 'مسكن ألم ومضاد التهاب ومميع دم', use: 'يستخدم لتسكين الألم وخفض الحرارة، وبجرعات منخفضة لمنع جلطات الدم.', dose: 'للألم: 325-650 ملغ كل 4-6 ساعات. للقلب: 75-100 ملغ يومياً بوصفة طبية.', warnings: ['لا يُعطى للأطفال أقل من 16 عاماً (خطر متلازمة راي)', 'تجنب مع قرحة المعدة', 'توقف عنه قبل الجراحة بأسبوع'], interactions: 'يتفاعل مع مميعات الدم الأخرى والإيبوبروفين وأدوية السكري.', storage: 'يحفظ في درجة حرارة الغرفة جافاً.', sideEffects: ['تهيج المعدة', 'نزيف', 'طنين في الأذن بالجرعات العالية'] },
+                en: { name: 'Aspirin', category: 'Analgesic, Anti-inflammatory & Blood Thinner', use: 'Used to relieve pain and reduce fever, and in low doses to prevent blood clots.', dose: 'For pain: 325-650 mg every 4-6 hours. For heart: 75-100 mg daily by prescription.', warnings: ['Do not give to children under 16 (risk of Reye\'s syndrome)', 'Avoid with stomach ulcers', 'Stop one week before surgery'], interactions: 'Interacts with other blood thinners, ibuprofen, and diabetes medications.', storage: 'Store at room temperature, keep dry.', sideEffects: ['Stomach irritation', 'Bleeding', 'Ear ringing at high doses'] }
+            },
+            'augmentin': {
+                scientific: 'Amoxicillin + Clavulanic Acid',
+                ar: { name: 'Augmentin (أوغمنتين)', category: 'مضاد حيوي مركب', use: 'مضاد حيوي قوي يعالج العدوى البكتيرية المقاومة مثل التهابات الجهاز التنفسي والأذن والجلد والجهاز البولي.', dose: 'للبالغين: 625 ملغ كل 8 ساعات أو 1 غرام كل 12 ساعة مع الطعام.', warnings: ['أخبر طبيبك عن حساسية البنسيلين', 'أكمل الجرعة الكاملة', 'قد يسبب إسهالاً'], interactions: 'يضعف فعالية حبوب منع الحمل — استخدمي وسيلة حماية إضافية.', storage: 'الأقراص في درجة حرارة الغرفة، الشراب في الثلاجة.', sideEffects: ['إسهال وغثيان شائعان', 'طفح جلدي', 'ألم في المعدة'] },
+                en: { name: 'Augmentin', category: 'Combined Antibiotic', use: 'Powerful antibiotic treating resistant bacterial infections in the respiratory tract, ears, skin, and urinary tract.', dose: 'Adults: 625 mg every 8 hours or 1g every 12 hours with food.', warnings: ['Tell your doctor about penicillin allergy', 'Complete the full course', 'May cause diarrhea'], interactions: 'Reduces contraceptive pill efficacy — use additional protection.', storage: 'Tablets at room temperature, suspension in the fridge.', sideEffects: ['Diarrhea and nausea are common', 'Skin rash', 'Stomach pain'] }
+            }
         };
 
         async function search() {
             var name = document.getElementById('drugInput').value.trim();
-            if (!name) { showError('يرجى كتابة اسم الدواء'); return; }
+            if (!name) { showError(PharmaLang.t('dinfo_no_drug_err')); return; }
 
             hideError();
             document.getElementById('searchBtn').disabled = true;
@@ -551,7 +591,6 @@
                 var key = name.toLowerCase().trim();
                 var result = drugDatabase[key];
 
-                // بحث جزئي إذا ما لقي
                 if (!result) {
                     for (var k in drugDatabase) {
                         if (k.includes(key) || key.includes(k)) {
@@ -562,62 +601,67 @@
                 }
 
                 if (!result) {
-                    showError('لم أتعرف على هذا الدواء — تأكد من الاسم أو جرب اسماً آخر. الأدوية المتاحة: Paracetamol, Amoxicillin, Ibuprofen, Metformin, Omeprazole, Aspirin, Augmentin');
+                    showError(PharmaLang.t('dinfo_not_found'));
                     return;
                 }
 
                 renderResult(result);
             } catch (e) {
-                showError('حدث خطأ، يرجى المحاولة مجدداً.');
+                showError(PharmaLang.t('dinfo_error'));
             } finally {
                 document.getElementById('searchBtn').disabled = false;
                 document.getElementById('loading').classList.remove('show');
             }
         }
 
-        var sectionTitles = {
-            ar: { use: '🎯 الاستخدام الرئيسي', dose: '💊 الجرعة', warnings: '⚠️ تحذيرات مهمة', side: '😟 الأعراض الجانبية الشائعة', interactions: '🔄 التفاعلات الدوائية', storage: '📦 التخزين' },
-            en: { use: '🎯 Primary Use', dose: '💊 Dosage', warnings: '⚠️ Important Warnings', side: '😟 Common Side Effects', interactions: '🔄 Drug Interactions', storage: '📦 Storage' }
-        };
-
         function renderResult(r) {
+            var lang = PharmaLang.get();
+            var d = (r[lang] || r.ar || r);
+
             // Hero
             document.getElementById('drugHero').innerHTML =
-                '<div class="drug-name">' + r.name + '</div>' +
+                '<div class="drug-name">' + (d.name || r.name || '') + '</div>' +
                 '<div class="drug-scientific">' + (r.scientific || '') + '</div>' +
-                '<span class="drug-category">' + (r.category || '') + '</span>';
+                '<span class="drug-category">' + (d.category || '') + '</span>';
 
             // Sections
             var html = '';
-            var titles = sectionTitles[PharmaLang.get()] || sectionTitles.ar;
+            var titles = {
+                use: PharmaLang.t('dinfo_sec_use'),
+                dose: PharmaLang.t('dinfo_sec_dose'),
+                warnings: PharmaLang.t('dinfo_sec_warn'),
+                side: PharmaLang.t('dinfo_sec_side'),
+                interactions: PharmaLang.t('dinfo_sec_inter'),
+                storage: PharmaLang.t('dinfo_sec_store')
+            };
 
-            if (r.use) {
-                html += section(titles.use, '<p>' + r.use + '</p>');
+            if (d.use) {
+                html += section(titles.use, '<p>' + d.use + '</p>');
             }
 
-            if (r.dose) {
-                html += section(titles.dose, '<p>' + r.dose + '</p>');
+            if (d.dose) {
+                html += section(titles.dose, '<p>' + d.dose + '</p>');
             }
 
-            if (r.warnings && r.warnings.length) {
+            if (d.warnings && d.warnings.length) {
                 html += '<div class="drug-section"><div class="section-title">' + titles.warnings + '</div>' +
                     '<div class="warning-box"><ul>' +
-                    r.warnings.map(function (w) { return '<li>' + w + '</li>'; }).join('') +
+                    d.warnings.map(function (w) { return '<li>' + w + '</li>'; }).join('') +
                     '</ul></div></div>';
             }
 
-            if (r.sideEffects && r.sideEffects.length) {
+            if (d.sideEffects && d.sideEffects.length) {
                 html += section(titles.side,
-                    '<ul>' + r.sideEffects.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ul>');
+                    '<ul>' + d.sideEffects.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ul>');
             }
 
-            if (r.interactions) {
+            if (d.interactions) {
                 html += '<div class="drug-section"><div class="section-title">' + titles.interactions + '</div>' +
-                    '<div class="interaction-box">' + r.interactions + '</div></div>';
+                    '<div class="interaction-box">' + d.interactions + '</div></div>';
             }
 
-            if (r.storage) {
-                html += section(titles.storage, '<p>' + r.storage + '</p>');
+            if (d.storage) {
+                html += section(titles.storage, '<p>' + d.storage + '</p>');
             }
 
             document.getElementById('drugSections').innerHTML = html;

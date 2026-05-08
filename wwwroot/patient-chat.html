@@ -486,7 +486,7 @@
                 <div class="error-strip" id="lookupError"></div>
 
                 <div class="suggested" id="suggestedArea" style="display:none;">
-                    <div class="suggested-label">أسئلة مقترحة بناءً على دوائك:</div>
+                    <div class="suggested-label" data-i18n="pc_suggested_lbl">أسئلة مقترحة بناءً على دوائك:</div>
                     <div class="q-chips" id="suggestedChips"></div>
                 </div>
             </div>
@@ -505,10 +505,8 @@
             <div class="messages" id="messages">
                 <div class="welcome-state" id="welcomeState">
                     <div class="welcome-icon">👋</div>
-                    <div class="welcome-text">
-                        أهلاً! أنا مساعدك لمعلومات الدواء.<br>
-                        يمكنك البحث عن رقم دوائك أعلاه للحصول على إجابات مخصصة،<br>
-                        أو اكتب سؤالك مباشرة وسأساعدك.
+                    <div class="welcome-text" data-i18n="pc_welcome">
+                        أهلاً! أنا مساعدك لمعلومات الدواء. يمكنك البحث عن رقم دوائك أعلاه للحصول على إجابات مخصصة، أو اكتب سؤالك مباشرة وسأساعدك.
                     </div>
                 </div>
             </div>
@@ -575,63 +573,64 @@
                 btn.textContent = PharmaLang.t('pc_lookup_btn');
 
                 if (xhr.status !== 200) {
-                    showLookupError('تعذر الاتصال بالسيرفر');
+                    showLookupError(PharmaLang.t('pc_conn_fail'));
                     return;
                 }
 
                 var data = JSON.parse(xhr.responseText);
 
                 if (!data.authentic) {
-                    showLookupError('الدواء غير موجود في النظام');
+                    showLookupError(PharmaLang.t('pc_not_found'));
                     return;
                 }
 
                 drugData = data;
-                var roleAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون' };
+                var locale = PharmaLang.get() === 'ar' ? 'ar-JO' : 'en-US';
                 var history = (data.trackingHistory || []).map(function (t) {
-                    return (roleAr[t.fromRole] || t.fromRole) + ' ← ' + (roleAr[t.toRole] || t.toRole);
-                }).join(' ← ');
+                    return getRoleLabel(t.fromRole) + ' → ' + getRoleLabel(t.toRole);
+                }).join(' → ');
 
-                var expiry = new Date(data.expiryDate).toLocaleDateString('ar-JO');
+                var expiry = new Date(data.expiryDate).toLocaleDateString(locale);
                 var statusClass = data.isExpired ? 'status-expired' : 'status-ok';
 
                 document.getElementById('stripName').innerHTML =
                     data.name + ' &nbsp; <span class="status-pill ' + statusClass + '">' + data.status + '</span>';
 
                 document.getElementById('stripDetails').innerHTML =
-                    'الشركة المصنعة: ' + data.manufacturer + ' | تاريخ الانتهاء: ' + expiry +
-                    (history ? '<br>المسار: ' + history : '');
+                    PharmaLang.t('pc_mfr_label') + data.manufacturer + ' | ' + PharmaLang.t('pc_expiry_label') + expiry +
+                    (history ? '<br>' + PharmaLang.t('pc_path_label') + history : '');
 
                 document.getElementById('drugStrip').classList.add('show');
 
-                // بناء السياق للـ AI
-                drugContext = 'معلومات دواء المريض:\n' +
-                    'الاسم: ' + data.name + '\n' +
-                    'الشركة المصنعة: ' + data.manufacturer + '\n' +
-                    'تاريخ الانتهاء: ' + expiry + '\n' +
-                    'الحالة: ' + data.status + '\n' +
-                    'منتهي الصلاحية: ' + (data.isExpired ? 'نعم ❌' : 'لا ✅') + '\n' +
-                    (history ? 'مسار التتبع: ' + history : '');
+                drugContext = data.name + ' | ' + data.manufacturer + ' | ' + expiry + ' | ' + (data.isExpired ? 'Expired' : 'Valid');
 
-                // أسئلة مقترحة
                 showSuggestedQuestions(data);
 
-                // رسالة ترحيب في الشات
-                addBotMsg('وجدت بيانات دوائك! 🎉\n\nاسم الدواء: ' + data.name + '\nالحالة: ' + data.status + '\n\nكيف يمكنني مساعدتك؟ يمكنك السؤال عن أي شيء يخص دوائك.');
+                var ar = PharmaLang.get() === 'ar';
+                addBotMsg(ar
+                    ? 'وجدت بيانات دوائك! 🎉\n\nاسم الدواء: ' + data.name + '\nالحالة: ' + data.status + '\n\nكيف يمكنني مساعدتك؟'
+                    : 'Found your drug data! 🎉\n\nDrug: ' + data.name + '\nStatus: ' + data.status + '\n\nHow can I help you?');
             };
 
             xhr.onerror = function () {
                 btn.disabled = false;
                 btn.textContent = PharmaLang.t('pc_lookup_btn');
-                showLookupError('تعذر الاتصال بالسيرفر');
+                showLookupError(PharmaLang.t('pc_conn_fail'));
             };
             xhr.send();
         }
 
+        function getRoleLabel(r) {
+            var ar = PharmaLang.get() === 'ar';
+            var mapAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون' };
+            var mapEn = { Factory: 'Factory', Distributor: 'Distributor', Pharmacy: 'Pharmacy', Customer: 'Customer' };
+            return (ar ? mapAr : mapEn)[r] || r;
+        }
+
         function showSuggestedQuestions(data) {
-            var questions = ['هل دوائي أصلي؟', 'من أين جاء الدواء؟', 'كيف أتناول الدواء بشكل صحيح؟'];
-            if (data.isExpired) questions.unshift('دوائي منتهي الصلاحية — ماذا أفعل؟');
-            if (data.trackingHistory && data.trackingHistory.length > 1) questions.push('كم مرة نُقل الدواء؟');
+            var questions = [PharmaLang.t('pc_auth_q'), PharmaLang.t('pc_source_q'), PharmaLang.t('pc_dose_q')];
+            if (data.isExpired) questions.unshift(PharmaLang.t('pc_expired_q'));
+            if (data.trackingHistory && data.trackingHistory.length > 1) questions.push(PharmaLang.t('pc_count_q'));
 
             document.getElementById('suggestedChips').innerHTML = questions.map(function (q) {
                 return '<span class="q-chip" onclick="askSuggested(\'' + q + '\')">' + q + '</span>';
@@ -656,7 +655,8 @@
             removeWelcome();
             var div = document.createElement('div');
             div.className = 'msg bot';
-            var time = new Date().toLocaleTimeString('ar-JO', { hour: '2-digit', minute: '2-digit' });
+            var locale = PharmaLang.get() === 'ar' ? 'ar-JO' : 'en-US';
+            var time = new Date().toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
             div.innerHTML = '<div class="msg-bubble">' + text.replace(/\n/g, '<br>') + '</div>' +
                 '<div class="msg-time">' + time + '</div>';
             document.getElementById('messages').appendChild(div);
@@ -667,7 +667,8 @@
             removeWelcome();
             var div = document.createElement('div');
             div.className = 'msg user';
-            var time = new Date().toLocaleTimeString('ar-JO', { hour: '2-digit', minute: '2-digit' });
+            var locale = PharmaLang.get() === 'ar' ? 'ar-JO' : 'en-US';
+            var time = new Date().toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
             div.innerHTML = '<div class="msg-bubble">' + text + '</div>' +
                 '<div class="msg-time">' + time + '</div>';
             document.getElementById('messages').appendChild(div);
@@ -686,46 +687,74 @@
 
         function generateSmartReply(msg) {
             var m = msg.toLowerCase();
+            var ar = PharmaLang.get() === 'ar';
             var name = drugData ? drugData.name : '';
             var expired = drugData ? drugData.isExpired : false;
             var manufacturer = drugData ? drugData.manufacturer : '';
             var history = drugData ? (drugData.trackingHistory || []) : [];
-            var roleAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون' };
 
-            if (m.includes('أصلي') || m.includes('اصلي') || m.includes('موثق') || m.includes('حقيقي') || m.includes('مزيف')) {
-                if (!drugData) return 'يرجى إدخال رقم الدواء أعلاه أولاً حتى أتمكن من التحقق من أصالته. 🔍';
-                return 'نعم! دواء ' + name + ' أصلي وموثق بالكامل في نظام PharmaChain. ✅\nتم التحقق من كل مرحلة في سلسلة التوريد بتقنية Blockchain، ولا يمكن التلاعب بهذه البيانات.';
+            var authKw = ar ? ['أصلي','اصلي','موثق','حقيقي','مزيف'] : ['authentic','genuine','fake','original','real'];
+            if (authKw.some(function(k){return m.includes(k);})) {
+                if (!drugData) return ar ? 'يرجى إدخال رقم الدواء أعلاه أولاً حتى أتمكن من التحقق من أصالته. 🔍' : 'Please enter the drug ID above so I can verify its authenticity. 🔍';
+                return ar
+                    ? 'نعم! دواء ' + name + ' أصلي وموثق بالكامل في نظام PharmaChain. ✅\nتم التحقق من كل مرحلة في سلسلة التوريد بتقنية Blockchain، ولا يمكن التلاعب بهذه البيانات.'
+                    : 'Yes! ' + name + ' is fully authentic and verified in PharmaChain. ✅\nEvery step in the supply chain is Blockchain-verified and tamper-proof.';
             }
-            if (m.includes('صلاحية') || m.includes('منتهي') || m.includes('تاريخ انتهاء')) {
-                if (!drugData) return 'أدخل رقم دوائك أعلاه لأتحقق من تاريخ صلاحيته. 📅';
-                if (expired) return '⚠️ تنبيه: دواء ' + name + ' منتهي الصلاحية!\nيرجى عدم استخدامه والتواصل مع الصيدلاني فوراً للحصول على بديل.';
-                return 'دواء ' + name + ' ضمن الصلاحية وصالح للاستخدام. ✅\nتأكد دائماً من الاحتفاظ بالدواء في مكان مناسب بعيد عن الحرارة والرطوبة.';
+            var expiryKw = ar ? ['صلاحية','منتهي','تاريخ انتهاء'] : ['expir','valid','expiry','expired'];
+            if (expiryKw.some(function(k){return m.includes(k);})) {
+                if (!drugData) return ar ? 'أدخل رقم دوائك أعلاه لأتحقق من تاريخ صلاحيته. 📅' : 'Enter your drug ID above so I can check its expiry date. 📅';
+                if (expired) return ar
+                    ? '⚠️ تنبيه: دواء ' + name + ' منتهي الصلاحية!\nيرجى عدم استخدامه والتواصل مع الصيدلاني فوراً للحصول على بديل.'
+                    : '⚠️ Warning: ' + name + ' is expired!\nPlease do not use it and contact your pharmacist immediately for a replacement.';
+                return ar
+                    ? 'دواء ' + name + ' ضمن الصلاحية وصالح للاستخدام. ✅\nتأكد دائماً من الاحتفاظ بالدواء في مكان مناسب بعيد عن الحرارة والرطوبة.'
+                    : name + ' is within its validity period. ✅\nAlways store your medication in a cool, dry place away from heat and moisture.';
             }
-            if (m.includes('من أين') || m.includes('مصدر') || m.includes('مصنع') || m.includes('شركة')) {
-                if (!drugData) return 'أدخل رقم دوائك لأريك معلومات المصنّع. 🏭';
-                return 'دواء ' + name + ' مصنّع من قبل شركة ' + manufacturer + '. 🏭\nتم تتبع مساره بالكامل من المصنع حتى وصل إليك عبر نظام Blockchain الآمن.';
+            var srcKw = ar ? ['من أين','مصدر','مصنع','شركة'] : ['where','source','manufacturer','made','company','factory'];
+            if (srcKw.some(function(k){return m.includes(k);})) {
+                if (!drugData) return ar ? 'أدخل رقم دوائك لأريك معلومات المصنّع. 🏭' : 'Enter your drug ID to see manufacturer information. 🏭';
+                return ar
+                    ? 'دواء ' + name + ' مصنّع من قبل شركة ' + manufacturer + '. 🏭\nتم تتبع مساره بالكامل من المصنع حتى وصل إليك عبر نظام Blockchain الآمن.'
+                    : name + ' is manufactured by ' + manufacturer + '. 🏭\nIts full route from factory to you is tracked via Blockchain.';
             }
-            if (m.includes('مسار') || m.includes('رحلة') || m.includes('كم مرة') || m.includes('نقل')) {
-                if (!drugData || history.length === 0) return 'أدخل رقم دوائك لأريك مسار تتبعه الكامل. 📦';
-                var path = history.map(function (t) { return (roleAr[t.fromRole] || t.fromRole) + ' ← ' + (roleAr[t.toRole] || t.toRole); }).join('\n');
-                return 'مسار دواء ' + name + ' الكامل:\n' + path + '\n\nكل نقلة مسجلة في Blockchain ولا يمكن تعديلها. 🔒';
+            var pathKw = ar ? ['مسار','رحلة','كم مرة','نقل'] : ['route','journey','transfer','times','moved','path'];
+            if (pathKw.some(function(k){return m.includes(k);})) {
+                if (!drugData || history.length === 0) return ar ? 'أدخل رقم دوائك لأريك مسار تتبعه الكامل. 📦' : 'Enter your drug ID to see its full tracking route. 📦';
+                var path = history.map(function (t) { return getRoleLabel(t.fromRole) + ' → ' + getRoleLabel(t.toRole); }).join('\n');
+                return ar
+                    ? 'مسار دواء ' + name + ' الكامل:\n' + path + '\n\nكل نقلة مسجلة في Blockchain ولا يمكن تعديلها. 🔒'
+                    : 'Full tracking route for ' + name + ':\n' + path + '\n\nEvery transfer is Blockchain-recorded and immutable. 🔒';
             }
-            if (m.includes('جرعة') || m.includes('كيف') || m.includes('استخدام') || m.includes('اشرب') || m.includes('اتناول')) {
-                return 'بخصوص جرعة ' + (name || 'الدواء') + '، يجب الرجوع إلى:\n• الطبيب المعالج الذي وصف الدواء\n• الصيدلاني المختص\n• النشرة الداخلية للدواء\n\nلا أستطيع تحديد الجرعة المناسبة لك، فكل حالة تختلف عن الأخرى. 🏥';
+            var doseKw = ar ? ['جرعة','كيف','استخدام','اشرب','اتناول'] : ['dose','dosage','how','take','use','consume'];
+            if (doseKw.some(function(k){return m.includes(k);})) {
+                return ar
+                    ? 'بخصوص جرعة ' + (name || 'الدواء') + '، يجب الرجوع إلى:\n• الطبيب المعالج الذي وصف الدواء\n• الصيدلاني المختص\n• النشرة الداخلية للدواء\n\nلا أستطيع تحديد الجرعة المناسبة لك، فكل حالة تختلف عن الأخرى. 🏥'
+                    : 'Regarding the dosage of ' + (name || 'this drug') + ', please consult:\n• Your prescribing doctor\n• A qualified pharmacist\n• The drug leaflet\n\nI cannot determine the right dose for you as every case differs. 🏥';
             }
-            if (m.includes('تخزين') || m.includes('احفظ') || m.includes('حرارة') || m.includes('تلف')) {
-                return 'للحفاظ على ' + (name || 'الدواء') + ':\n• احفظه في مكان بارد وجاف بعيد عن الشمس\n• لا تتركه في السيارة\n• احفظه بعيداً عن متناول الأطفال\n• تحقق من تاريخ الانتهاء بانتظام. 📦';
+            var storeKw = ar ? ['تخزين','احفظ','حرارة','تلف'] : ['store','storage','keep','temperature','heat','damage'];
+            if (storeKw.some(function(k){return m.includes(k);})) {
+                return ar
+                    ? 'للحفاظ على ' + (name || 'الدواء') + ':\n• احفظه في مكان بارد وجاف بعيد عن الشمس\n• لا تتركه في السيارة\n• احفظه بعيداً عن متناول الأطفال\n• تحقق من تاريخ الانتهاء بانتظام. 📦'
+                    : 'To preserve ' + (name || 'the drug') + ':\n• Store in a cool, dry place away from sunlight\n• Do not leave in a car\n• Keep out of reach of children\n• Check the expiry date regularly. 📦';
             }
-            if (m.includes('أعراض') || m.includes('اعراض') || m.includes('آثار') || m.includes('ضار')) {
-                return 'إذا لاحظت أي أعراض غير طبيعية بعد تناول ' + (name || 'الدواء') + ':\n• توقف عن استخدامه فوراً\n• تواصل مع طبيبك أو الصيدلاني\n• في حالات الطوارئ اتصل بالإسعاف\n\nصحتك أهم شيء! 🏥';
+            var sideKw = ar ? ['أعراض','اعراض','آثار','ضار'] : ['side effect','symptom','adverse','harm','reaction'];
+            if (sideKw.some(function(k){return m.includes(k);})) {
+                return ar
+                    ? 'إذا لاحظت أي أعراض غير طبيعية بعد تناول ' + (name || 'الدواء') + ':\n• توقف عن استخدامه فوراً\n• تواصل مع طبيبك أو الصيدلاني\n• في حالات الطوارئ اتصل بالإسعاف\n\nصحتك أهم شيء! 🏥'
+                    : 'If you notice unusual symptoms after taking ' + (name || 'the drug') + ':\n• Stop using it immediately\n• Contact your doctor or pharmacist\n• In emergencies, call an ambulance\n\nYour health is the priority! 🏥';
             }
-            if (m.includes('شكر') || m.includes('تمام') || m.includes('ممتاز')) {
-                return 'بكل سرور! 😊 إذا كان لديك أي سؤال آخر عن دوائك لا تتردد. صحتك بالسلامة! 🌟';
+            var thanksKw = ar ? ['شكر','تمام','ممتاز'] : ['thank','great','perfect','awesome'];
+            if (thanksKw.some(function(k){return m.includes(k);})) {
+                return ar ? 'بكل سرور! 😊 إذا كان لديك أي سؤال آخر عن دوائك لا تتردد. صحتك بالسلامة! 🌟' : 'My pleasure! 😊 Feel free to ask anything else about your medication. Stay healthy! 🌟';
             }
             if (!drugData) {
-                return 'يمكنني مساعدتك بمعلومات دوائك! 💊\nابحث برقم الدواء أعلاه للحصول على معلومات مخصصة، أو اسألني عن: الأصالة، الصلاحية، التخزين، الأعراض الجانبية.';
+                return ar
+                    ? 'يمكنني مساعدتك بمعلومات دوائك! 💊\nابحث برقم الدواء أعلاه للحصول على معلومات مخصصة، أو اسألني عن: الأصالة، الصلاحية، التخزين، الأعراض الجانبية.'
+                    : 'I can help with your medication information! 💊\nSearch by drug ID above for personalized info, or ask me about: authenticity, expiry, storage, or side effects.';
             }
-            return 'بخصوص دواء ' + name + '، يسعدني مساعدتك! 😊\nيمكنك سؤالي عن: الأصالة، الصلاحية، المصدر، مسار التتبع، التخزين، أو الأعراض الجانبية.\nللمعلومات الطبية التفصيلية يُنصح بمراجعة الصيدلاني المختص.';
+            return ar
+                ? 'بخصوص دواء ' + name + '، يسعدني مساعدتك! 😊\nيمكنك سؤالي عن: الأصالة، الصلاحية، المصدر، مسار التتبع، التخزين، أو الأعراض الجانبية.\nللمعلومات الطبية التفصيلية يُنصح بمراجعة الصيدلاني المختص.'
+                : 'Regarding ' + name + ', I\'m happy to help! 😊\nYou can ask about: authenticity, expiry, source, tracking route, storage, or side effects.\nFor detailed medical info, consult your pharmacist.';
         }
 
         async function sendMsg() {
@@ -750,10 +779,24 @@
         }
 
         window.addEventListener('pharmaLangChanged', function() {
-            // Update lookup button text if not in loading state
             var btn = document.getElementById('lookupBtn');
             if (!btn.disabled) {
                 btn.textContent = PharmaLang.t('pc_lookup_btn');
+            }
+            // Rebuild suggested questions with new language
+            if (drugData && document.getElementById('suggestedArea').style.display !== 'none') {
+                showSuggestedQuestions(drugData);
+            }
+            // Rebuild drug strip details with new language/locale if drug is loaded
+            if (drugData) {
+                var locale = PharmaLang.get() === 'ar' ? 'ar-JO' : 'en-US';
+                var history = (drugData.trackingHistory || []).map(function (t) {
+                    return getRoleLabel(t.fromRole) + ' → ' + getRoleLabel(t.toRole);
+                }).join(' → ');
+                var expiry = new Date(drugData.expiryDate).toLocaleDateString(locale);
+                document.getElementById('stripDetails').innerHTML =
+                    PharmaLang.t('pc_mfr_label') + drugData.manufacturer + ' | ' + PharmaLang.t('pc_expiry_label') + expiry +
+                    (history ? '<br>' + PharmaLang.t('pc_path_label') + history : '');
             }
         });
     </script>

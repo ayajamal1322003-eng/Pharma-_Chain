@@ -23,10 +23,7 @@
         .ai-pulse { width: 8px; height: 8px; border-radius: 50%; background: #fbbf24; animation: pulse 2s ease-in-out infinite; }
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
 
-        /* Step indicator */
-        .step-header {
-            display: flex; align-items: center; gap: 12px;
-        }
+        .step-header { display: flex; align-items: center; gap: 12px; }
         .step-num {
             width: 28px; height: 28px; border-radius: 50%;
             background: linear-gradient(135deg, #0d9488, #14b8a6);
@@ -35,7 +32,6 @@
         }
         .step-title { font-size: 15px; font-weight: 700; color: var(--gray-700); }
 
-        /* Status strips */
         .status-strip {
             background: #f0fdfa; border: 1px solid #99f6e4;
             border-radius: 10px; padding: 10px 14px;
@@ -46,7 +42,6 @@
         .status-strip.error-strip { background: #fee2e2; border-color: #fca5a5; color: #7f1d1d; }
         .status-strip.success  { background: #d1fae5; border-color: #6ee7b7; color: #064e3b; }
 
-        /* Loading */
         .loading-area { text-align: center; padding: 36px; display: none; }
         .loading-area.show { display: block; }
         .ai-spinner {
@@ -61,11 +56,9 @@
         .loading-text { font-size: 14px; color: var(--gray-600); font-weight: 500; }
         .loading-sub  { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
 
-        /* Results */
         .results-area { display: none; }
         .results-area.show { display: block; }
 
-        /* Risk Summary */
         .risk-summary { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
         .risk-stat {
             flex: 1; min-width: 100px;
@@ -82,7 +75,6 @@
         .risk-stat.low  .num { color: #059669; }
         .risk-stat.ok   .num { color: #2563eb; }
 
-        /* Risk Items */
         .risk-list { display: flex; flex-direction: column; gap: 10px; }
         .risk-item {
             border-radius: 12px; padding: 14px 16px; border: 1px solid;
@@ -105,7 +97,6 @@
         .risk-badge.low    { background: #d1fae5; color: #064e3b; }
         .risk-badge.ok     { background: #dbeafe; color: #1e3a8a; }
 
-        /* Verdict */
         .verdict {
             border-radius: 12px; padding: 18px 22px; margin-top: 16px;
             display: flex; align-items: center; gap: 14px; border: 1px solid;
@@ -117,14 +108,9 @@
         .verdict-text h3 { font-size: 15px; font-weight: 800; color: var(--gray-800); }
         .verdict-text p  { font-size: 13px; color: var(--gray-600); margin-top: 3px; }
 
-        /* Chain table */
         .hash-cell { font-family: monospace; font-size: 11px; color: var(--gray-400); }
-
         .no-access { text-align: center; padding: 60px; color: #7f1d1d; font-size: 15px; }
-
         .controls-row { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 16px; flex-wrap: wrap; }
-        .control-group { display: flex; flex-direction: column; gap: 6px; }
-        .control-label { font-size: 12px; color: var(--gray-500); font-weight: 600; }
     </style>
 </head>
 <body>
@@ -143,7 +129,7 @@
         <div class="nav-section-hdr" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
         <a class="nav-item active"><span class="nav-icon">🤖</span> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
         <a class="nav-item" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
-        <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span>إدارة QR Code</span></a>
+        <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span data-i18n="nav_qr_control">إدارة QR Code</span></a>
         <div class="user-info-bar">
             <div class="user-row">
                 <div class="user-avatar">👤</div>
@@ -160,26 +146,26 @@
     <div class="main">
         <div class="page-header">
             <div>
-                <div class="page-title" data-i18n="risk_title">محلل المخاطر الذكي</div>
-                <div class="page-subtitle" data-i18n="risk_subtitle">فحص أمني عميق لسلسلة Blockchain بالذكاء الاصطناعي</div>
+                <div class="page-title" data-i18n="risk_title">محلل المخاطر AI</div>
+                <div class="page-subtitle" data-i18n="risk_subtitle">تحليل ذكي لمخاطر سلسلة التوريد</div>
             </div>
         </div>
 
         <div class="ai-hero-banner">
             <div class="ai-hero-left">
-                <h2>🚨 تحليل مخاطر السلسلة</h2>
-                <p>يفحص الأنماط الزمنية والمسارات غير الطبيعية ويكتشف التلاعب</p>
+                <h2 data-i18n="risk_hero_title">🚨 تحليل مخاطر السلسلة</h2>
+                <p data-i18n="risk_hero_desc">يفحص الأنماط الزمنية والمسارات غير الطبيعية ويكتشف التلاعب</p>
             </div>
             <div class="ai-hero-badge">
                 <div class="ai-pulse"></div>
-                مدعوم بـ Claude AI
+                <span data-i18n="risk_powered_ai">مدعوم بـ Claude AI</span>
             </div>
         </div>
 
         <div id="noAccessMsg" style="display:none">
             <div class="card">
-                <div class="card-header"><div class="card-header-left"><div class="card-icon ci-red">🔒</div><div><div class="card-title">وصول مقيّد</div></div></div></div>
-                <div style="padding:20px;"><div class="no-access">هذه الصفحة للمدير فقط<br><small>ليس لديك صلاحية الوصول</small></div></div>
+                <div class="card-header"><div class="card-header-left"><div class="card-icon ci-red">🔒</div><div><div class="card-title" data-i18n="risk_access_title">وصول مقيّد</div></div></div></div>
+                <div style="padding:20px;"><div class="no-access" id="noAccessText">هذه الصفحة للمدير فقط<br><small>ليس لديك صلاحية الوصول</small></div></div>
             </div>
         </div>
 
@@ -192,27 +178,34 @@
                         <div>
                             <div class="step-header">
                                 <div class="step-num">1</div>
-                                <div class="step-title">جلب بيانات السلسلة</div>
+                                <div class="step-title" data-i18n="risk_step1_title">جلب بيانات السلسلة</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div style="padding:20px;">
                     <div class="controls-row">
-                        <button class="btn btn-primary" onclick="fetchChain()" id="fetchBtn">⬇️ جلب البيانات تلقائياً</button>
-                        <button class="btn btn-outline" onclick="toggleManual()">✏️ إدخال يدوي</button>
+                        <button class="btn btn-primary" onclick="fetchChain()" id="fetchBtn" data-i18n="risk_fetch_btn">⬇️ جلب البيانات تلقائياً</button>
+                        <button class="btn btn-outline" onclick="toggleManual()" data-i18n="risk_manual_btn">✏️ إدخال يدوي</button>
                     </div>
                     <div id="manualArea" style="display:none; margin-top:12px;">
                         <textarea id="manualData" rows="6"
                             style="width:100%;padding:10px 14px;border:1px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:'Courier New',monospace;color:var(--gray-800);outline:none;resize:vertical;background:var(--gray-50);"
-                            placeholder="الصق هنا بيانات السلسلة من /api/transaction/chain ..."></textarea>
+                            data-i18n-ph="risk_manual_ph" placeholder="الصق هنا بيانات السلسلة من /api/transaction/chain ..."></textarea>
                     </div>
                     <div id="fetchStatus" style="margin-top:12px; display:none;"></div>
                     <div id="chainPreview" style="display:none; margin-top:16px;">
-                        <div style="font-size:13px;font-weight:700;color:var(--gray-600);margin-bottom:8px;">معاينة السلسلة المجلوبة:</div>
+                        <div style="font-size:13px;font-weight:700;color:var(--gray-600);margin-bottom:8px;" data-i18n="risk_preview_lbl">معاينة السلسلة المجلوبة:</div>
                         <div class="table-wrap">
                             <table id="chainTable">
-                                <thead><tr><th>Block #</th><th>الدواء</th><th>من</th><th>إلى</th><th>التاريخ</th><th>Hash</th></tr></thead>
+                                <thead><tr>
+                                    <th>Block #</th>
+                                    <th data-i18n="risk_bc_th_drug">الدواء</th>
+                                    <th data-i18n="risk_bc_th_from">من</th>
+                                    <th data-i18n="risk_bc_th_to">إلى</th>
+                                    <th data-i18n="risk_bc_th_date">التاريخ</th>
+                                    <th data-i18n="risk_bc_th_hash">Hash</th>
+                                </tr></thead>
                                 <tbody id="chainTableBody"></tbody>
                             </table>
                         </div>
@@ -228,21 +221,21 @@
                         <div>
                             <div class="step-header">
                                 <div class="step-num">2</div>
-                                <div class="step-title">التحليل الذكي للمخاطر</div>
+                                <div class="step-title" data-i18n="risk_step2_title">التحليل الذكي للمخاطر</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div style="padding:20px;">
-                    <div class="status-strip" id="aiInfo">💡 اضغط "جلب البيانات" أولاً، ثم اضغط "تحليل المخاطر"</div>
-                    <button class="btn btn-danger" onclick="analyzeRisk()" id="analyzeBtn" disabled style="margin-bottom:16px;">
+                    <div class="status-strip" id="aiInfo" data-i18n="risk_info_prompt">💡 اضغط "جلب البيانات" أولاً، ثم اضغط "تحليل المخاطر"</div>
+                    <button class="btn btn-danger" onclick="analyzeRisk()" id="analyzeBtn" disabled style="margin-bottom:16px;" data-i18n="risk_analyze_btn">
                         🔍 تحليل المخاطر بالذكاء الاصطناعي
                     </button>
 
                     <div class="loading-area" id="loadingArea">
                         <div class="ai-spinner"></div>
-                        <div class="loading-text">الذكاء الاصطناعي يحلل السلسلة...</div>
-                        <div class="loading-sub">يفحص الأنماط الزمنية والمسارات غير الطبيعية</div>
+                        <div class="loading-text" data-i18n="risk_loading_text">الذكاء الاصطناعي يحلل السلسلة...</div>
+                        <div class="loading-sub" data-i18n="risk_loading_sub">يفحص الأنماط الزمنية والمسارات غير الطبيعية</div>
                     </div>
 
                     <div class="results-area" id="resultsArea">
@@ -250,8 +243,8 @@
                         <div class="risk-list" id="riskList"></div>
                         <div id="verdictBox"></div>
                         <div style="margin-top:16px; display:flex; gap:10px;">
-                            <button class="btn btn-outline" onclick="reAnalyze()">🔄 إعادة التحليل</button>
-                            <button class="btn btn-outline" onclick="copyReport()">📋 نسخ التقرير</button>
+                            <button class="btn btn-outline" onclick="reAnalyze()" data-i18n="risk_reanalyze">🔄 إعادة التحليل</button>
+                            <button class="btn btn-outline" onclick="copyReport()" data-i18n="risk_copy_report">📋 نسخ التقرير</button>
                         </div>
                     </div>
                 </div>
@@ -284,69 +277,120 @@
         area.style.display = area.style.display === 'none' ? 'block' : 'none';
     }
 
+    function getRoleLabel(r) {
+        var ar = PharmaLang.get() === 'ar';
+        var mapAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون', Admin: 'المدير' };
+        var mapEn = { Factory: 'Factory', Distributor: 'Distributor', Pharmacy: 'Pharmacy', Customer: 'Customer', Admin: 'Admin' };
+        return (ar ? mapAr : mapEn)[r] || r;
+    }
+
     function fetchChain() {
         var btn = document.getElementById('fetchBtn');
-        btn.disabled = true; btn.textContent = '⏳ جاري الجلب...';
+        btn.disabled = true;
+        btn.textContent = PharmaLang.t('risk_fetching');
         var status = document.getElementById('fetchStatus');
         status.style.display = 'block';
-        status.innerHTML = '<div class="status-strip">⏳ جاري الاتصال بالسيرفر...</div>';
+        status.innerHTML = '<div class="status-strip">' + PharmaLang.t('risk_fetching_srv') + '</div>';
         var xhr = new XMLHttpRequest();
         xhr.open('GET', API + '/api/transaction/chain', true);
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
         xhr.onload = function () {
-            btn.disabled = false; btn.textContent = '⬇️ جلب البيانات تلقائياً';
+            btn.disabled = false;
+            btn.textContent = PharmaLang.t('risk_fetch_btn');
             if (xhr.status === 401) { window.location.replace(API + '/login.html'); return; }
-            if (xhr.status !== 200) { status.innerHTML = '<div class="status-strip error-strip">❌ تعذر الجلب — تحقق من تشغيل السيرفر</div>'; return; }
+            if (xhr.status !== 200) {
+                status.innerHTML = '<div class="status-strip error-strip">' + PharmaLang.t('risk_fetch_fail') + '</div>';
+                return;
+            }
             var data = JSON.parse(xhr.responseText);
             chainData = data;
-            if (!data.chain || data.chain.length === 0) { status.innerHTML = '<div class="status-strip warning">⚠️ السلسلة فارغة — لا توجد blocks بعد</div>'; return; }
-            status.innerHTML = '<div class="status-strip success">✅ تم جلب ' + data.totalBlocks + ' block بنجاح</div>';
+            if (!data.chain || data.chain.length === 0) {
+                status.innerHTML = '<div class="status-strip warning">' + PharmaLang.t('risk_empty_chain') + '</div>';
+                return;
+            }
+            status.innerHTML = '<div class="status-strip success">' + PharmaLang.t('risk_fetch_done') + data.totalBlocks + PharmaLang.t('risk_fetch_done_suf') + '</div>';
             renderChainTable(data.chain);
             document.getElementById('analyzeBtn').disabled = false;
-            document.getElementById('aiInfo').textContent = '✅ البيانات جاهزة — اضغط "تحليل المخاطر"';
+            document.getElementById('aiInfo').textContent = PharmaLang.t('risk_data_ready');
         };
         xhr.onerror = function () {
-            btn.disabled = false; btn.textContent = '⬇️ جلب البيانات تلقائياً';
-            document.getElementById('fetchStatus').innerHTML = '<div class="status-strip error-strip">❌ تعذر الاتصال بالسيرفر</div>';
+            btn.disabled = false;
+            btn.textContent = PharmaLang.t('risk_fetch_btn');
+            document.getElementById('fetchStatus').innerHTML = '<div class="status-strip error-strip">' + PharmaLang.t('risk_conn_fail') + '</div>';
         };
         xhr.send();
     }
 
     function renderChainTable(chain) {
         var tbody = document.getElementById('chainTableBody');
-        var roleAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون' };
+        var locale = PharmaLang.get() === 'ar' ? 'ar-JO' : 'en-US';
         tbody.innerHTML = chain.map(function (b) {
             return '<tr><td><strong>#' + b.blockNumber + '</strong></td><td>' + b.drugName + '</td>'
-                + '<td>' + (roleAr[b.fromRole] || b.fromRole) + '</td>'
-                + '<td>' + (roleAr[b.toRole] || b.toRole) + '</td>'
-                + '<td>' + new Date(b.timestamp).toLocaleString('ar-JO') + '</td>'
+                + '<td>' + getRoleLabel(b.fromRole) + '</td>'
+                + '<td>' + getRoleLabel(b.toRole) + '</td>'
+                + '<td>' + new Date(b.timestamp).toLocaleString(locale) + '</td>'
                 + '<td class="hash-cell">' + b.blockHash + '</td></tr>';
         }).join('');
         document.getElementById('chainPreview').style.display = 'block';
     }
 
     function analyzeChainLocally(chain) {
+        var ar = PharmaLang.get() === 'ar';
         var high = [], medium = [], low = [], ok = [];
         if (!chain || chain.length === 0) {
-            return { summary: 'السلسلة فارغة — لا توجد بيانات للتحليل', high: [], medium: [], low: [], ok: [{ title: 'السلسلة فارغة', desc: 'لم يتم تسجيل أي نقلات بعد' }], verdict: 'safe', verdictText: '✅ السلسلة سليمة', recommendation: 'ابدأ بإضافة أدوية ونقلها لتظهر البيانات هنا.' };
+            return {
+                summary: PharmaLang.t('risk_empty_summary'),
+                high: [], medium: [], low: [],
+                ok: [{ title: PharmaLang.t('risk_empty_title'), desc: PharmaLang.t('risk_empty_desc') }],
+                verdict: 'safe',
+                verdictText: PharmaLang.t('risk_chain_safe'),
+                recommendation: PharmaLang.t('risk_start_add')
+            };
         }
         for (var i = 1; i < chain.length; i++) {
             if (chain[i].previousHash !== chain[i - 1].blockHash) {
-                high.push({ title: 'انكسار في سلسلة Hash', desc: 'Block #' + chain[i].blockNumber + ' لا يرتبط بالـ Block السابق — تم التلاعب بالسلسلة!' });
+                high.push({
+                    title: PharmaLang.t('risk_hash_break'),
+                    desc: 'Block #' + chain[i].blockNumber + PharmaLang.t('risk_hash_break_desc')
+                });
             }
         }
         chain.forEach(function (b) {
             if (b.blockHash && !b.blockHash.startsWith('00')) {
-                high.push({ title: 'خرق Proof of Work', desc: 'Block #' + b.blockNumber + ' لديه Hash لا يبدأ بـ 00 — يعني إن الـ Block لم يُعدَّن بشكل صحيح.' });
+                high.push({
+                    title: PharmaLang.t('risk_pow_break'),
+                    desc: ar
+                        ? 'Block #' + b.blockNumber + ' لديه Hash لا يبدأ بـ 00 — يعني إن الـ Block لم يُعدَّن بشكل صحيح.'
+                        : 'Block #' + b.blockNumber + ' has a Hash not starting with 00 — the block was not mined correctly.'
+                });
             }
         });
         for (var j = 1; j < chain.length; j++) {
             var t1 = new Date(chain[j - 1].timestamp);
             var t2 = new Date(chain[j].timestamp);
             var diffHours = (t2 - t1) / (1000 * 60 * 60);
-            if (diffHours > 48) { high.push({ title: 'تأخير خطير في النقل', desc: 'تأخر ' + Math.round(diffHours) + ' ساعة بين Block #' + chain[j - 1].blockNumber + ' وBlock #' + chain[j].blockNumber + ' — يتجاوز الحد الأقصى المقبول.' }); }
-            else if (diffHours > 24) { medium.push({ title: 'تأخير مشبوه', desc: 'مرت ' + Math.round(diffHours) + ' ساعة بين نقلتين متتاليتين — يُنصح بالتحقيق.' }); }
-            else if (diffHours < 0.05) { medium.push({ title: 'سرعة نقل غير طبيعية', desc: 'نقلتان بفارق أقل من 3 دقائق في Block #' + chain[j].blockNumber + ' — قد يكون نشاطاً مشبوهاً.' }); }
+            if (diffHours > 48) {
+                high.push({
+                    title: PharmaLang.t('risk_delay_high'),
+                    desc: ar
+                        ? 'تأخر ' + Math.round(diffHours) + ' ساعة بين Block #' + chain[j-1].blockNumber + ' وBlock #' + chain[j].blockNumber + ' — يتجاوز الحد الأقصى المقبول.'
+                        : Math.round(diffHours) + 'h delay between Block #' + chain[j-1].blockNumber + ' and Block #' + chain[j].blockNumber + ' — exceeds the acceptable maximum.'
+                });
+            } else if (diffHours > 24) {
+                medium.push({
+                    title: PharmaLang.t('risk_delay_med'),
+                    desc: ar
+                        ? 'مرت ' + Math.round(diffHours) + ' ساعة بين نقلتين متتاليتين — يُنصح بالتحقيق.'
+                        : Math.round(diffHours) + 'h between two consecutive transfers — investigation recommended.'
+                });
+            } else if (diffHours < 0.05) {
+                medium.push({
+                    title: PharmaLang.t('risk_speed'),
+                    desc: ar
+                        ? 'نقلتان بفارق أقل من 3 دقائق في Block #' + chain[j].blockNumber + ' — قد يكون نشاطاً مشبوهاً.'
+                        : 'Two transfers less than 3 minutes apart at Block #' + chain[j].blockNumber + ' — potentially suspicious.'
+                });
+            }
         }
         var drugDistributors = {};
         chain.forEach(function (b) {
@@ -357,19 +401,41 @@
         });
         for (var drugId in drugDistributors) {
             if (drugDistributors[drugId].length > 1) {
-                medium.push({ title: 'دواء مرّ على عدة موزعين', desc: 'الدواء رقم ' + drugId + ' نُقل عبر ' + drugDistributors[drugId].length + ' موزعين (' + drugDistributors[drugId].join(', ') + ') — المسار الطبيعي موزع واحد فقط.' });
+                medium.push({
+                    title: PharmaLang.t('risk_multi_dist'),
+                    desc: ar
+                        ? 'الدواء رقم ' + drugId + ' نُقل عبر ' + drugDistributors[drugId].length + ' موزعين (' + drugDistributors[drugId].join(', ') + ') — المسار الطبيعي موزع واحد فقط.'
+                        : 'Drug #' + drugId + ' passed through ' + drugDistributors[drugId].length + ' distributors (' + drugDistributors[drugId].join(', ') + ') — normal route has one distributor.'
+                });
             }
         }
         if (high.length === 0 && medium.length === 0) {
-            ok.push({ title: 'Hash Chaining سليم', desc: 'كل Block مرتبط بالسابق بشكل صحيح' });
-            ok.push({ title: 'Proof of Work محقق', desc: 'كل الـ Hashes تبدأ بـ 00' });
-            ok.push({ title: 'التوقيت طبيعي', desc: 'لا توجد تأخيرات غير مبررة' });
-            low.push({ title: 'المسارات منطقية', desc: 'جميع نقلات الأدوية تتبع المسار الصحيح: مصنع ← موزع ← صيدلية' });
+            ok.push({ title: PharmaLang.t('risk_hash_ok'), desc: PharmaLang.t('risk_hash_ok_desc') });
+            ok.push({ title: PharmaLang.t('risk_pow_ok'), desc: PharmaLang.t('risk_pow_ok_desc') });
+            ok.push({ title: PharmaLang.t('risk_timing_ok'), desc: PharmaLang.t('risk_timing_ok_desc') });
+            low.push({ title: PharmaLang.t('risk_routes_ok'), desc: PharmaLang.t('risk_routes_ok_desc') });
         }
         var verdict = high.length > 0 ? 'danger' : medium.length > 0 ? 'warning' : 'safe';
-        var verdictText = high.length > 0 ? '🚨 تم اكتشاف تلاعب — يجب التحقيق الفوري' : medium.length > 0 ? '⚠️ توجد نقاط تحتاج مراجعة' : '✅ السلسلة سليمة — ' + chain.length + ' blocks تم التحقق منها';
-        var recommendation = high.length > 0 ? 'أوقف عمليات النقل فوراً وراجع الـ Blocks المتأثرة مع فريق الأمن.' : medium.length > 0 ? 'راجع النقاط المذكورة مع المسؤولين المعنيين وتأكد من صحة البيانات.' : 'استمر في مراقبة السلسلة بانتظام. النظام يعمل بشكل مثالي.';
-        return { summary: 'تم تحليل ' + chain.length + ' block — ' + (high.length > 0 ? 'وُجدت مشاكل خطيرة تستوجب التحقيق' : medium.length > 0 ? 'وُجدت تحذيرات تستوجب المراجعة' : 'السلسلة سليمة بالكامل'), high: high, medium: medium, low: low, ok: ok, verdict: verdict, verdictText: verdictText, recommendation: recommendation };
+        var verdictText = high.length > 0
+            ? PharmaLang.t('risk_verdict_danger')
+            : medium.length > 0
+                ? PharmaLang.t('risk_verdict_warn')
+                : PharmaLang.t('risk_verdict_safe') + chain.length + PharmaLang.t('risk_blocks_verified');
+        var recommendation = high.length > 0
+            ? PharmaLang.t('risk_rec_danger')
+            : medium.length > 0
+                ? PharmaLang.t('risk_rec_warn')
+                : PharmaLang.t('risk_rec_safe');
+        var summaryState = high.length > 0
+            ? PharmaLang.t('risk_chain_has_high')
+            : medium.length > 0
+                ? PharmaLang.t('risk_chain_has_med')
+                : PharmaLang.t('risk_chain_safe').replace('✅ ', '');
+        return {
+            summary: PharmaLang.t('risk_analyzed') + chain.length + PharmaLang.t('risk_blocks') + summaryState,
+            high: high, medium: medium, low: low, ok: ok,
+            verdict: verdict, verdictText: verdictText, recommendation: recommendation
+        };
     }
 
     async function analyzeRisk() {
@@ -381,7 +447,7 @@
             chainToAnalyze = chainData.chain;
         } else {
             document.getElementById('aiInfo').className = 'status-strip error-strip';
-            document.getElementById('aiInfo').textContent = '❌ اجلب البيانات أولاً أو أدخلها يدوياً';
+            document.getElementById('aiInfo').textContent = PharmaLang.t('risk_no_data');
             return;
         }
         document.getElementById('analyzeBtn').disabled = true;
@@ -395,7 +461,7 @@
         } catch (e) {
             document.getElementById('aiInfo').className = 'status-strip error-strip';
             document.getElementById('aiInfo').style.display = 'block';
-            document.getElementById('aiInfo').textContent = '❌ خطأ في التحليل: ' + e.message;
+            document.getElementById('aiInfo').textContent = '❌ ' + e.message;
         } finally {
             document.getElementById('analyzeBtn').disabled = false;
             document.getElementById('loadingArea').classList.remove('show');
@@ -408,23 +474,22 @@
         var low  = (result.low || []).length;
         var ok   = (result.ok || []).length;
         document.getElementById('riskSummary').innerHTML =
-            '<div class="risk-stat high"><div class="num">' + high + '</div><div class="lbl">🔴 خطر عالي</div></div>' +
-            '<div class="risk-stat med"><div class="num">' + med  + '</div><div class="lbl">🟡 تحذير</div></div>' +
-            '<div class="risk-stat low"><div class="num">' + low  + '</div><div class="lbl">🟢 منخفض</div></div>' +
-            '<div class="risk-stat ok"><div class="num">'  + ok   + '</div><div class="lbl">✅ طبيعي</div></div>';
+            '<div class="risk-stat high"><div class="num">' + high + '</div><div class="lbl">' + PharmaLang.t('risk_high') + '</div></div>' +
+            '<div class="risk-stat med"><div class="num">'  + med  + '</div><div class="lbl">' + PharmaLang.t('risk_med') + '</div></div>' +
+            '<div class="risk-stat low"><div class="num">'  + low  + '</div><div class="lbl">' + PharmaLang.t('risk_low_lbl') + '</div></div>' +
+            '<div class="risk-stat ok"><div class="num">'   + ok   + '</div><div class="lbl">' + PharmaLang.t('risk_ok_lbl') + '</div></div>';
         var html = '';
         if (result.summary) {
             html += '<div style="background:var(--gray-50);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--gray-600);border:1px solid var(--gray-100);">'
-                + '<strong>ملخص التحليل:</strong> ' + result.summary + '</div>';
+                + '<strong>' + PharmaLang.t('risk_summary_lbl') + '</strong> ' + result.summary + '</div>';
         }
         function renderItems(items, level, icon) {
             if (!items || items.length === 0) return '';
-            var levelAr = { high: 'عالي', medium: 'متوسط', low: 'منخفض', ok: 'طبيعي' };
             return items.map(function (item) {
                 return '<div class="risk-item ' + level + '">'
                     + '<div class="risk-icon">' + icon + '</div>'
                     + '<div class="risk-content"><div class="risk-title">' + item.title + '</div><div class="risk-desc">' + item.desc + '</div></div>'
-                    + '<span class="risk-badge ' + level + '">' + levelAr[level] + '</span></div>';
+                    + '<span class="risk-badge ' + level + '">' + PharmaLang.t('risk_level_' + (level === 'ok' ? 'ok' : level === 'low' ? 'low' : level === 'medium' ? 'med' : 'high')) + '</span></div>';
             }).join('');
         }
         html += renderItems(result.high, 'high', '🔴');
@@ -449,14 +514,42 @@
     function copyReport() {
         if (!lastReport) return;
         var parsed = JSON.parse(lastReport);
-        var text = 'تقرير تحليل المخاطر — PharmaChain\n=====================================\n';
-        text += 'الملخص: ' + parsed.summary + '\n\n';
-        if (parsed.high && parsed.high.length) { text += '🔴 مخاطر عالية:\n'; parsed.high.forEach(function (i) { text += '  - ' + i.title + ': ' + i.desc + '\n'; }); }
-        if (parsed.medium && parsed.medium.length) { text += '\n🟡 تحذيرات:\n'; parsed.medium.forEach(function (i) { text += '  - ' + i.title + ': ' + i.desc + '\n'; }); }
-        text += '\nالحكم: ' + parsed.verdictText + '\n';
-        text += 'التوصية: ' + parsed.recommendation;
-        navigator.clipboard.writeText(text).then(function () { alert('تم نسخ التقرير!'); });
+        var text = PharmaLang.t('risk_report_hdr') + '\n=====================================\n';
+        text += PharmaLang.t('risk_report_sum') + parsed.summary + '\n\n';
+        if (parsed.high && parsed.high.length) {
+            text += PharmaLang.t('risk_report_high');
+            parsed.high.forEach(function (i) { text += '  - ' + i.title + ': ' + i.desc + '\n'; });
+        }
+        if (parsed.medium && parsed.medium.length) {
+            text += PharmaLang.t('risk_report_med');
+            parsed.medium.forEach(function (i) { text += '  - ' + i.title + ': ' + i.desc + '\n'; });
+        }
+        text += PharmaLang.t('risk_report_verdict') + parsed.verdictText + '\n';
+        text += PharmaLang.t('risk_report_rec') + parsed.recommendation;
+        navigator.clipboard.writeText(text).then(function () { alert(PharmaLang.t('risk_copied')); });
     }
+
+    window.addEventListener('pharmaLangChanged', function () {
+        // Re-render the no-access message
+        if (role !== 'Admin') {
+            document.getElementById('noAccessText').innerHTML =
+                PharmaLang.t('risk_no_access') + '<br><small>' + PharmaLang.t('risk_no_access_sub') + '</small>';
+        }
+        // Re-render chain table if loaded
+        if (chainData && chainData.chain && chainData.chain.length > 0) {
+            renderChainTable(chainData.chain);
+        }
+        // Re-render results if they exist
+        if (lastReport) {
+            // Re-run analysis on language switch to get freshly translated text
+            var chainToAnalyze = chainData && chainData.chain ? chainData.chain : null;
+            if (chainToAnalyze) {
+                var result = analyzeChainLocally(chainToAnalyze);
+                lastReport = JSON.stringify(result);
+                renderResults(result);
+            }
+        }
+    });
 </script>
 </body>
 </html>

@@ -54,16 +54,11 @@
         .results-area { display: none; }
         .results-area.show { display: block; }
 
-        /* Stats Overview */
         .stats-overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .stat-ov-card {
-            background: var(--gray-50); border: 1px solid var(--gray-100);
-            border-radius: 12px; padding: 14px; text-align: center;
-        }
+        .stat-ov-card { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: 12px; padding: 14px; text-align: center; }
         .stat-ov-card .num { font-size: 26px; font-weight: 800; color: var(--gray-800); }
         .stat-ov-card .lbl { font-size: 11px; color: var(--gray-500); margin-top: 4px; }
 
-        /* Insights Grid */
         .insights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
         @media (max-width: 700px) { .insights-grid { grid-template-columns: 1fr; } }
 
@@ -88,7 +83,6 @@
         .insight-card.alert       .insight-item { border-color: #d97706; }
         .insight-item strong { display: block; color: var(--gray-800); margin-bottom: 2px; }
 
-        /* Perf Summary */
         .perf-summary {
             background: var(--gray-50); border: 1px solid var(--gray-100);
             border-radius: 12px; padding: 16px; margin-bottom: 16px;
@@ -96,7 +90,6 @@
         }
         .perf-summary strong { color: var(--gray-800); font-size: 14px; }
 
-        /* Distributor Table */
         .perf-bar-wrap { background: var(--gray-100); border-radius: 4px; height: 8px; width: 100px; overflow: hidden; }
         .perf-bar { height: 100%; border-radius: 4px; transition: width 0.5s; }
         .perf-bar.good { background: #34d399; }
@@ -123,7 +116,7 @@
         <div class="nav-section-hdr" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
         <a class="nav-item" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
         <a class="nav-item active"><span class="nav-icon">📈</span> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
-        <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span>إدارة QR Code</span></a>
+        <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span data-i18n="nav_qr_control">إدارة QR Code</span></a>
         <div class="user-info-bar">
             <div class="user-row">
                 <div class="user-avatar">👤</div>
@@ -140,25 +133,25 @@
     <div class="main">
         <div class="page-header">
             <div>
-                <div class="page-title" data-i18n="advisor_title">تحليلات الأداء الذكية</div>
-                <div class="page-subtitle" data-i18n="advisor_subtitle">رؤى استراتيجية لتحسين سلسلة التوريد بالذكاء الاصطناعي</div>
+                <div class="page-title" data-i18n="advisor_title">تحليلات الأداء AI</div>
+                <div class="page-subtitle" data-i18n="advisor_subtitle">رؤى وتوصيات ذكية لتحسين المخزون</div>
             </div>
         </div>
 
         <div class="ai-hero-banner">
             <div class="ai-hero-left">
-                <h2>📊 مستشار التوريد الذكي</h2>
-                <p>يقيّم أداء الموزعين والصيدليات ويحدد فرص التحسين الاستراتيجي</p>
+                <h2 data-i18n="adv_hero_title">📊 مستشار التوريد الذكي</h2>
+                <p data-i18n="adv_hero_desc">يقيّم أداء الموزعين والصيدليات ويحدد فرص التحسين الاستراتيجي</p>
             </div>
             <div class="ai-hero-badge">
                 <div class="ai-pulse"></div>
-                مدعوم بـ Claude AI
+                <span data-i18n="adv_powered_ai">مدعوم بـ Claude AI</span>
             </div>
         </div>
 
         <div id="noAccessMsg" style="display:none">
             <div class="card">
-                <div style="padding:20px;"><div class="no-access">هذه الصفحة للمدير فقط<br><small>ليس لديك صلاحية الوصول</small></div></div>
+                <div style="padding:20px;"><div class="no-access" id="noAccessText">هذه الصفحة للمدير فقط<br><small>ليس لديك صلاحية الوصول</small></div></div>
             </div>
         </div>
 
@@ -171,20 +164,20 @@
                         <div>
                             <div class="step-header">
                                 <div class="step-num">1</div>
-                                <div class="step-title">جلب بيانات العمليات</div>
+                                <div class="step-title" data-i18n="adv_step1_title">جلب بيانات العمليات</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div style="padding:20px;">
                     <div class="controls-row">
-                        <button class="btn btn-primary" onclick="fetchAllData()" id="fetchBtn">⬇️ جلب البيانات تلقائياً</button>
-                        <button class="btn btn-outline" onclick="toggleManual()">✏️ إدخال يدوي</button>
+                        <button class="btn btn-primary" onclick="fetchAllData()" id="fetchBtn" data-i18n="adv_fetch_btn">⬇️ جلب البيانات تلقائياً</button>
+                        <button class="btn btn-outline" onclick="toggleManual()" data-i18n="adv_manual_btn">✏️ إدخال يدوي</button>
                     </div>
                     <div id="manualArea" style="display:none; margin-top:12px;">
                         <textarea id="manualData" rows="6"
                             style="width:100%;padding:10px 14px;border:1px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:'Segoe UI',sans-serif;color:var(--gray-800);outline:none;resize:vertical;background:var(--gray-50);"
-                            placeholder="الصق هنا بيانات العمليات (نقلات، موزعين، صيدليات)..."></textarea>
+                            data-i18n-ph="adv_manual_ph" placeholder="الصق هنا بيانات العمليات..."></textarea>
                     </div>
                     <div id="fetchStatus" style="margin-top:12px; display:none;"></div>
                     <div id="statsPreview" style="display:none; margin-top:16px;">
@@ -201,33 +194,33 @@
                         <div>
                             <div class="step-header">
                                 <div class="step-num">2</div>
-                                <div class="step-title">التوصيات الذكية</div>
+                                <div class="step-title" data-i18n="adv_step2_title">التوصيات الذكية</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div style="padding:20px;">
-                    <div class="status-strip" id="aiInfo">💡 اضغط "جلب البيانات" أولاً، ثم اضغط "احصل على التوصيات"</div>
-                    <button class="btn btn-success" onclick="getAdvice()" id="adviceBtn" disabled style="margin-bottom:16px;">
+                    <div class="status-strip" id="aiInfo" data-i18n="adv_info_prompt">💡 اضغط "جلب البيانات" أولاً، ثم اضغط "احصل على التوصيات"</div>
+                    <button class="btn btn-success" onclick="getAdvice()" id="adviceBtn" disabled style="margin-bottom:16px;" data-i18n="adv_advice_btn">
                         💡 احصل على توصيات الذكاء الاصطناعي
                     </button>
 
                     <div class="loading-area" id="loadingArea">
                         <div class="ai-spinner"></div>
-                        <div class="loading-text">الذكاء الاصطناعي يحلل بيانات التوريد...</div>
-                        <div class="loading-sub">يقيّم أداء الموزعين والصيدليات ويحدد فرص التحسين</div>
+                        <div class="loading-text" data-i18n="adv_loading_text">الذكاء الاصطناعي يحلل بيانات التوريد...</div>
+                        <div class="loading-sub" data-i18n="adv_loading_sub">يقيّم أداء الموزعين والصيدليات ويحدد فرص التحسين</div>
                     </div>
 
                     <div class="results-area" id="resultsArea">
                         <div class="perf-summary" id="perfSummary"></div>
                         <div class="insights-grid" id="insightsGrid"></div>
                         <div id="distTableWrap" style="display:none;">
-                            <div style="font-size:13px;font-weight:700;color:var(--gray-600);margin-bottom:8px;">مقارنة أداء الموزعين:</div>
+                            <div style="font-size:13px;font-weight:700;color:var(--gray-600);margin-bottom:8px;" id="distTableHdr" data-i18n="adv_dist_table_hdr">مقارنة أداء الموزعين:</div>
                             <div class="table-wrap"><table id="distTable"></table></div>
                         </div>
                         <div style="margin-top:16px; display:flex; gap:10px;">
-                            <button class="btn btn-outline" onclick="getAdvice()">🔄 تحديث التوصيات</button>
-                            <button class="btn btn-outline" onclick="copyAdvice()">📋 نسخ التقرير</button>
+                            <button class="btn btn-outline" onclick="getAdvice()" data-i18n="adv_refresh">🔄 تحديث التوصيات</button>
+                            <button class="btn btn-outline" onclick="copyAdvice()" data-i18n="adv_copy">📋 نسخ التقرير</button>
                         </div>
                     </div>
                 </div>
@@ -261,21 +254,26 @@
 
     function fetchAllData() {
         var btn = document.getElementById('fetchBtn');
-        btn.disabled = true; btn.textContent = '⏳ جاري الجلب...';
+        btn.disabled = true;
+        btn.textContent = PharmaLang.t('adv_fetching');
         var status = document.getElementById('fetchStatus');
         status.style.display = 'block';
-        status.innerHTML = '<div class="status-strip">⏳ جاري الاتصال بالسيرفر...</div>';
+        status.innerHTML = '<div class="status-strip">' + PharmaLang.t('adv_fetching_srv') + '</div>';
         var chainDone = false, auditDone = false;
         var chainResult = null, auditResult = null;
         function checkBothDone() {
             if (!chainDone || !auditDone) return;
-            btn.disabled = false; btn.textContent = '⬇️ جلب البيانات تلقائياً';
-            if (!chainResult || !auditResult) { status.innerHTML = '<div class="status-strip error-strip">❌ تعذر الجلب — تحقق من تشغيل السيرفر</div>'; return; }
+            btn.disabled = false;
+            btn.textContent = PharmaLang.t('adv_fetch_btn');
+            if (!chainResult || !auditResult) {
+                status.innerHTML = '<div class="status-strip error-strip">' + PharmaLang.t('adv_fetch_fail') + '</div>';
+                return;
+            }
             allData = { chain: chainResult, audit: auditResult };
             renderStatsPreview(chainResult, auditResult);
-            status.innerHTML = '<div class="status-strip success">✅ تم جلب ' + (chainResult.totalBlocks || 0) + ' عملية و ' + auditResult.length + ' سجل</div>';
+            status.innerHTML = '<div class="status-strip success">' + PharmaLang.t('adv_fetch_done_pre') + (chainResult.totalBlocks || 0) + PharmaLang.t('adv_fetch_done_ops') + auditResult.length + PharmaLang.t('adv_fetch_done_suf') + '</div>';
             document.getElementById('adviceBtn').disabled = false;
-            document.getElementById('aiInfo').textContent = '✅ البيانات جاهزة — اضغط "احصل على التوصيات"';
+            document.getElementById('aiInfo').textContent = PharmaLang.t('adv_data_ready');
         }
         var xhr1 = new XMLHttpRequest();
         xhr1.open('GET', API + '/api/transaction/chain', true);
@@ -298,14 +296,15 @@
         var uniquePharmacies = transfers.filter(function (t) { return t.toRole === 'Pharmacy'; }).map(function (t) { return t.toUsername; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).length;
         var failedLogins = audit.filter(function (l) { return l.action === 'FailedLogin'; }).length;
         document.getElementById('statsGrid').innerHTML =
-            '<div class="stat-ov-card"><div class="num">' + transfers.length + '</div><div class="lbl">إجمالي النقلات</div></div>' +
-            '<div class="stat-ov-card"><div class="num">' + uniqueDistributors + '</div><div class="lbl">الموزعون النشطون</div></div>' +
-            '<div class="stat-ov-card"><div class="num">' + uniquePharmacies + '</div><div class="lbl">الصيدليات المستلِمة</div></div>' +
-            '<div class="stat-ov-card"><div class="num">' + failedLogins + '</div><div class="lbl">دخول فاشل</div></div>';
+            '<div class="stat-ov-card"><div class="num">' + transfers.length + '</div><div class="lbl">' + PharmaLang.t('adv_total_trans') + '</div></div>' +
+            '<div class="stat-ov-card"><div class="num">' + uniqueDistributors + '</div><div class="lbl">' + PharmaLang.t('adv_active_dist') + '</div></div>' +
+            '<div class="stat-ov-card"><div class="num">' + uniquePharmacies + '</div><div class="lbl">' + PharmaLang.t('adv_pharmacies') + '</div></div>' +
+            '<div class="stat-ov-card"><div class="num">' + failedLogins + '</div><div class="lbl">' + PharmaLang.t('adv_failed_logins') + '</div></div>';
         document.getElementById('statsPreview').style.display = 'block';
     }
 
     function generateAdviceLocally(data) {
+        var ar = PharmaLang.get() === 'ar';
         var chain = data && data.chain ? (data.chain.chain || []) : [];
         var audit = data && data.audit ? data.audit : [];
         var totalOps = chain.length;
@@ -316,29 +315,93 @@
         transfers.forEach(function (t) { if (t.fromRole === 'Distributor') { distOps[t.fromUsername] = (distOps[t.fromUsername] || 0) + 1; } });
         var distList = Object.keys(distOps).map(function (name) {
             var ops = distOps[name];
-            return { name: name, ops: ops, rating: ops >= 10 ? 'جيد' : ops >= 5 ? 'متوسط' : 'ضعيف', note: ops >= 10 ? 'أداء ممتاز — موزع نشط' : ops >= 5 ? 'أداء مقبول — يمكن تحسينه' : 'نشاط منخفض — يحتاج متابعة' };
+            var rating = ops >= 10 ? 'good' : ops >= 5 ? 'avg' : 'bad';
+            return {
+                name: name, ops: ops, rating: rating,
+                ratingLabel: PharmaLang.t('adv_rating_' + rating),
+                note: PharmaLang.t('adv_note_' + rating)
+            };
         });
         var immediate = [], strategic = [], opportunities = [], alerts = [];
-        if (failedLogins > 5) alerts.push({ title: 'محاولات دخول فاشلة مرتفعة', desc: failedLogins + ' محاولة دخول فاشلة — قد يكون هجوم Brute Force. يُنصح بمراجعة سجل العمليات.' });
-        if (tampers > 0) alerts.push({ title: 'تم اكتشاف تلاعب سابق', desc: 'وُجد ' + tampers + ' محاولة تلاعب في السجل — تحقق من Blockchain للتأكد من سلامة السلسلة.' });
-        if (distList.length === 0) alerts.push({ title: 'لا يوجد موزعون نشطون', desc: 'لم يتم تسجيل أي نقلات من موزعين بعد — تحقق من تشغيل النظام.' });
-        var weakDist = distList.filter(function (d) { return d.rating === 'ضعيف'; });
-        if (weakDist.length > 0) immediate.push({ title: 'مراجعة الموزعين ضعيفي الأداء', desc: weakDist.map(function (d) { return d.name; }).join(', ') + ' لديهم نشاط منخفض — تواصل معهم لمعرفة السبب.' });
-        if (totalOps > 0) immediate.push({ title: 'مراجعة دورية للسلسلة', desc: 'لديك ' + totalOps + ' عملية مسجلة. يُنصح بإجراء Verify Chain يومياً للتأكد من سلامة البيانات.' });
-        strategic.push({ title: 'توسيع شبكة الموزعين', desc: 'إضافة موزعين جدد لتوزيع الحمل وتقليل الاعتماد على موزع واحد — يحسن الكفاءة بنسبة تصل إلى 30%.' });
-        strategic.push({ title: 'نظام تنبيه تلقائي', desc: 'إضافة إشعارات تلقائية عند أي انحراف في السلسلة لتسريع وقت الاستجابة للتهديدات.' });
-        var goodDist = distList.filter(function (d) { return d.rating === 'جيد'; });
-        if (goodDist.length > 0) opportunities.push({ title: 'تكريم الموزعين المتميزين', desc: goodDist.map(function (d) { return d.name; }).join(', ') + ' يتميزون بأداء عالٍ — منحهم أولوية في العقود الجديدة سيحفز بقية الموزعين.' });
-        opportunities.push({ title: 'تحليل أوقات الذروة', desc: 'تحديد أوقات الذروة في النقلات وتوزيع الموارد بناءً عليها لتقليل التأخيرات.' });
-        var summary = 'تم تحليل ' + totalOps + ' عملية نقل مع ' + distList.length + ' موزع نشط. ' + (alerts.length > 0 ? 'وُجدت ' + alerts.length + ' تنبيهات تستوجب الاهتمام الفوري.' : 'الأداء العام مقبول مع وجود فرص تحسين.');
-        return { summary: summary, immediate: immediate, strategic: strategic, opportunities: opportunities, alerts: alerts, distributors: distList };
+        if (failedLogins > 5) {
+            alerts.push({
+                title: PharmaLang.t('adv_alert_brute'),
+                desc: ar
+                    ? failedLogins + ' محاولة دخول فاشلة — قد يكون هجوم Brute Force. يُنصح بمراجعة سجل العمليات.'
+                    : failedLogins + ' failed login attempts — possible Brute Force attack. Review audit log.'
+            });
+        }
+        if (tampers > 0) {
+            alerts.push({
+                title: PharmaLang.t('adv_alert_tamper'),
+                desc: ar
+                    ? 'وُجد ' + tampers + ' محاولة تلاعب في السجل — تحقق من Blockchain للتأكد من سلامة السلسلة.'
+                    : tampers + ' tampering attempt(s) found in log — check Blockchain to verify chain integrity.'
+            });
+        }
+        if (distList.length === 0) {
+            alerts.push({
+                title: PharmaLang.t('adv_alert_no_dist'),
+                desc: ar
+                    ? 'لم يتم تسجيل أي نقلات من موزعين بعد — تحقق من تشغيل النظام.'
+                    : 'No transfers from distributors recorded yet — check system operation.'
+            });
+        }
+        var weakDist = distList.filter(function (d) { return d.rating === 'bad'; });
+        if (weakDist.length > 0) {
+            immediate.push({
+                title: PharmaLang.t('adv_imm_weak_dist'),
+                desc: ar
+                    ? weakDist.map(function (d) { return d.name; }).join(', ') + ' لديهم نشاط منخفض — تواصل معهم لمعرفة السبب.'
+                    : weakDist.map(function (d) { return d.name; }).join(', ') + ' have low activity — reach out to investigate.'
+            });
+        }
+        if (totalOps > 0) {
+            immediate.push({
+                title: PharmaLang.t('adv_imm_review'),
+                desc: ar
+                    ? 'لديك ' + totalOps + ' عملية مسجلة. يُنصح بإجراء Verify Chain يومياً للتأكد من سلامة البيانات.'
+                    : 'You have ' + totalOps + ' recorded operations. Daily Verify Chain is recommended to ensure data integrity.'
+            });
+        }
+        strategic.push({
+            title: PharmaLang.t('adv_str_expand'),
+            desc: ar
+                ? 'إضافة موزعين جدد لتوزيع الحمل وتقليل الاعتماد على موزع واحد — يحسن الكفاءة بنسبة تصل إلى 30%.'
+                : 'Add new distributors to spread the load and reduce dependency on one — can improve efficiency by up to 30%.'
+        });
+        strategic.push({
+            title: PharmaLang.t('adv_str_notify'),
+            desc: ar
+                ? 'إضافة إشعارات تلقائية عند أي انحراف في السلسلة لتسريع وقت الاستجابة للتهديدات.'
+                : 'Add automatic alerts for any chain deviations to speed up threat response time.'
+        });
+        var goodDist = distList.filter(function (d) { return d.rating === 'good'; });
+        if (goodDist.length > 0) {
+            opportunities.push({
+                title: PharmaLang.t('adv_opp_reward'),
+                desc: ar
+                    ? goodDist.map(function (d) { return d.name; }).join(', ') + ' يتميزون بأداء عالٍ — منحهم أولوية في العقود الجديدة سيحفز بقية الموزعين.'
+                    : goodDist.map(function (d) { return d.name; }).join(', ') + ' show high performance — prioritizing them in new contracts will motivate others.'
+            });
+        }
+        opportunities.push({
+            title: PharmaLang.t('adv_opp_peak'),
+            desc: ar
+                ? 'تحديد أوقات الذروة في النقلات وتوزيع الموارد بناءً عليها لتقليل التأخيرات.'
+                : 'Identify peak transfer times and allocate resources accordingly to reduce delays.'
+        });
+        var summaryText = ar
+            ? 'تم تحليل ' + totalOps + ' عملية نقل مع ' + distList.length + ' موزع نشط. ' + (alerts.length > 0 ? 'وُجدت ' + alerts.length + ' تنبيهات تستوجب الاهتمام الفوري.' : 'الأداء العام مقبول مع وجود فرص تحسين.')
+            : 'Analyzed ' + totalOps + ' transfer operations with ' + distList.length + ' active distributor(s). ' + (alerts.length > 0 ? alerts.length + ' alert(s) requiring immediate attention.' : 'Overall performance is acceptable with improvement opportunities.');
+        return { summary: summaryText, immediate: immediate, strategic: strategic, opportunities: opportunities, alerts: alerts, distributors: distList };
     }
 
     async function getAdvice() {
         var manualText = document.getElementById('manualData').value.trim();
         if (!manualText && !allData) {
             document.getElementById('aiInfo').className = 'status-strip error-strip';
-            document.getElementById('aiInfo').textContent = '❌ اجلب البيانات أولاً أو أدخلها يدوياً';
+            document.getElementById('aiInfo').textContent = PharmaLang.t('adv_no_data');
             return;
         }
         document.getElementById('adviceBtn').disabled = true;
@@ -352,7 +415,7 @@
         } catch (e) {
             document.getElementById('aiInfo').className = 'status-strip error-strip';
             document.getElementById('aiInfo').style.display = 'block';
-            document.getElementById('aiInfo').textContent = '❌ خطأ: ' + e.message;
+            document.getElementById('aiInfo').textContent = PharmaLang.t('adv_err') + e.message;
         } finally {
             document.getElementById('adviceBtn').disabled = false;
             document.getElementById('loadingArea').classList.remove('show');
@@ -360,37 +423,41 @@
     }
 
     function renderAdvice(result) {
-        document.getElementById('perfSummary').innerHTML = '<strong>📋 ملخص التحليل</strong><br><br>' + (result.summary || '');
+        document.getElementById('perfSummary').innerHTML = '<strong>' + PharmaLang.t('adv_summary_title') + '</strong><br><br>' + (result.summary || '');
         var grid = '';
         if (result.immediate && result.immediate.length) {
-            grid += '<div class="insight-card immediate"><div class="insight-header"><div class="insight-icon">🚨</div><div class="insight-title">توصيات فورية — هذا الأسبوع</div></div><div class="insight-items">'
+            grid += '<div class="insight-card immediate"><div class="insight-header"><div class="insight-icon">🚨</div><div class="insight-title">' + PharmaLang.t('adv_immediate') + '</div></div><div class="insight-items">'
                 + result.immediate.map(function (i) { return '<div class="insight-item"><strong>' + i.title + '</strong>' + i.desc + '</div>'; }).join('') + '</div></div>';
         }
         if (result.strategic && result.strategic.length) {
-            grid += '<div class="insight-card strategic"><div class="insight-header"><div class="insight-icon">📈</div><div class="insight-title">توصيات استراتيجية</div></div><div class="insight-items">'
+            grid += '<div class="insight-card strategic"><div class="insight-header"><div class="insight-icon">📈</div><div class="insight-title">' + PharmaLang.t('adv_strategic') + '</div></div><div class="insight-items">'
                 + result.strategic.map(function (i) { return '<div class="insight-item"><strong>' + i.title + '</strong>' + i.desc + '</div>'; }).join('') + '</div></div>';
         }
         if (result.opportunities && result.opportunities.length) {
-            grid += '<div class="insight-card opportunity"><div class="insight-header"><div class="insight-icon">💡</div><div class="insight-title">فرص التحسين</div></div><div class="insight-items">'
+            grid += '<div class="insight-card opportunity"><div class="insight-header"><div class="insight-icon">💡</div><div class="insight-title">' + PharmaLang.t('adv_opportunities') + '</div></div><div class="insight-items">'
                 + result.opportunities.map(function (i) { return '<div class="insight-item"><strong>' + i.title + '</strong>' + i.desc + '</div>'; }).join('') + '</div></div>';
         }
         if (result.alerts && result.alerts.length) {
-            grid += '<div class="insight-card alert"><div class="insight-header"><div class="insight-icon">⚠️</div><div class="insight-title">تنبيهات تحتاج انتباهاً</div></div><div class="insight-items">'
+            grid += '<div class="insight-card alert"><div class="insight-header"><div class="insight-icon">⚠️</div><div class="insight-title">' + PharmaLang.t('adv_alerts') + '</div></div><div class="insight-items">'
                 + result.alerts.map(function (i) { return '<div class="insight-item"><strong>' + i.title + '</strong>' + i.desc + '</div>'; }).join('') + '</div></div>';
         }
         document.getElementById('insightsGrid').innerHTML = grid;
         if (result.distributors && result.distributors.length) {
-            var ratingColor = { 'جيد': '#059669', 'متوسط': '#d97706', 'ضعيف': '#dc2626' };
-            var barClass = { 'جيد': 'good', 'متوسط': 'avg', 'ضعيف': 'bad' };
+            var ratingColor = { good: '#059669', avg: '#d97706', bad: '#dc2626' };
             var maxOps = Math.max.apply(null, result.distributors.map(function (d) { return d.ops || 0; }));
-            var tableHtml = '<thead><tr><th>الموزع</th><th>العمليات</th><th>الأداء</th><th>التقييم</th><th>الملاحظة</th></tr></thead><tbody>'
+            var tableHtml = '<thead><tr>'
+                + '<th>' + PharmaLang.t('adv_dist_th_name') + '</th>'
+                + '<th>' + PharmaLang.t('adv_dist_th_ops') + '</th>'
+                + '<th>' + PharmaLang.t('adv_dist_th_perf') + '</th>'
+                + '<th>' + PharmaLang.t('adv_dist_th_rating') + '</th>'
+                + '<th>' + PharmaLang.t('adv_dist_th_note') + '</th>'
+                + '</tr></thead><tbody>'
                 + result.distributors.map(function (d) {
                     var pct = maxOps > 0 ? Math.round((d.ops / maxOps) * 100) : 0;
-                    var cls = barClass[d.rating] || 'avg';
                     var col = ratingColor[d.rating] || '#d97706';
                     return '<tr><td><strong>' + d.name + '</strong></td><td>' + d.ops + '</td>'
-                        + '<td><div class="perf-bar-wrap"><div class="perf-bar ' + cls + '" style="width:' + pct + '%"></div></div></td>'
-                        + '<td><span style="color:' + col + ';font-weight:700;">' + d.rating + '</span></td>'
+                        + '<td><div class="perf-bar-wrap"><div class="perf-bar ' + d.rating + '" style="width:' + pct + '%"></div></div></td>'
+                        + '<td><span style="color:' + col + ';font-weight:700;">' + d.ratingLabel + '</span></td>'
                         + '<td style="font-size:12px;color:var(--gray-500);">' + d.note + '</td></tr>';
                 }).join('') + '</tbody>';
             document.getElementById('distTable').innerHTML = tableHtml;
@@ -402,12 +469,33 @@
 
     function copyAdvice() {
         if (!lastResult) return;
-        var text = 'تقرير تحليلات الأداء — PharmaChain\n=====================================\n';
+        var text = PharmaLang.t('adv_report_hdr') + '\n=====================================\n';
         text += lastResult.summary + '\n\n';
-        if (lastResult.immediate && lastResult.immediate.length) { text += '🚨 توصيات فورية:\n'; lastResult.immediate.forEach(function (i) { text += '  - ' + i.title + ': ' + i.desc + '\n'; }); }
-        if (lastResult.strategic && lastResult.strategic.length) { text += '\n📈 توصيات استراتيجية:\n'; lastResult.strategic.forEach(function (i) { text += '  - ' + i.title + ': ' + i.desc + '\n'; }); }
-        navigator.clipboard.writeText(text).then(function () { alert('تم نسخ التقرير!'); });
+        if (lastResult.immediate && lastResult.immediate.length) {
+            text += '🚨 ' + PharmaLang.t('adv_immediate') + ':\n';
+            lastResult.immediate.forEach(function (i) { text += '  - ' + i.title + ': ' + i.desc + '\n'; });
+        }
+        if (lastResult.strategic && lastResult.strategic.length) {
+            text += '\n📈 ' + PharmaLang.t('adv_strategic') + ':\n';
+            lastResult.strategic.forEach(function (i) { text += '  - ' + i.title + ': ' + i.desc + '\n'; });
+        }
+        navigator.clipboard.writeText(text).then(function () { alert(PharmaLang.t('adv_copied')); });
     }
+
+    window.addEventListener('pharmaLangChanged', function () {
+        if (role !== 'Admin') {
+            document.getElementById('noAccessText').innerHTML =
+                PharmaLang.t('adv_no_access') + '<br><small>' + PharmaLang.t('adv_no_access_sub') + '</small>';
+        }
+        if (allData) {
+            renderStatsPreview(allData.chain, allData.audit);
+        }
+        if (lastResult) {
+            var result = generateAdviceLocally(allData);
+            lastResult = result;
+            renderAdvice(result);
+        }
+    });
 </script>
 </body>
 </html>
