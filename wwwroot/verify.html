@@ -149,6 +149,13 @@
         }
         .v-search-btn:hover { background: linear-gradient(135deg, #0f766e, #0d9488); }
 
+        /* ── LTR overrides ── */
+        [dir="ltr"] .v-search-btn { left: auto; right: 6px; }
+        [dir="ltr"] .v-search-input { padding: 12px 110px 12px 16px; }
+        [dir="ltr"] .timeline-items { padding-right: 0; padding-left: 22px; }
+        [dir="ltr"] .timeline-items::before { right: auto; left: 5px; }
+        [dir="ltr"] .timeline-dot { right: auto; left: -17px; }
+
         .v-drug-select {
             width: 100%;
             padding: 12px 14px;
