@@ -361,59 +361,61 @@
             <h1 data-i18n="verify_title">PharmaChain</h1>
         </div>
         <p data-i18n="verify_subtitle">تحقق من أصالة دوائك في ثوانٍ</p>
-        <div class="verify-security-badge">مؤمّن بتقنية Blockchain</div>
+        <div class="verify-security-badge" data-i18n="ver_badge">مؤمّن بتقنية Blockchain</div>
     </div>
 
     <div class="verify-container">
         <div class="qr-alert checking" id="qrAlert">
-            <div class="qr-alert-title">🔍 جارٍ التحقق من توقيع QR Code...</div>
-            <div>يتم التحقق من صحة الـ Signature والتاريخ قبل عرض النتيجة</div>
+            <div class="qr-alert-title" data-i18n="ver_qr_checking_title">🔍 جارٍ التحقق من توقيع QR Code...</div>
+            <div data-i18n="ver_qr_checking_sub">يتم التحقق من صحة الـ Signature والتاريخ قبل عرض النتيجة</div>
         </div>
 
         <div class="search-card" id="searchCard">
             <div class="search-card-head">
-                <div class="search-card-head-title">🔍 التحقق من الدواء</div>
-                <div class="search-card-head-sub">ابحث باسم الدواء أو اختره من القائمة أو أدخل رقمه</div>
+                <div class="search-card-head-title" data-i18n="ver_search_title">🔍 التحقق من الدواء</div>
+                <div class="search-card-head-sub" data-i18n="ver_search_sub">ابحث باسم الدواء أو اختره من القائمة أو أدخل رقمه</div>
             </div>
             <div class="search-card-body">
                 <div class="search-tabs">
-                    <button class="search-tab active" onclick="switchTab('name')">🔤 بحث بالاسم</button>
-                    <button class="search-tab" onclick="switchTab('list')">📋 اختيار من القائمة</button>
-                    <button class="search-tab" onclick="switchTab('id')">🔢 رقم الدواء</button>
+                    <button class="search-tab active" onclick="switchTab('name')" data-i18n="ver_tab_name">🔤 بحث بالاسم</button>
+                    <button class="search-tab" onclick="switchTab('list')" data-i18n="ver_tab_list">📋 اختيار من القائمة</button>
+                    <button class="search-tab" onclick="switchTab('id')" data-i18n="ver_tab_id">🔢 رقم الدواء</button>
                 </div>
                 <div id="tabName">
                     <div class="name-search-wrap">
                         <input type="text" class="v-search-input" id="nameInput"
                                placeholder="اكتب اسم الدواء... مثال: Panadol"
+                               data-i18n-ph="ver_name_ph"
                                oninput="onNameSearch()"
                                onkeydown="if(event.key==='Enter') searchByName()"
                                autocomplete="off">
-                        <button class="v-search-btn" onclick="searchByName()">تحقق</button>
+                        <button class="v-search-btn" onclick="searchByName()" data-i18n="ver_btn_verify">تحقق</button>
                         <div class="autocomplete" id="autocomplete"></div>
                     </div>
-                    <div class="search-hint">اكتب اسم الدواء وستظهر اقتراحات تلقائية</div>
+                    <div class="search-hint" data-i18n="ver_hint_name">اكتب اسم الدواء وستظهر اقتراحات تلقائية</div>
                 </div>
                 <div id="tabList" style="display:none">
                     <select class="v-drug-select" id="drugSelect">
-                        <option value="">⏳ جاري تحميل الأدوية...</option>
+                        <option value="" data-i18n="ver_loading_drugs">⏳ جاري تحميل الأدوية...</option>
                     </select>
-                    <button class="v-select-verify-btn" onclick="verifyFromSelect()">✅ تحقق من الدواء المحدد</button>
+                    <button class="v-select-verify-btn" onclick="verifyFromSelect()" data-i18n="ver_btn_verify_sel">✅ تحقق من الدواء المحدد</button>
                 </div>
                 <div id="tabId" style="display:none">
                     <div class="name-search-wrap">
                         <input type="number" class="v-search-input" id="idInput"
                                placeholder="أدخل رقم الدواء (ID)" min="1"
+                               data-i18n-ph="ver_id_ph"
                                onkeydown="if(event.key==='Enter') verifyById()">
-                        <button class="v-search-btn" onclick="verifyById()">تحقق</button>
+                        <button class="v-search-btn" onclick="verifyById()" data-i18n="ver_btn_verify">تحقق</button>
                     </div>
-                    <div class="search-hint">رقم الدواء موجود على الملصق أو الـ QR Code</div>
+                    <div class="search-hint" data-i18n="ver_hint_id">رقم الدواء موجود على الملصق أو الـ QR Code</div>
                 </div>
             </div>
         </div>
 
         <div class="v-loading" id="loading">
             <div class="v-loading-icon"></div>
-            <div class="v-loading-text">جاري التحقق من قاعدة بيانات Blockchain...</div>
+            <div class="v-loading-text" data-i18n="ver_loading">جاري التحقق من قاعدة بيانات Blockchain...</div>
         </div>
 
         <div class="result-card" id="resultCard">
@@ -424,16 +426,16 @@
             </div>
             <div class="result-body" id="resultBody"></div>
             <div class="ai-section" id="aiSection" style="display:none">
-                <div class="ai-section-title">هل تريد معرفة أكثر عن دوائك؟</div>
+                <div class="ai-section-title" data-i18n="ver_ai_title">هل تريد معرفة أكثر عن دوائك؟</div>
                 <div class="ai-btns">
-                    <a class="ai-btn ai-btn-primary" id="chatLink" href="patient-chat.html">🤖 اسأل مساعدنا الذكي</a>
-                    <a class="ai-btn ai-btn-outline" href="drug-info.html">💊 معلومات عن الدواء</a>
+                    <a class="ai-btn ai-btn-primary" id="chatLink" href="patient-chat.html" data-i18n="ver_chat_link">🤖 اسأل مساعدنا الذكي</a>
+                    <a class="ai-btn ai-btn-outline" href="drug-info.html" data-i18n="ver_info_link">💊 معلومات عن الدواء</a>
                 </div>
             </div>
-            <button class="new-search-btn" onclick="newSearch()">🔍 تحقق من دواء آخر</button>
+            <button class="new-search-btn" onclick="newSearch()" data-i18n="ver_new_search">🔍 تحقق من دواء آخر</button>
         </div>
 
-        <div class="back-link" onclick="goBack()">← العودة للوحة التحكم</div>
+        <div class="back-link" onclick="goBack()" data-i18n="ver_back">← العودة للوحة التحكم</div>
     </div>
 
     <script>
@@ -443,9 +445,11 @@
         var qrSigResult = null;
 
         function verifyQrSignature(id, prod, ts, sig) {
+            var ar = PharmaLang.get() === 'ar';
             var alert = document.getElementById('qrAlert');
             alert.className = 'qr-alert checking show';
-            alert.innerHTML = '<div class="qr-alert-title">🔍 جارٍ التحقق من توقيع QR Code...</div><div>يتم التحقق من صحة الـ HMAC-SHA256 Signature</div>';
+            alert.innerHTML = '<div class="qr-alert-title">🔍 ' + (ar ? 'جارٍ التحقق من توقيع QR Code...' : 'Verifying QR Code Signature...') + '</div>'
+                + '<div>' + (ar ? 'يتم التحقق من صحة الـ HMAC-SHA256 Signature' : 'Validating HMAC-SHA256 Signature integrity') + '</div>';
 
             var url = API + '/api/qr/verify-signature?id=' + encodeURIComponent(id)
                 + '&prod=' + encodeURIComponent(prod)
@@ -462,17 +466,20 @@
                     try {
                         qrSigResult = JSON.parse(xhr.responseText);
                     } catch (e) {
-                        qrSigResult = { isValid: false, attackType: 'PARSE_ERROR', message: 'خطأ في قراءة استجابة السيرفر' };
+                        var ar2 = PharmaLang.get() === 'ar';
+                        qrSigResult = { isValid: false, attackType: 'PARSE_ERROR', message: ar2 ? 'خطأ في قراءة استجابة السيرفر' : 'Error reading server response' };
                     }
                 } else {
-                    qrSigResult = { isValid: false, attackType: 'SERVER_ERROR', message: 'تعذر الاتصال بالسيرفر للتحقق من الـ Signature' };
+                    var ar3 = PharmaLang.get() === 'ar';
+                    qrSigResult = { isValid: false, attackType: 'SERVER_ERROR', message: ar3 ? 'تعذر الاتصال بالسيرفر للتحقق من الـ Signature' : 'Could not connect to server for Signature verification' };
                 }
                 renderQrAlert(qrSigResult);
                 verifyDrug(parseInt(id));
             };
 
             xhr.onerror = function () {
-                qrSigResult = { isValid: false, attackType: 'NETWORK_ERROR', message: 'خطأ في الشبكة — تعذر الوصول للسيرفر' };
+                var ar4 = PharmaLang.get() === 'ar';
+                qrSigResult = { isValid: false, attackType: 'NETWORK_ERROR', message: ar4 ? 'خطأ في الشبكة — تعذر الوصول للسيرفر' : 'Network error — could not reach server' };
                 renderQrAlert(qrSigResult);
                 verifyDrug(parseInt(id));
             };
@@ -480,7 +487,7 @@
             xhr.send();
         }
 
-        var attackLabels = {
+        var attackLabelsAr = {
             'SIGNATURE_MISMATCH': '⚠️ تبديل ملصق — هذا الـ QR ينتمي لدواء مختلف',
             'DATE_MISMATCH': '⚠️ تلاعب بالتاريخ — تاريخ الإنتاج لا يطابق السجل',
             'DRUG_NOT_FOUND': '❌ دواء وهمي — الرقم غير موجود في النظام',
@@ -490,21 +497,36 @@
             'NETWORK_ERROR': '🔴 خطأ في الشبكة',
             'PARSE_ERROR': '🔴 خطأ في البيانات'
         };
+        var attackLabelsEn = {
+            'SIGNATURE_MISMATCH': '⚠️ Label Swap — this QR belongs to a different drug',
+            'DATE_MISMATCH': '⚠️ Date Tampering — production date does not match the record',
+            'DRUG_NOT_FOUND': '❌ Fake Drug — ID not found in system',
+            'QR_EXPIRED': '⏰ QR Expired — older than one year',
+            'DELAY_DETECTED': '⚠️ Suspicious Delay — large time gap in the chain',
+            'SERVER_ERROR': '🔴 Server Error',
+            'NETWORK_ERROR': '🔴 Network Error',
+            'PARSE_ERROR': '🔴 Data Error'
+        };
+        function getAttackLabel(type) {
+            var ar = PharmaLang.get() === 'ar';
+            return (ar ? attackLabelsAr : attackLabelsEn)[type] || ('❌ ' + (type || (ar ? 'خطأ غير معروف' : 'Unknown Error')));
+        }
 
         function renderQrAlert(result) {
             var alert = document.getElementById('qrAlert');
+            var ar = PharmaLang.get() === 'ar';
             if (result.isValid) {
                 alert.className = 'qr-alert valid show';
-                alert.innerHTML = '<div class="qr-alert-title">✅ QR Code موثق وسليم</div>'
-                    + '<div>الـ Signature صحيحة — الدواء لم يتعرض للتلاعب</div>'
-                    + '<div class="qr-alert-code">HMAC-SHA256 ✓ | تاريخ الإنتاج ✓ | السلسلة سليمة ✓</div>';
+                alert.innerHTML = '<div class="qr-alert-title">✅ ' + (ar ? 'QR Code موثق وسليم' : 'QR Code Verified — Authentic') + '</div>'
+                    + '<div>' + (ar ? 'الـ Signature صحيحة — الدواء لم يتعرض للتلاعب' : 'Signature is valid — drug has not been tampered with') + '</div>'
+                    + '<div class="qr-alert-code">HMAC-SHA256 ✓ | ' + (ar ? 'تاريخ الإنتاج ✓ | السلسلة سليمة ✓' : 'Production Date ✓ | Chain Intact ✓') + '</div>';
             } else {
-                var label = attackLabels[result.attackType] || ('❌ ' + (result.attackType || 'خطأ غير معروف'));
+                var label = getAttackLabel(result.attackType);
                 var isCritical = ['DRUG_NOT_FOUND', 'SIGNATURE_MISMATCH', 'DATE_MISMATCH'].indexOf(result.attackType) > -1;
                 alert.className = 'qr-alert ' + (isCritical ? 'invalid' : 'warning') + ' show';
                 alert.innerHTML = '<div class="qr-alert-title">' + label + '</div>'
-                    + '<div>' + (result.message || 'تم رصد محاولة تلاعب — يرجى التواصل مع الصيدلاني') + '</div>'
-                    + '<div class="qr-alert-code">كود الهجوم: ' + (result.attackType || 'UNKNOWN') + '</div>';
+                    + '<div>' + (result.message || (ar ? 'تم رصد محاولة تلاعب — يرجى التواصل مع الصيدلاني' : 'Tampering detected — please contact your pharmacist')) + '</div>'
+                    + '<div class="qr-alert-code">' + (ar ? 'كود الهجوم: ' : 'Attack Code: ') + (result.attackType || 'UNKNOWN') + '</div>';
             }
         }
 
@@ -512,19 +534,22 @@
             var strip = document.getElementById('qrSecurityStrip');
             var title = document.getElementById('qrSigTitle');
             var detail = document.getElementById('qrSigDetail');
+            var ar = PharmaLang.get() === 'ar';
             strip.style.display = 'block';
 
             if (result.isValid) {
                 strip.className = 'qr-security-strip sig-ok';
-                title.textContent = '🔐 التحقق من QR Signature: سليم';
-                detail.innerHTML = 'الـ HMAC-SHA256 Signature صحيحة ✓<br>تاريخ الإنتاج متطابق ✓<br>الـ QR لم يتعرض لأي تلاعب ✓';
+                title.textContent = ar ? '🔐 التحقق من QR Signature: سليم' : '🔐 QR Signature Verification: Valid';
+                detail.innerHTML = ar
+                    ? 'الـ HMAC-SHA256 Signature صحيحة ✓<br>تاريخ الإنتاج متطابق ✓<br>الـ QR لم يتعرض لأي تلاعب ✓'
+                    : 'HMAC-SHA256 Signature valid ✓<br>Production date matches ✓<br>QR has not been tampered with ✓';
             } else {
                 var isCritical = ['DRUG_NOT_FOUND', 'SIGNATURE_MISMATCH', 'DATE_MISMATCH'].indexOf(result.attackType) > -1;
                 strip.className = 'qr-security-strip ' + (isCritical ? 'sig-bad' : 'sig-warn');
-                var label = attackLabels[result.attackType] || result.attackType;
-                title.textContent = '🚨 تحذير أمني: ' + label;
-                detail.innerHTML = (result.message || 'تم رصد تلاعب محتمل في هذا الـ QR Code')
-                    + '<br><strong>كود الهجوم: ' + (result.attackType || 'UNKNOWN') + '</strong>';
+                var label = getAttackLabel(result.attackType);
+                title.textContent = ar ? '🚨 تحذير أمني: ' + label : '🚨 Security Warning: ' + label;
+                detail.innerHTML = (result.message || (ar ? 'تم رصد تلاعب محتمل في هذا الـ QR Code' : 'Potential tampering detected in this QR Code'))
+                    + '<br><strong>' + (ar ? 'كود الهجوم: ' : 'Attack Code: ') + (result.attackType || 'UNKNOWN') + '</strong>';
             }
         }
 
@@ -543,13 +568,14 @@
                 if (xhr.status !== 200) return;
                 var response = JSON.parse(xhr.responseText);
                 allDrugs = Array.isArray(response) ? response : (response.drugs || []);
+                var ar = PharmaLang.get() === 'ar';
                 var sel = document.getElementById('drugSelect');
-                sel.innerHTML = '<option value="">-- اختر دواء --</option>';
+                sel.innerHTML = '<option value="">-- ' + (ar ? 'اختر دواء' : 'Select a drug') + ' --</option>';
                 allDrugs.forEach(function (d) {
                     var expired = new Date(d.expiryDate) < new Date();
                     var opt = document.createElement('option');
                     opt.value = d.id;
-                    opt.textContent = (expired ? 'منتهي - ' : 'صالح - ') + d.name + ' — ' + d.manufacturer;
+                    opt.textContent = (expired ? (ar ? 'منتهي - ' : 'Expired - ') : (ar ? 'صالح - ' : 'Valid - ')) + d.name + ' — ' + d.manufacturer;
                     sel.appendChild(opt);
                 });
             };
@@ -576,12 +602,14 @@
             }).slice(0, 6);
             if (matches.length === 0) { ac.classList.remove('show'); return; }
             var now = new Date();
+            var ar = PharmaLang.get() === 'ar';
             ac.innerHTML = matches.map(function (d) {
                 var expired = new Date(d.expiryDate) < now;
+                var locale = ar ? 'ar-JO' : 'en-GB';
                 return '<div class="autocomplete-item" onclick="selectDrug(' + d.id + ',\'' + d.name.replace(/'/g, '') + '\')">'
-                    + '<div><div class="autocomplete-name">' + (expired ? 'منتهي ' : 'صالح ') + d.name + '</div>'
-                    + '<div class="autocomplete-meta">' + d.manufacturer + ' · رقم ' + d.id + '</div></div>'
-                    + '<div class="autocomplete-meta">' + new Date(d.expiryDate).toLocaleDateString('ar-JO') + '</div></div>';
+                    + '<div><div class="autocomplete-name">' + (expired ? (ar ? 'منتهي ' : 'Expired ') : (ar ? 'صالح ' : 'Valid ')) + d.name + '</div>'
+                    + '<div class="autocomplete-meta">' + d.manufacturer + ' · ' + (ar ? 'رقم ' : '#') + d.id + '</div></div>'
+                    + '<div class="autocomplete-meta">' + new Date(d.expiryDate).toLocaleDateString(locale) + '</div></div>';
             }).join('');
             ac.classList.add('show');
         }
@@ -598,7 +626,7 @@
             document.getElementById('autocomplete').classList.remove('show');
             var match = allDrugs.find(function (d) { return d.name.toLowerCase().includes(val); });
             if (match) { verifyDrug(match.id); }
-            else { showNotFound('لم يتم العثور على دواء بهذا الاسم'); }
+            else { showNotFound(PharmaLang.get() === 'ar' ? 'لم يتم العثور على دواء بهذا الاسم' : 'No drug found with this name'); }
         }
 
         function verifyFromSelect() {
@@ -624,12 +652,12 @@
 
             xhr.onload = function () {
                 document.getElementById('loading').classList.remove('show');
-                if (xhr.status !== 200) { showNotFound('تعذر الاتصال بالسيرفر'); return; }
+                if (xhr.status !== 200) { showNotFound(PharmaLang.get() === 'ar' ? 'تعذر الاتصال بالسيرفر' : 'Could not connect to server'); return; }
                 renderResult(JSON.parse(xhr.responseText), id);
             };
             xhr.onerror = function () {
                 document.getElementById('loading').classList.remove('show');
-                showNotFound('تعذر الاتصال بالسيرفر');
+                showNotFound(PharmaLang.get() === 'ar' ? 'تعذر الاتصال بالسيرفر' : 'Could not connect to server');
             };
             xhr.send();
         }
@@ -637,42 +665,52 @@
         function renderResult(data, id) {
             var hero = document.getElementById('resultHero');
             var body = document.getElementById('resultBody');
-            var roleMap = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون' };
+            var ar = PharmaLang.get() === 'ar';
+            var locale = ar ? 'ar-JO' : 'en-GB';
+            var roleMapAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون' };
+            var roleMapEn = { Factory: 'Factory', Distributor: 'Distributor', Pharmacy: 'Pharmacy', Customer: 'Customer' };
+            var roleMap = ar ? roleMapAr : roleMapEn;
 
             if (!data.authentic) {
                 hero.className = 'result-hero fake';
-                hero.innerHTML = '<span class="result-icon">✗</span><div class="result-title">دواء غير موثق</div><div class="result-sub">هذا الدواء غير مسجل في نظام PharmaChain</div>';
-                body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-400);font-size:13px;">تحقق من رقم الدواء أو تواصل مع الصيدلاني</div>';
+                hero.innerHTML = '<span class="result-icon">✗</span><div class="result-title">' + (ar ? 'دواء غير موثق' : 'Unverified Drug') + '</div>'
+                    + '<div class="result-sub">' + (ar ? 'هذا الدواء غير مسجل في نظام PharmaChain' : 'This drug is not registered in PharmaChain') + '</div>';
+                body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-400);font-size:13px;">'
+                    + (ar ? 'تحقق من رقم الدواء أو تواصل مع الصيدلاني' : 'Check the drug ID or contact your pharmacist') + '</div>';
                 document.getElementById('aiSection').style.display = 'none';
             } else {
                 var expiry = new Date(data.expiryDate);
                 if (data.isExpired) {
                     hero.className = 'result-hero expired';
-                    hero.innerHTML = '<span class="result-icon">⚠️</span><div class="result-title">دواء منتهي الصلاحية</div><div class="result-sub">الدواء مسجل لكن تجاوز تاريخ الانتهاء</div>';
+                    hero.innerHTML = '<span class="result-icon">⚠️</span><div class="result-title">' + (ar ? 'دواء منتهي الصلاحية' : 'Expired Drug') + '</div>'
+                        + '<div class="result-sub">' + (ar ? 'الدواء مسجل لكن تجاوز تاريخ الانتهاء' : 'Drug is registered but past its expiry date') + '</div>';
                 } else {
                     hero.className = 'result-hero authentic';
-                    hero.innerHTML = '<span class="result-icon">✓</span><div class="result-title">دواء أصلي موثق</div><div class="result-sub">تم التحقق من الأصالة عبر Blockchain</div>';
+                    hero.innerHTML = '<span class="result-icon">✓</span><div class="result-title">' + (ar ? 'دواء أصلي موثق' : 'Authentic Verified Drug') + '</div>'
+                        + '<div class="result-sub">' + (ar ? 'تم التحقق من الأصالة عبر Blockchain' : 'Authenticity verified via Blockchain') + '</div>';
                 }
 
                 var html = '<div class="info-grid">'
-                    + '<div class="info-item"><div class="info-label">اسم الدواء</div><div class="info-value">' + data.name + '</div></div>'
-                    + '<div class="info-item"><div class="info-label">الشركة المصنعة</div><div class="info-value">' + data.manufacturer + '</div></div>'
-                    + '<div class="info-item"><div class="info-label">تاريخ الانتهاء</div><div class="info-value">' + expiry.toLocaleDateString('ar-JO') + '</div></div>'
-                    + '<div class="info-item"><div class="info-label">الحالة</div><div class="info-value">' + data.status + '</div></div>'
+                    + '<div class="info-item"><div class="info-label">' + (ar ? 'اسم الدواء' : 'Drug Name') + '</div><div class="info-value">' + data.name + '</div></div>'
+                    + '<div class="info-item"><div class="info-label">' + (ar ? 'الشركة المصنعة' : 'Manufacturer') + '</div><div class="info-value">' + data.manufacturer + '</div></div>'
+                    + '<div class="info-item"><div class="info-label">' + (ar ? 'تاريخ الانتهاء' : 'Expiry Date') + '</div><div class="info-value">' + expiry.toLocaleDateString(locale) + '</div></div>'
+                    + '<div class="info-item"><div class="info-label">' + (ar ? 'الحالة' : 'Status') + '</div><div class="info-value">' + data.status + '</div></div>'
                     + '</div>';
 
                 if (data.trackingHistory && data.trackingHistory.length > 0) {
-                    html += '<div class="timeline-header">⛓️ مسار الدواء عبر Blockchain <span class="timeline-count">' + data.trackingHistory.length + ' نقلة</span></div><div class="timeline-items">';
+                    html += '<div class="timeline-header">⛓️ ' + (ar ? 'مسار الدواء عبر Blockchain' : 'Drug Path via Blockchain')
+                        + ' <span class="timeline-count">' + data.trackingHistory.length + (ar ? ' نقلة' : ' transfers') + '</span></div><div class="timeline-items">';
                     data.trackingHistory.forEach(function (t) {
                         html += '<div class="timeline-item"><div class="timeline-dot"></div><div>'
-                            + '<div class="timeline-step">' + (roleMap[t.fromRole] || t.fromRole) + ' ← ' + (roleMap[t.toRole] || t.toRole) + '</div>'
-                            + '<div class="timeline-date">' + new Date(t.timestamp).toLocaleString('ar-JO') + '</div>'
+                            + '<div class="timeline-step">' + (roleMap[t.fromRole] || t.fromRole) + ' → ' + (roleMap[t.toRole] || t.toRole) + '</div>'
+                            + '<div class="timeline-date">' + new Date(t.timestamp).toLocaleString(locale) + '</div>'
                             + '<div class="timeline-hash">Block Hash: ' + t.blockHash + '</div>'
                             + '</div></div>';
                     });
                     html += '</div>';
                 } else {
-                    html += '<div style="text-align:center;color:var(--gray-400);font-size:13px;padding:16px 0;">لا توجد عمليات نقل مسجلة بعد</div>';
+                    html += '<div style="text-align:center;color:var(--gray-400);font-size:13px;padding:16px 0;">'
+                        + (ar ? 'لا توجد عمليات نقل مسجلة بعد' : 'No transfer records yet') + '</div>';
                 }
 
                 body.innerHTML = html;
@@ -690,8 +728,9 @@
         }
 
         function showNotFound(msg) {
+            var ar = PharmaLang.get() === 'ar';
             document.getElementById('resultHero').className = 'result-hero fake';
-            document.getElementById('resultHero').innerHTML = '<span class="result-icon">🔍</span><div class="result-title">لم يتم العثور</div><div class="result-sub">' + msg + '</div>';
+            document.getElementById('resultHero').innerHTML = '<span class="result-icon">🔍</span><div class="result-title">' + (ar ? 'لم يتم العثور' : 'Not Found') + '</div><div class="result-sub">' + msg + '</div>';
             document.getElementById('resultBody').innerHTML = '';
             document.getElementById('aiSection').style.display = 'none';
             document.getElementById('resultCard').classList.add('show');
@@ -715,6 +754,26 @@
             if (!e.target.closest('.name-search-wrap'))
                 document.getElementById('autocomplete').classList.remove('show');
         });
+
+        var _lastResultData = null;
+        var _lastResultId   = null;
+
+        window.addEventListener('pharmaLangChanged', function () {
+            // Rebuild drug list with translated text
+            loadAllDrugs();
+            // Re-render QR alert if visible
+            if (qrSigResult !== null) renderQrAlert(qrSigResult);
+            // Re-render result card if visible
+            if (_lastResultData !== null) renderResult(_lastResultData, _lastResultId);
+        });
+
+        // Wrap renderResult to remember last data
+        var _origRenderResult = renderResult;
+        renderResult = function (data, id) {
+            _lastResultData = data;
+            _lastResultId   = id;
+            _origRenderResult(data, id);
+        };
 
         loadAllDrugs();
 

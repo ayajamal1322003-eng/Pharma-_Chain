@@ -148,7 +148,7 @@
         </div>
 
         <div id="noAccessMsg" style="display:none">
-            <div class="card"><div class="card-body"><div class="no-access">⛔ ليس لديك صلاحية نقل الأدوية</div></div></div>
+            <div class="card"><div class="card-body"><div class="no-access" data-i18n="tr_no_access">⛔ ليس لديك صلاحية نقل الأدوية</div></div></div>
         </div>
 
         <div id="formContent">
@@ -157,11 +157,11 @@
                 <!-- ── Left: Form ── -->
                 <div>
                     <div class="blockchain-banner">
-                        <div class="bc-banner-title">⛓️ Blockchain Protection — نشط</div>
+                        <div class="bc-banner-title" data-i18n="tr_bc_active">⛓️ Blockchain Protection — نشط</div>
                         <div class="bc-banner-items">
-                            <div class="bc-banner-item">🔒 <span>Hash Chaining:</span> كل Block مرتبط بالسابق بـ SHA-256</div>
-                            <div class="bc-banner-item">⚡ <span>Proof of Work:</span> Mining تلقائي عند كل نقل</div>
-                            <div class="bc-banner-item">🌿 <span>Merkle Root:</span> تلخيص كل بيانات الـ Block</div>
+                            <div class="bc-banner-item">🔒 <span>Hash Chaining:</span> <span data-i18n="tr_bc_hash">كل Block مرتبط بالسابق بـ SHA-256</span></div>
+                            <div class="bc-banner-item">⚡ <span>Proof of Work:</span> <span data-i18n="tr_bc_pow">Mining تلقائي عند كل نقل</span></div>
+                            <div class="bc-banner-item">🌿 <span>Merkle Root:</span> <span data-i18n="tr_bc_merkle">تلخيص كل بيانات الـ Block</span></div>
                         </div>
                     </div>
 
@@ -171,19 +171,19 @@
                             <div class="card-header-left">
                                 <div class="card-icon ci-blue">💊</div>
                                 <div>
-                                    <div class="card-title">اختيار الدواء</div>
-                                    <div class="card-subtitle">اختر الدواء المراد نقله</div>
+                                    <div class="card-title" data-i18n="tr_drug_select">اختيار الدواء</div>
+                                    <div class="card-subtitle" data-i18n="tr_drug_select_sub">اختر الدواء المراد نقله</div>
                                 </div>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label>الدواء <span class="req">*</span></label>
+                                <label><span data-i18n="tr_drug_lbl">الدواء</span> <span class="req">*</span></label>
                                 <select id="drugId" onchange="onDrugSelect()">
-                                    <option value="">— جاري التحميل...</option>
+                                    <option value="" data-i18n="tr_loading">— جاري التحميل...</option>
                                 </select>
-                                <div class="field-err" id="drugError">⚠️ يرجى اختيار الدواء</div>
-                                <div class="field-hint">يتم عرض الأدوية المتاحة في النظام</div>
+                                <div class="field-err" id="drugError" data-i18n="tr_drug_err">⚠️ يرجى اختيار الدواء</div>
+                                <div class="field-hint" data-i18n="tr_drug_hint">يتم عرض الأدوية المتاحة في النظام</div>
                             </div>
 
                             <div class="drug-preview" id="drugPreview">
@@ -192,10 +192,10 @@
                                     <span class="badge" id="prevStatus">—</span>
                                 </div>
                                 <div class="dp-meta-grid">
-                                    <div class="dp-meta-item"><div class="dp-meta-label">الكمية المتاحة</div><div class="dp-meta-value" id="prevQty">—</div></div>
-                                    <div class="dp-meta-item"><div class="dp-meta-label">الشركة المصنعة</div><div class="dp-meta-value" id="prevMfr">—</div></div>
-                                    <div class="dp-meta-item"><div class="dp-meta-label">تاريخ الانتهاء</div><div class="dp-meta-value" id="prevExp">—</div></div>
-                                    <div class="dp-meta-item"><div class="dp-meta-label">رقم الدواء</div><div class="dp-meta-value" id="prevId">—</div></div>
+                                    <div class="dp-meta-item"><div class="dp-meta-label" data-i18n="tr_qty_avail">الكمية المتاحة</div><div class="dp-meta-value" id="prevQty">—</div></div>
+                                    <div class="dp-meta-item"><div class="dp-meta-label" data-i18n="th_manufacturer">الشركة المصنعة</div><div class="dp-meta-value" id="prevMfr">—</div></div>
+                                    <div class="dp-meta-item"><div class="dp-meta-label" data-i18n="th_expiry">تاريخ الانتهاء</div><div class="dp-meta-value" id="prevExp">—</div></div>
+                                    <div class="dp-meta-item"><div class="dp-meta-label" data-i18n="tr_drug_id">رقم الدواء</div><div class="dp-meta-value" id="prevId">—</div></div>
                                 </div>
                                 <div class="dp-hash" id="prevHash"></div>
                             </div>
@@ -208,8 +208,8 @@
                             <div class="card-header-left">
                                 <div class="card-icon ci-emerald">🔄</div>
                                 <div>
-                                    <div class="card-title">تفاصيل النقل</div>
-                                    <div class="card-subtitle">المستلم والمسار</div>
+                                    <div class="card-title" data-i18n="tr_details">تفاصيل النقل</div>
+                                    <div class="card-subtitle" data-i18n="tr_details_sub">المستلم والمسار</div>
                                 </div>
                             </div>
                         </div>
@@ -217,35 +217,35 @@
                             <div class="transfer-flow" id="transferFlow">
                                 <div class="flow-node" id="fromNode">
                                     <div class="flow-icon" id="fromIcon">🏭</div>
-                                    <div class="flow-label" id="fromLabel">أنت</div>
-                                    <div class="flow-sub" id="fromSub">المرسل</div>
+                                    <div class="flow-label" id="fromLabel" data-i18n="tr_you">أنت</div>
+                                    <div class="flow-sub" id="fromSub" data-i18n="tr_sender">المرسل</div>
                                 </div>
                                 <div class="flow-arrow">
                                     <div class="flow-arrow-line"></div>
-                                    <div class="flow-arrow-text">نقل دواء</div>
+                                    <div class="flow-arrow-text" data-i18n="tr_arrow">نقل دواء</div>
                                 </div>
                                 <div class="flow-node" id="toNode">
                                     <div class="flow-icon" id="toIcon">🚚</div>
-                                    <div class="flow-label" id="toLabel">المستلم</div>
-                                    <div class="flow-sub" id="toSub">الوجهة</div>
+                                    <div class="flow-label" id="toLabel" data-i18n="tr_recipient">المستلم</div>
+                                    <div class="flow-sub" id="toSub" data-i18n="tr_destination">الوجهة</div>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label>اسم المستخدم المستلم <span class="req">*</span></label>
-                                <input type="text" id="toUsername" placeholder="أدخل اسم المستخدم المستلم" oninput="onRecipientInput()">
-                                <div class="field-err" id="usernameError">⚠️ اسم المستخدم المستلم مطلوب</div>
-                                <div class="field-hint" id="recipientHint">المستلم يجب أن يكون <span id="expectedRole" style="font-weight:700;color:var(--blue-600)"></span></div>
+                                <label><span data-i18n="tr_recipient_lbl">اسم المستخدم المستلم</span> <span class="req">*</span></label>
+                                <input type="text" id="toUsername" placeholder="أدخل اسم المستخدم المستلم" data-i18n-ph="tr_recipient_ph" oninput="onRecipientInput()">
+                                <div class="field-err" id="usernameError" data-i18n="tr_recipient_err">⚠️ اسم المستخدم المستلم مطلوب</div>
+                                <div class="field-hint" id="recipientHint"><span data-i18n="tr_recipient_hint">المستلم يجب أن يكون</span> <span id="expectedRole" style="font-weight:700;color:var(--blue-600)"></span></div>
                             </div>
 
                             <div class="form-group">
-                                <label>ملاحظات النقل <span class="field-badge">اختياري</span></label>
-                                <textarea id="transferNotes" placeholder="أي ملاحظات خاصة بهذا النقل..." rows="2"></textarea>
+                                <label><span data-i18n="tr_notes_lbl">ملاحظات النقل</span> <span class="field-badge" data-i18n="add_scientific_opt">اختياري</span></label>
+                                <textarea id="transferNotes" placeholder="أي ملاحظات خاصة بهذا النقل..." data-i18n-ph="tr_notes_ph" rows="2"></textarea>
                             </div>
 
                             <button class="btn btn-success btn-full" id="transferBtn" onclick="transferDrug()" style="font-size:15px;padding:14px;border-radius:12px;">
                                 <span id="transferIcon">🔄</span>
-                                <span id="transferText">نقل الدواء وتسجيله في الـ Blockchain</span>
+                                <span id="transferText" data-i18n="tr_btn">نقل الدواء وتسجيله في الـ Blockchain</span>
                             </button>
 
                             <div class="alert alert-success" id="successMsg" style="margin-top:12px;"></div>
@@ -262,29 +262,29 @@
                         <div class="card-header">
                             <div class="card-header-left">
                                 <div class="card-icon ci-emerald">🗺️</div>
-                                <div><div class="card-title">مسار التوريد</div><div class="card-subtitle">دورك الحالي في السلسلة</div></div>
+                                <div><div class="card-title" data-i18n="tr_supply_path">مسار التوريد</div><div class="card-subtitle" data-i18n="tr_supply_role">دورك الحالي في السلسلة</div></div>
                             </div>
                         </div>
                         <div class="card-body" style="padding:10px 16px;">
                             <div class="role-flow">
                                 <div class="role-node" id="rn-factory">
                                     <div class="rn-icon">🏭</div>
-                                    <div class="rn-lbl">المصنع</div>
+                                    <div class="rn-lbl" data-i18n="tr_role_factory">المصنع</div>
                                 </div>
-                                <div class="role-arrow">←</div>
+                                <div class="role-arrow">→</div>
                                 <div class="role-node" id="rn-distributor">
                                     <div class="rn-icon">🚚</div>
-                                    <div class="rn-lbl">الموزع</div>
+                                    <div class="rn-lbl" data-i18n="tr_role_dist">الموزع</div>
                                 </div>
-                                <div class="role-arrow">←</div>
+                                <div class="role-arrow">→</div>
                                 <div class="role-node" id="rn-pharmacy">
                                     <div class="rn-icon">🏥</div>
-                                    <div class="rn-lbl">الصيدلية</div>
+                                    <div class="rn-lbl" data-i18n="tr_role_pharm">الصيدلية</div>
                                 </div>
-                                <div class="role-arrow">←</div>
+                                <div class="role-arrow">→</div>
                                 <div class="role-node" id="rn-customer">
                                     <div class="rn-icon">👤</div>
-                                    <div class="rn-lbl">الزبون</div>
+                                    <div class="rn-lbl" data-i18n="tr_role_cust">الزبون</div>
                                 </div>
                             </div>
                             <div style="text-align:center;font-size:12px;color:var(--gray-500);margin-top:6px;padding:0 12px;" id="roleDescription"></div>
@@ -296,7 +296,7 @@
                         <div class="card-header">
                             <div class="card-header-left">
                                 <div class="card-icon ci-purple">📋</div>
-                                <div><div class="card-title">آخر النقلات</div><div class="card-subtitle">نقلاتك الأخيرة</div></div>
+                                <div><div class="card-title" data-i18n="tr_recent">آخر النقلات</div><div class="card-subtitle" data-i18n="tr_recent_sub">نقلاتك الأخيرة</div></div>
                             </div>
                         </div>
                         <div class="card-body" style="padding:8px 20px;" id="recentTransfers">
@@ -309,15 +309,15 @@
                         <div class="card-header">
                             <div class="card-header-left">
                                 <div class="card-icon ci-amber">💡</div>
-                                <div><div class="card-title">تذكير مهم</div></div>
+                                <div><div class="card-title" data-i18n="tr_tips">تذكير مهم</div></div>
                             </div>
                         </div>
                         <div class="card-body" style="padding:14px 18px;">
                             <div style="display:flex;flex-direction:column;gap:10px;font-size:12.5px;color:var(--gray-600);">
-                                <div style="display:flex;gap:8px;"><span>⚠️</span><span>تأكد من اسم المستلم قبل النقل — لا يمكن التراجع</span></div>
-                                <div style="display:flex;gap:8px;"><span>⛓️</span><span>سيتم Mining الـ Block تلقائياً (Nonce + Hash)</span></div>
-                                <div style="display:flex;gap:8px;"><span>📱</span><span>يمكن للمستلم التحقق من الدواء عبر QR Code</span></div>
-                                <div style="display:flex;gap:8px;"><span>🔔</span><span>العملية تُسجَّل في Audit Log مع الـ IP</span></div>
+                                <div style="display:flex;gap:8px;"><span>⚠️</span><span data-i18n="tr_tip1">تأكد من اسم المستلم قبل النقل — لا يمكن التراجع</span></div>
+                                <div style="display:flex;gap:8px;"><span>⛓️</span><span data-i18n="tr_tip2">سيتم Mining الـ Block تلقائياً (Nonce + Hash)</span></div>
+                                <div style="display:flex;gap:8px;"><span>📱</span><span data-i18n="tr_tip3">يمكن للمستلم التحقق من الدواء عبر QR Code</span></div>
+                                <div style="display:flex;gap:8px;"><span>🔔</span><span data-i18n="tr_tip4">العملية تُسجَّل في Audit Log مع الـ IP</span></div>
                             </div>
                         </div>
                     </div>
@@ -347,32 +347,38 @@
     }
 
     var allowedTransfers = { Factory: 'Distributor', Distributor: 'Pharmacy', Pharmacy: 'Customer' };
-    var roleLabelsAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون', Admin: 'المدير' };
-    var roleIcons    = { Factory: '🏭', Distributor: '🚚', Pharmacy: '🏥', Customer: '👤', Admin: '👨‍💼' };
+    var roleIcons = { Factory: '🏭', Distributor: '🚚', Pharmacy: '🏥', Customer: '👤', Admin: '👨‍💼' };
+    function getRoleLabel(r) {
+        var ar = PharmaLang.get() === 'ar';
+        var mapAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون', Admin: 'المدير' };
+        var mapEn = { Factory: 'Factory', Distributor: 'Distributor', Pharmacy: 'Pharmacy', Customer: 'Customer', Admin: 'Admin' };
+        return (ar ? mapAr : mapEn)[r] || r;
+    }
 
     function goTo(page) { window.location.replace(API + '/' + page); }
     function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
 
     function setupRoleFlow() {
+        var ar = PharmaLang.get() === 'ar';
         var roleMap = { Factory: 'factory', Distributor: 'distributor', Pharmacy: 'pharmacy', Customer: 'customer' };
         var key = roleMap[role];
         if (key) { var el = document.getElementById('rn-' + key); if (el) el.classList.add('active-role'); }
         var target = allowedTransfers[role];
         document.getElementById('roleDescription').textContent = role === 'Admin'
-            ? 'لديك صلاحية النقل لأي جهة'
-            : 'يمكنك النقل من ' + (roleLabelsAr[role] || role) + ' إلى ' + (roleLabelsAr[target] || '—');
+            ? (ar ? 'لديك صلاحية النقل لأي جهة' : 'You can transfer to any party')
+            : (ar ? 'يمكنك النقل من ' + getRoleLabel(role) + ' إلى ' + getRoleLabel(target) : 'You can transfer from ' + getRoleLabel(role) + ' to ' + getRoleLabel(target));
         document.getElementById('fromIcon').textContent  = roleIcons[role] || '👤';
-        document.getElementById('fromLabel').textContent = roleLabelsAr[role] || role;
-        document.getElementById('fromSub').textContent   = localStorage.getItem('username') || 'أنت';
+        document.getElementById('fromLabel').textContent = getRoleLabel(role);
+        document.getElementById('fromSub').textContent   = localStorage.getItem('username') || (ar ? 'أنت' : 'You');
         if (target) {
             document.getElementById('toIcon').textContent  = roleIcons[target] || '👤';
-            document.getElementById('toLabel').textContent = roleLabelsAr[target];
-            document.getElementById('toSub').textContent   = 'الوجهة التالية';
-            document.getElementById('expectedRole').textContent = roleLabelsAr[target];
+            document.getElementById('toLabel').textContent = getRoleLabel(target);
+            document.getElementById('toSub').textContent   = ar ? 'الوجهة التالية' : 'Next destination';
+            document.getElementById('expectedRole').textContent = getRoleLabel(target);
         } else if (role === 'Admin') {
             document.getElementById('toIcon').textContent  = '👤';
-            document.getElementById('toLabel').textContent = 'أي جهة';
-            document.getElementById('expectedRole').textContent = 'أي دور';
+            document.getElementById('toLabel').textContent = ar ? 'أي جهة' : 'Any party';
+            document.getElementById('expectedRole').textContent = ar ? 'أي دور' : 'Any role';
         }
     }
 
@@ -384,14 +390,15 @@
             if (xhr.status !== 200) return;
             var response = JSON.parse(xhr.responseText);
             drugsData = Array.isArray(response) ? response : (response.drugs || []);
+            var ar = PharmaLang.get() === 'ar';
             var select = document.getElementById('drugId');
-            select.innerHTML = '<option value="">-- اختر دواء --</option>';
+            select.innerHTML = '<option value="">-- ' + (ar ? 'اختر دواء' : 'Select drug') + ' --</option>';
             var now = new Date();
             drugsData.forEach(function (d) {
                 var opt = document.createElement('option');
                 var isExpired = new Date(d.expiryDate) < now;
                 opt.value = d.id;
-                opt.textContent = (isExpired ? '❌ ' : '✅ ') + d.name + ' — كمية: ' + d.quantity;
+                opt.textContent = (isExpired ? '❌ ' : '✅ ') + d.name + ' — ' + (ar ? 'كمية: ' : 'Qty: ') + d.quantity;
                 if (isExpired) opt.style.color = '#9f1239';
                 select.appendChild(opt);
             });
@@ -404,19 +411,20 @@
         xhr.open('GET', API + '/api/transaction/chain', true);
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
         xhr.onload = function () {
-            if (xhr.status !== 200) { document.getElementById('recentTransfers').innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400);font-size:13px;">تعذر التحميل</div>'; return; }
+            var ar = PharmaLang.get() === 'ar';
+            var locale = ar ? 'ar-JO' : 'en-GB';
+            if (xhr.status !== 200) { document.getElementById('recentTransfers').innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400);font-size:13px;">' + (ar ? 'تعذر التحميل' : 'Failed to load') + '</div>'; return; }
             var data = JSON.parse(xhr.responseText);
             var chain = data.chain || [];
             var myUsername = localStorage.getItem('username');
             var mine = chain.filter(function (b) { return b.fromUsername === myUsername; }).slice(-5).reverse();
-            if (mine.length === 0) { document.getElementById('recentTransfers').innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400);font-size:13px;">لا توجد نقلات سابقة</div>'; return; }
-            var roleAr = { Factory: 'المصنع', Distributor: 'الموزع', Pharmacy: 'الصيدلية', Customer: 'الزبون' };
+            if (mine.length === 0) { document.getElementById('recentTransfers').innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400);font-size:13px;">' + (ar ? 'لا توجد نقلات سابقة' : 'No previous transfers') + '</div>'; return; }
             var html = mine.map(function (b) {
                 return '<div class="history-item">'
                     + '<div class="history-dot"></div>'
                     + '<div><div class="history-title">' + b.drugName + '</div>'
-                    + '<div class="history-sub">' + (roleAr[b.fromRole]||b.fromRole) + ' ← ' + (roleAr[b.toRole]||b.toRole) + ' · ' + b.toUsername + '</div>'
-                    + '<div class="history-sub">' + new Date(b.timestamp).toLocaleString('ar-JO') + '</div>'
+                    + '<div class="history-sub">' + getRoleLabel(b.fromRole) + ' → ' + getRoleLabel(b.toRole) + ' · ' + b.toUsername + '</div>'
+                    + '<div class="history-sub">' + new Date(b.timestamp).toLocaleString(locale) + '</div>'
                     + '<div class="history-hash">Block #' + b.blockNumber + ' · ' + b.blockHash + '</div>'
                     + '</div></div>';
             }).join('');
@@ -440,14 +448,16 @@
         preview.className = 'drug-preview show' + (isExpired ? ' expired' : isSoon ? ' low' : '');
         document.getElementById('prevName').textContent = drug.name;
         document.getElementById('prevId').textContent   = '#' + drug.id;
-        document.getElementById('prevQty').textContent  = drug.quantity + ' وحدة' + (drug.quantity <= 10 ? ' ⚠️' : '');
+        var ar = PharmaLang.get() === 'ar';
+        var locale = ar ? 'ar-JO' : 'en-GB';
+        document.getElementById('prevQty').textContent  = drug.quantity + (ar ? ' وحدة' : ' units') + (drug.quantity <= 10 ? ' ⚠️' : '');
         document.getElementById('prevMfr').textContent  = drug.manufacturer || '—';
-        document.getElementById('prevExp').textContent  = expiry.toLocaleDateString('ar-JO');
+        document.getElementById('prevExp').textContent  = expiry.toLocaleDateString(locale);
         document.getElementById('prevHash').textContent = 'Batch Hash: ' + drug.batchNumber;
         var statusEl = document.getElementById('prevStatus');
-        if (isExpired) { statusEl.className = 'badge badge-red';   statusEl.textContent = 'منتهي الصلاحية ❌'; }
-        else if (isSoon) { statusEl.className = 'badge badge-amber'; statusEl.textContent = 'ينتهي قريباً ⚠️'; }
-        else { statusEl.className = 'badge badge-green'; statusEl.textContent = 'صالح ✅'; }
+        if (isExpired) { statusEl.className = 'badge badge-red';   statusEl.textContent = ar ? 'منتهي الصلاحية ❌' : 'Expired ❌'; }
+        else if (isSoon) { statusEl.className = 'badge badge-amber'; statusEl.textContent = ar ? 'ينتهي قريباً ⚠️' : 'Expiring Soon ⚠️'; }
+        else { statusEl.className = 'badge badge-green'; statusEl.textContent = ar ? 'صالح ✅' : 'Valid ✅'; }
     }
 
     function onRecipientInput() {
@@ -466,7 +476,7 @@
         var btn = document.getElementById('transferBtn');
         btn.disabled = true;
         document.getElementById('transferIcon').textContent = '⏳';
-        document.getElementById('transferText').textContent = 'جاري النقل والـ Mining...';
+        document.getElementById('transferText').textContent = PharmaLang.get() === 'ar' ? 'جاري النقل والـ Mining...' : 'Transferring and Mining...';
         document.getElementById('errorMsg').classList.remove('show');
 
         var xhr = new XMLHttpRequest();
@@ -474,15 +484,16 @@
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
         xhr.onload = function () {
+            var ar = PharmaLang.get() === 'ar';
             btn.disabled = false;
             document.getElementById('transferIcon').textContent = '🔄';
-            document.getElementById('transferText').textContent = 'نقل الدواء وتسجيله في الـ Blockchain';
+            document.getElementById('transferText').textContent = PharmaLang.t('tr_btn');
             if (xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
                 var drug = drugsData.find(function (d) { return d.id == drugId; });
                 var successEl = document.getElementById('successMsg');
                 successEl.classList.add('show');
-                successEl.innerHTML = '<div><div style="font-weight:700;margin-bottom:4px;">✅ تم نقل ' + (drug ? drug.name : 'الدواء') + ' بنجاح!</div>'
+                successEl.innerHTML = '<div><div style="font-weight:700;margin-bottom:4px;">✅ ' + (ar ? 'تم نقل ' : 'Successfully transferred ') + (drug ? drug.name : (ar ? 'الدواء' : 'drug')) + (ar ? ' بنجاح!' : '!') + '</div>'
                     + '<div style="font-size:12px;font-family:Consolas,monospace;">Block Hash: ' + data.blockHash + '</div>'
                     + '<div style="font-size:12px;">Nonce: ' + (data.nonce||'—') + ' · Block #' + (data.blockNumber||'—') + '</div></div>';
                 setTimeout(function () { goTo('dashboard.html'); }, 3000);
@@ -490,19 +501,26 @@
                 localStorage.clear(); window.location.replace(API + '/login.html');
             } else {
                 var errEl = document.getElementById('errorMsg');
-                errEl.innerHTML = '<span>❌</span><span>' + (xhr.responseText || 'حدث خطأ غير متوقع') + '</span>';
+                errEl.innerHTML = '<span>❌</span><span>' + (xhr.responseText || (ar ? 'حدث خطأ غير متوقع' : 'An unexpected error occurred')) + '</span>';
                 errEl.classList.add('show');
             }
         };
         xhr.onerror = function () {
+            var ar = PharmaLang.get() === 'ar';
             btn.disabled = false;
             document.getElementById('transferIcon').textContent = '🔄';
-            document.getElementById('transferText').textContent = 'نقل الدواء وتسجيله في الـ Blockchain';
-            document.getElementById('errorMsg').innerHTML = '<span>❌</span><span>تعذر الاتصال بالسيرفر</span>';
+            document.getElementById('transferText').textContent = PharmaLang.t('tr_btn');
+            document.getElementById('errorMsg').innerHTML = '<span>❌</span><span>' + (ar ? 'تعذر الاتصال بالسيرفر' : 'Could not connect to server') + '</span>';
             document.getElementById('errorMsg').classList.add('show');
         };
         xhr.send(JSON.stringify({ drugId: drugId, toUsername: toUsername }));
     }
+
+    window.addEventListener('pharmaLangChanged', function () {
+        setupRoleFlow();
+        loadDrugs();
+        loadRecentTransfers();
+    });
 
     var hasAccess = allowedTransfers[role] || role === 'Admin';
     if (hasAccess) {

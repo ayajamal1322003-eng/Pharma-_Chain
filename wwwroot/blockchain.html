@@ -201,41 +201,41 @@
 
         <div class="controls-row">
             <div class="control-group" style="flex:1;min-width:220px;">
-                <div class="control-label">اختر الدواء</div>
+                <div class="control-label" data-i18n="bc_select_drug">اختر الدواء</div>
                 <select id="drugSelect" onchange="loadChain()" style="width:100%;">
-                    <option value="">-- اختر دواء لعرض سلسلته --</option>
+                    <option value="" data-i18n="bc_select_drug_ph">-- اختر دواء لعرض سلسلته --</option>
                 </select>
             </div>
-            <button class="btn btn-primary" onclick="verifyChain()">🔍 تحقق من سلامة السلسلة</button>
-            <button class="btn btn-outline" onclick="loadChain()" id="refreshBtn">🔄 تحديث</button>
+            <button class="btn btn-primary" onclick="verifyChain()" data-i18n="bc_verify_btn">🔍 تحقق من سلامة السلسلة</button>
+            <button class="btn btn-outline" onclick="loadChain()" id="refreshBtn" data-i18n="btn_refresh">🔄 تحديث</button>
         </div>
 
         <div class="stats-bar" id="statsBar" style="display:none;">
             <div class="stat-chip">
                 <div class="stat-chip-icon">📦</div>
-                <div><div class="stat-chip-val" id="statBlocks">0</div><div class="stat-chip-lbl">عدد الـ Blocks</div></div>
+                <div><div class="stat-chip-val" id="statBlocks">0</div><div class="stat-chip-lbl" data-i18n="bc_stat_blocks">عدد الـ Blocks</div></div>
             </div>
             <div class="stat-chip">
                 <div class="stat-chip-icon">⛏️</div>
-                <div><div class="stat-chip-val" id="statNonce">—</div><div class="stat-chip-lbl">آخر Nonce</div></div>
+                <div><div class="stat-chip-val" id="statNonce">—</div><div class="stat-chip-lbl" data-i18n="bc_stat_nonce">آخر Nonce</div></div>
             </div>
             <div class="stat-chip">
                 <div class="stat-chip-icon">🌿</div>
-                <div><div class="stat-chip-val" id="statMerkle" style="font-size:13px;font-family:'Consolas',monospace;">—</div><div class="stat-chip-lbl">آخر Merkle Root</div></div>
+                <div><div class="stat-chip-val" id="statMerkle" style="font-size:13px;font-family:'Consolas',monospace;">—</div><div class="stat-chip-lbl" data-i18n="bc_stat_merkle">آخر Merkle Root</div></div>
             </div>
             <div class="stat-chip">
                 <div class="stat-chip-icon" id="statIntIcon">✅</div>
-                <div><div class="stat-chip-val" id="statInt" style="font-size:15px;">سليمة</div><div class="stat-chip-lbl">حالة السلسلة</div></div>
+                <div><div class="stat-chip-val" id="statInt" style="font-size:15px;" data-i18n="bc_stat_ok">سليمة</div><div class="stat-chip-lbl" data-i18n="bc_stat_chain">حالة السلسلة</div></div>
             </div>
         </div>
 
         <div class="verify-result" id="verifyResult"></div>
 
         <div class="demo-card" id="demoCard">
-            <div class="demo-card-title">⚙️ منطقة العرض التجريبي — للأدمن فقط</div>
+            <div class="demo-card-title" data-i18n="bc_demo_title">⚙️ منطقة العرض التجريبي — للأدمن فقط</div>
             <div class="demo-btns">
-                <button class="btn btn-danger" onclick="demoTamper()">🔓 كسر السلسلة (محاكاة هجوم)</button>
-                <button class="btn btn-success" onclick="demoRestore()">🔒 استعادة من Backup</button>
+                <button class="btn btn-danger" onclick="demoTamper()" data-i18n="bc_demo_tamper">🔓 كسر السلسلة (محاكاة هجوم)</button>
+                <button class="btn btn-success" onclick="demoRestore()" data-i18n="bc_demo_restore">🔒 استعادة من Backup</button>
             </div>
             <div class="demo-result" id="demoResult"></div>
         </div>
@@ -243,8 +243,8 @@
         <div id="mainArea">
             <div class="empty-chain">
                 <div class="empty-chain-icon">⛓️</div>
-                <div style="font-size:15px;font-weight:600;color:var(--gray-500);">اختر دواء لعرض سلسلة Blockchain</div>
-                <div style="font-size:13px;margin-top:6px;">كل نقل دواء يُسجَّل كـ Block جديد مرتبط بالسابق</div>
+                <div style="font-size:15px;font-weight:600;color:var(--gray-500);" data-i18n="bc_empty_title">اختر دواء لعرض سلسلة Blockchain</div>
+                <div style="font-size:13px;margin-top:6px;" data-i18n="bc_empty_sub">كل نقل دواء يُسجَّل كـ Block جديد مرتبط بالسابق</div>
             </div>
         </div>
     </div>
@@ -269,8 +269,12 @@
         document.getElementById('demoCard').style.display = 'block';
     }
 
-    var roleLabels = { Factory:'المصنع', Distributor:'الموزع', Pharmacy:'الصيدلية', Customer:'الزبون', Admin:'المدير' };
     var roleIcons  = { Factory:'🏭', Distributor:'🚚', Pharmacy:'🏥', Customer:'👤' };
+    function getRoleLabel(r) {
+        return PharmaLang.get() === 'ar'
+            ? ({Factory:'المصنع',Distributor:'الموزع',Pharmacy:'الصيدلية',Customer:'الزبون',Admin:'المدير'}[r]||r)
+            : ({Factory:'Factory',Distributor:'Distributor',Pharmacy:'Pharmacy',Customer:'Customer',Admin:'Admin'}[r]||r);
+    }
 
     function goTo(page) { window.location.replace(API + '/' + page); }
     function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
@@ -303,21 +307,23 @@
         document.getElementById('statsBar').style.display = 'none';
         firstBlockId = null; currentTransactions = [];
 
+        var ar = PharmaLang.get() === 'ar';
         if (!drugId) {
-            document.getElementById('mainArea').innerHTML = '<div class="empty-chain"><div class="empty-chain-icon">⛓️</div><div style="font-size:15px;font-weight:600;color:var(--gray-500);">اختر دواء لعرض سلسلة Blockchain</div></div>';
+            document.getElementById('mainArea').innerHTML = '<div class="empty-chain"><div class="empty-chain-icon">⛓️</div><div style="font-size:15px;font-weight:600;color:var(--gray-500);">' + (ar ? 'اختر دواء لعرض سلسلة Blockchain' : 'Select a drug to view its Blockchain') + '</div></div>';
             return;
         }
 
-        document.getElementById('mainArea').innerHTML = '<div class="loading-state"><div class="spinner"></div>⛏️ جاري تحميل السلسلة...</div>';
+        document.getElementById('mainArea').innerHTML = '<div class="loading-state"><div class="spinner"></div>⛏️ ' + (ar ? 'جاري تحميل السلسلة...' : 'Loading chain...') + '</div>';
 
         var xhr = new XMLHttpRequest();
         xhr.open('GET', API + '/api/transaction/history/' + drugId, true);
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
         xhr.onload = function () {
-            if (xhr.status !== 200) { document.getElementById('mainArea').innerHTML = '<div class="loading-state">⚠️ تعذر تحميل السلسلة</div>'; return; }
+            var ar2 = PharmaLang.get() === 'ar';
+            if (xhr.status !== 200) { document.getElementById('mainArea').innerHTML = '<div class="loading-state">⚠️ ' + (ar2 ? 'تعذر تحميل السلسلة' : 'Failed to load chain') + '</div>'; return; }
             var transactions = JSON.parse(xhr.responseText);
             if (transactions.length === 0) {
-                document.getElementById('mainArea').innerHTML = '<div class="empty-chain"><div class="empty-chain-icon">📭</div><div style="font-size:15px;font-weight:600;color:var(--gray-500);">لا توجد عمليات نقل لهذا الدواء بعد</div></div>';
+                document.getElementById('mainArea').innerHTML = '<div class="empty-chain"><div class="empty-chain-icon">📭</div><div style="font-size:15px;font-weight:600;color:var(--gray-500);">' + (ar2 ? 'لا توجد عمليات نقل لهذا الدواء بعد' : 'No transfers recorded for this drug yet') + '</div></div>';
                 return;
             }
             currentTransactions = transactions;
@@ -325,14 +331,16 @@
             renderChain(transactions);
             updateStats(transactions);
         };
-        xhr.onerror = function () { document.getElementById('mainArea').innerHTML = '<div class="loading-state">⚠️ تعذر الاتصال بالسيرفر</div>'; };
+        xhr.onerror = function () { var ar3 = PharmaLang.get() === 'ar'; document.getElementById('mainArea').innerHTML = '<div class="loading-state">⚠️ ' + (ar3 ? 'تعذر الاتصال بالسيرفر' : 'Could not connect to server') + '</div>'; };
         xhr.send();
     }
 
     function renderChain(transactions) {
-        var drug = drugsData.find(function (d) { return d.id == document.getElementById('drugSelect').value; }) || { name: 'الدواء' };
+        var ar = PharmaLang.get() === 'ar';
+        var locale = ar ? 'ar-JO' : 'en-GB';
+        var drug = drugsData.find(function (d) { return d.id == document.getElementById('drugSelect').value; }) || { name: ar ? 'الدواء' : 'Drug' };
         var chainHtml = '<div class="genesis">'
-            + '<div class="genesis-label">Genesis Block — كتلة التأسيس</div>'
+            + '<div class="genesis-label">Genesis Block — ' + (ar ? 'كتلة التأسيس' : 'Foundation Block') + '</div>'
             + '<div class="genesis-name">⛓️ ' + drug.name + '</div>'
             + '<div class="genesis-hash">0000000000000000</div>'
             + '</div>';
@@ -346,28 +354,30 @@
             return '<div class="summary-item" onclick="scrollToBlock(\'' + t.id + '\')">'
                 + '<div class="summary-dot" id="sdot-' + t.id + '"></div>'
                 + '<div><div class="summary-title">Block #' + (t.blockNumber||(i+1)) + ' — ' + t.drugName + '</div>'
-                + '<div class="summary-sub">' + (roleLabels[t.fromRole]||t.fromRole) + ' ← ' + (roleLabels[t.toRole]||t.toRole) + ' · ' + new Date(t.timestamp).toLocaleDateString('ar-JO') + '</div>'
+                + '<div class="summary-sub">' + getRoleLabel(t.fromRole) + ' → ' + getRoleLabel(t.toRole) + ' · ' + new Date(t.timestamp).toLocaleDateString(locale) + '</div>'
                 + '</div></div>';
         }).join('');
 
-        var rightHtml = '<div class="card"><div class="card-header"><div class="card-header-left"><div class="card-icon ci-blue">📋</div><div><div class="card-title">ملخص الـ Blocks</div></div></div></div><div class="card-body" style="padding:8px 16px;">' + summaryItems + '</div></div>'
-            + '<div class="card"><div class="card-header"><div class="card-header-left"><div class="card-icon ci-dark">🔐</div><div><div class="card-title">عناصر الأمان</div></div></div></div><div class="card-body" style="padding:8px 16px;">' + buildIntegrityItems() + '</div></div>';
+        var rightHtml = '<div class="card"><div class="card-header"><div class="card-header-left"><div class="card-icon ci-blue">📋</div><div><div class="card-title">' + (ar ? 'ملخص الـ Blocks' : 'Blocks Summary') + '</div></div></div></div><div class="card-body" style="padding:8px 16px;">' + summaryItems + '</div></div>'
+            + '<div class="card"><div class="card-header"><div class="card-header-left"><div class="card-icon ci-dark">🔐</div><div><div class="card-title">' + (ar ? 'عناصر الأمان' : 'Security Elements') + '</div></div></div></div><div class="card-body" style="padding:8px 16px;">' + buildIntegrityItems() + '</div></div>';
 
         document.getElementById('mainArea').innerHTML =
             '<div class="chain-layout"><div id="chainBlocks">' + chainHtml + '</div><div class="right-panel">' + rightHtml + '</div></div>';
     }
 
     function buildBlockHtml(t, bNum) {
+        var ar = PharmaLang.get() === 'ar';
+        var locale = ar ? 'ar-JO' : 'en-GB';
         return '<div class="block-card" id="block-' + t.id + '">'
             + '<div class="block-top">'
-            + '<span class="block-num" id="badge-' + t.id + '">كتلة #' + bNum + '</span>'
-            + '<span class="block-time">' + new Date(t.timestamp).toLocaleString('ar-JO') + '</span>'
+            + '<span class="block-num" id="badge-' + t.id + '">' + (ar ? 'كتلة #' : 'Block #') + bNum + '</span>'
+            + '<span class="block-time">' + new Date(t.timestamp).toLocaleString(locale) + '</span>'
             + '</div><div class="block-body">'
             + '<div class="block-grid">'
-            + '<div class="block-field"><div class="block-field-label">من</div><div class="block-field-value">' + (roleIcons[t.fromRole]||'') + ' <span class="role-tag role-' + t.fromRole + '">' + (roleLabels[t.fromRole]||t.fromRole) + '</span></div></div>'
-            + '<div class="block-field"><div class="block-field-label">إلى</div><div class="block-field-value">' + (roleIcons[t.toRole]||'') + ' <span class="role-tag role-' + t.toRole + '">' + (roleLabels[t.toRole]||t.toRole) + '</span></div></div>'
-            + '<div class="block-field"><div class="block-field-label">المرسل</div><div class="block-field-value">' + t.fromUsername + '</div></div>'
-            + '<div class="block-field"><div class="block-field-label">المستلم</div><div class="block-field-value">' + t.toUsername + '</div></div>'
+            + '<div class="block-field"><div class="block-field-label">' + (ar ? 'من' : 'From') + '</div><div class="block-field-value">' + (roleIcons[t.fromRole]||'') + ' <span class="role-tag role-' + t.fromRole + '">' + getRoleLabel(t.fromRole) + '</span></div></div>'
+            + '<div class="block-field"><div class="block-field-label">' + (ar ? 'إلى' : 'To') + '</div><div class="block-field-value">' + (roleIcons[t.toRole]||'') + ' <span class="role-tag role-' + t.toRole + '">' + getRoleLabel(t.toRole) + '</span></div></div>'
+            + '<div class="block-field"><div class="block-field-label">' + (ar ? 'المرسل' : 'Sender') + '</div><div class="block-field-value">' + t.fromUsername + '</div></div>'
+            + '<div class="block-field"><div class="block-field-label">' + (ar ? 'المستلم' : 'Recipient') + '</div><div class="block-field-value">' + t.toUsername + '</div></div>'
             + '</div>'
             + '<div class="block-meta-row">'
             + '<div class="meta-chip"><div class="meta-chip-label">⛏️ Proof of Work — Nonce</div><div class="meta-chip-value">' + (t.nonce||0) + '</div></div>'
@@ -380,6 +390,7 @@
     }
 
     function buildIntegrityItems() {
+        var ar = PharmaLang.get() === 'ar';
         return [
             { icon: '🔗', label: 'Hash Chaining', id: 'Hash-Chaining', status: 'pending' },
             { icon: '⛏️', label: 'Proof of Work', id: 'Proof-of-Work', status: 'pending' },
@@ -387,7 +398,7 @@
             { icon: '💾', label: 'JSON Backup',   id: 'JSON-Backup',   status: 'ok' }
         ].map(function (item) {
             var cls = item.status === 'ok' ? 's-ok' : 's-pending';
-            var txt = item.status === 'ok' ? 'متاح' : 'في انتظار التحقق';
+            var txt = item.status === 'ok' ? (ar ? 'متاح' : 'Available') : (ar ? 'في انتظار التحقق' : 'Awaiting verification');
             return '<div class="integrity-item" id="intg-' + item.id + '">'
                 + '<div class="integrity-icon">' + item.icon + '</div>'
                 + '<div class="integrity-label">' + item.label + '</div>'
@@ -422,15 +433,16 @@
         xhr.onload = function () {
             if (xhr.status !== 200) return;
             var data = JSON.parse(xhr.responseText);
+            var ar = PharmaLang.get() === 'ar';
             if (data.valid) {
                 result.className = 'verify-result show ok';
                 result.textContent = '✅ ' + data.message;
-                document.getElementById('statInt').textContent = 'سليمة ✅';
+                document.getElementById('statInt').textContent = ar ? 'سليمة ✅' : 'Intact ✅';
                 updateIntegrityStatus(true, null);
             } else {
                 result.className = 'verify-result show err';
                 result.textContent = '🚨 ' + data.message;
-                document.getElementById('statInt').textContent = 'تلاعب مكتشف 🚨';
+                document.getElementById('statInt').textContent = ar ? 'تلاعب مكتشف 🚨' : 'Tampering Detected 🚨';
                 document.getElementById('statIntIcon').textContent = '🚨';
                 updateIntegrityStatus(false, data.tamperedBlock);
                 if (data.tamperedBlock) {
@@ -451,16 +463,17 @@
     }
 
     function updateIntegrityStatus(valid, tamperedBlock) {
+        var ar = PharmaLang.get() === 'ar';
         ['Hash-Chaining', 'Proof-of-Work', 'Merkle-Root'].forEach(function (key) {
             var el = document.getElementById('intg-status-' + key);
             if (!el) return;
-            if (valid) { el.className = 'integrity-status s-ok';  el.textContent = 'سليم ✓'; }
-            else       { el.className = 'integrity-status s-err'; el.textContent = 'خطأ ✗'; }
+            if (valid) { el.className = 'integrity-status s-ok';  el.textContent = ar ? 'سليم ✓' : 'Valid ✓'; }
+            else       { el.className = 'integrity-status s-err'; el.textContent = ar ? 'خطأ ✗' : 'Error ✗'; }
         });
     }
 
     function demoTamper() {
-        if (!firstBlockId) { showDemo('⚠️ اختر دواء أولاً', 'red'); return; }
+        if (!firstBlockId) { showDemo('⚠️ ' + (PharmaLang.get() === 'ar' ? 'اختر دواء أولاً' : 'Select a drug first'), 'red'); return; }
         var xhr = new XMLHttpRequest();
         xhr.open('POST', API + '/api/transaction/demo-tamper/' + firstBlockId, true);
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
@@ -485,6 +498,11 @@
         el.textContent = msg;
         el.className = 'demo-result show ' + type;
     }
+
+    window.addEventListener('pharmaLangChanged', function () {
+        loadDrugs();
+        if (currentTransactions.length > 0) renderChain(currentTransactions);
+    });
 
     loadDrugs();
 </script>
