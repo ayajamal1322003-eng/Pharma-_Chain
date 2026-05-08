@@ -125,7 +125,7 @@
         <div class="nav-section-hdr" id="navAISection" style="display:none" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
         <a class="nav-item" id="navRisk"    style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
         <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
-        <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span>إدارة QR Code</span></a>
+        <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span data-i18n="nav_qr_control">إدارة QR Code</span></a>
         <div class="user-info-bar">
             <div class="user-row">
                 <div class="user-avatar">👤</div>
@@ -430,7 +430,7 @@
             }).join('');
             document.getElementById('recentTransfers').innerHTML = html;
         };
-        xhr.onerror = function () { document.getElementById('recentTransfers').innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400);font-size:13px;">تعذر التحميل</div>'; };
+        xhr.onerror = function () { document.getElementById('recentTransfers').innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400);font-size:13px;">' + (PharmaLang.get() === 'ar' ? 'تعذر التحميل' : 'Failed to load') + '</div>'; };
         xhr.send();
     }
 

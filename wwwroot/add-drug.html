@@ -1407,7 +1407,7 @@
                     } catch (e) {
                         // fallback إذا الرد مش JSON
                         document.getElementById('successMsg').classList.add('show');
-                        document.getElementById('successText').textContent = 'تم إضافة "' + payload.name + '" بنجاح!';
+                        document.getElementById('successText').textContent = PharmaLang.get() === 'ar' ? 'تم إضافة "' + payload.name + '" بنجاح!' : '"' + payload.name + '" added successfully!';
                         setTimeout(function () { goTo('dashboard.html'); }, 2000);
                     }
                 } else if (xhr.status === 401) {
@@ -1440,7 +1440,7 @@
             // عرض الـ Token بشكل مقروء (كل 8 أحرف مسافة)
             var formatted = _aiToken
                 ? _aiToken.match(/.{1,8}/g).join('  ')
-                : '— غير متاح —';
+                : (PharmaLang.get() === 'ar' ? '— غير متاح —' : '— Not available —');
 
             document.getElementById('aiTokenDisplay').textContent = formatted;
             document.getElementById('aiMethodDisplay').textContent =

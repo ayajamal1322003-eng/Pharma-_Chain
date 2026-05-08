@@ -2258,9 +2258,10 @@
         // ══════════════════════════════════════════════
         var attacks = {
             sig: {
-                title: '🔄 هجوم تبديل ملصق QR — SIGNATURE_MISMATCH',
+                title: { ar: '🔄 هجوم تبديل ملصق QR — SIGNATURE_MISMATCH', en: '🔄 QR Label Swap Attack — SIGNATURE_MISMATCH' },
                 body: function () {
-                    return `
+                    var _a = PharmaLang.get() === 'ar';
+                    return _a ? `
 <div class="sim-step">
       <div class="sim-step-num">1</div>
       <div class="sim-step-content">
@@ -2317,14 +2318,72 @@
 </div>
 <div class="live-demo-row">
       <button class="btn btn-danger" onclick="liveDemoSig()">🔴 جرّب الهجوم على السيرفر الحقيقي</button>
+</div>` : `
+<div class="sim-step">
+      <div class="sim-step-num">1</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">What does the attacker do?</div>
+        <div class="sim-step-body">
+          Takes a QR Code from a genuine drug (drug #5) and places it on a different drug (drug #12).
+          Or manually modifies the <strong>id</strong> in the QR URL from the browser.
+        </div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num red">2</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">Original URL vs Tampered URL</div>
+        <div class="qr-compare">
+          <div class="qr-box-sim">
+            <div class="qr-box-sim-title">✅ Original QR</div>
+            <div class="qr-field"><span class="qr-key">id=</span><span class="qr-val ok">5</span></div>
+            <div class="qr-field"><span class="qr-key">prod=</span><span class="qr-val">2024-03-01</span></div>
+            <div class="qr-field"><span class="qr-key">sig=</span><span class="qr-val ok">a3f92c1d8e...</span></div>
+          </div>
+          <div class="qr-box-sim">
+            <div class="qr-box-sim-title">❌ Tampered QR</div>
+            <div class="qr-field"><span class="qr-key">id=</span><span class="qr-val changed">12 ← Modified!</span></div>
+            <div class="qr-field"><span class="qr-key">prod=</span><span class="qr-val">2024-03-01</span></div>
+            <div class="qr-field"><span class="qr-key">sig=</span><span class="qr-val changed">a3f92c1d8e... ← same old sig</span></div>
+          </div>
+        </div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num green">3</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">How does the system detect it?</div>
+        <div class="code-block">
+<span class="code-gray">// Server recalculates HMAC-SHA256:</span>
+<span class="code-white">payload  = </span><span class="code-warn">"12|2024-03-01|1710000000"</span>  <span class="code-gray">← new id</span>
+<span class="code-white">expected = HMAC_SHA256(payload, SECRET_KEY) = </span><span class="code-ok">"b7d4e9f2..."</span>
+<span class="code-white">received = </span><span class="code-err">"a3f92c1d..."</span>  <span class="code-gray">← from attacker</span>
+<span class="code-err">expected ≠ received → SIGNATURE_MISMATCH 🚨</span>
+        </div>
+        <div class="result-box err">🚨 <strong>SIGNATURE_MISMATCH</strong> — HMAC does not match the id. Server rejects the request and logs the attempt with the IP Address.</div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num orange">4</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">Why is it impossible to bypass?</div>
+        <div class="sim-step-body">
+          HMAC-SHA256 is encrypted with a <strong>SECRET_KEY</strong> that exists only on the server.
+          Without this key, no valid sig can be generated for any id — even Brute Force is practically impossible (128-bit key).
+        </div>
+      </div>
+</div>
+<div class="live-demo-row">
+      <button class="btn btn-danger" onclick="liveDemoSig()">🔴 Try the attack on the real server</button>
 </div>`;
                 }
             },
 
             date: {
-                title: '📅 هجوم تلاعب بتاريخ الإنتاج — DATE_MISMATCH',
+                title: { ar: '📅 هجوم تلاعب بتاريخ الإنتاج — DATE_MISMATCH', en: '📅 Production Date Tampering Attack — DATE_MISMATCH' },
                 body: function () {
-                    return `
+                    var _a = PharmaLang.get() === 'ar';
+                    return _a ? `
 <div class="sim-step">
       <div class="sim-step-num">1</div>
       <div class="sim-step-content">
@@ -2383,14 +2442,74 @@
 </div>
 <div class="live-demo-row">
       <button class="btn btn-danger" onclick="liveDemoDate()">🔴 جرّب الهجوم على السيرفر الحقيقي</button>
+</div>` : `
+<div class="sim-step">
+      <div class="sim-step-num">1</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">What does the attacker do?</div>
+        <div class="sim-step-body">
+          Takes a QR from an old production batch (date 2020) and puts it on a new box.
+          Or modifies the <strong>prod</strong> (production date) in the URL to change the drug's date.
+        </div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num red">2</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">Original URL vs Tampered URL</div>
+        <div class="qr-compare">
+          <div class="qr-box-sim">
+            <div class="qr-box-sim-title">✅ Original QR</div>
+            <div class="qr-field"><span class="qr-key">id=</span><span class="qr-val ok">7</span></div>
+            <div class="qr-field"><span class="qr-key">prod=</span><span class="qr-val ok">2024-06-15</span></div>
+            <div class="qr-field"><span class="qr-key">sig=</span><span class="qr-val ok">c9a3f1e2...</span></div>
+          </div>
+          <div class="qr-box-sim">
+            <div class="qr-box-sim-title">❌ Tampered QR</div>
+            <div class="qr-field"><span class="qr-key">id=</span><span class="qr-val">7</span></div>
+            <div class="qr-field"><span class="qr-key">prod=</span><span class="qr-val changed">2020-01-01 ← Modified!</span></div>
+            <div class="qr-field"><span class="qr-key">sig=</span><span class="qr-val changed">sig from 2020...</span></div>
+          </div>
+        </div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num green">3</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">How does the system detect it?</div>
+        <div class="code-block">
+<span class="code-gray">// Server fetches drug from DB:</span>
+<span class="code-white">drug = DB.Find(id: 7)</span>
+<span class="code-white">db_prod_date = </span><span class="code-ok">"2024-06-15"</span>
+
+<span class="code-gray">// Compare QR date with DB date:</span>
+<span class="code-white">qr_prod_date = </span><span class="code-err">"2020-01-01"</span>
+<span class="code-err">qr_prod_date ≠ db_prod_date → DATE_MISMATCH 🚨</span>
+        </div>
+        <div class="result-box err">🚨 <strong>DATE_MISMATCH</strong> — Production date in QR does not match the database. This QR is from a different batch or is forged.</div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num orange">4</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">Why this attack matters</div>
+        <div class="sim-step-body">
+          Used to sell expired drugs with new dates, or to reuse old packaging.
+          Linking the QR to the actual production date in the DB makes this forgery impossible.
+        </div>
+      </div>
+</div>
+<div class="live-demo-row">
+      <button class="btn btn-danger" onclick="liveDemoDate()">🔴 Try the attack on the real server</button>
 </div>`;
                 }
             },
 
             fake: {
-                title: '🎭 هجوم QR مزيف كلياً — DRUG_NOT_FOUND',
+                title: { ar: '🎭 هجوم QR مزيف كلياً — DRUG_NOT_FOUND', en: '🎭 Fully Fake QR Attack — DRUG_NOT_FOUND' },
                 body: function () {
-                    return `
+                    var _a = PharmaLang.get() === 'ar';
+                    return _a ? `
 <div class="sim-step">
       <div class="sim-step-num">1</div>
       <div class="sim-step-content">
@@ -2426,14 +2545,51 @@
 </div>
 <div class="live-demo-row">
       <button class="btn btn-danger" onclick="liveDemoFake()">🔴 جرّب: ابعث drug_id غير موجود</button>
+</div>` : `
+<div class="sim-step">
+      <div class="sim-step-num">1</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">What does the attacker do?</div>
+        <div class="sim-step-body">
+          Creates a QR Code with random numbers or a drug_id not in the system.
+          The simplest type of forgery — used by those unfamiliar with how the system works.
+        </div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num red">2</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">The Tampered URL</div>
+        <div class="code-block">
+<span class="code-gray">// Fake QR — drug_id not in DB:</span>
+<span class="code-white">verify.html?id=</span><span class="code-err">99999</span><span class="code-white">&prod=2024-01-01&ts=1700000&sig=</span><span class="code-err">FAKE123ABC</span>
+        </div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num green">3</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">How does the system detect it?</div>
+        <div class="code-block">
+<span class="code-gray">// Server searches DB:</span>
+<span class="code-white">drug = DB.Drugs.Find(id: 99999)</span>
+<span class="code-err">if (drug == null) → DRUG_NOT_FOUND 🚨</span>
+<span class="code-gray">// Doesn't even reach Signature check!</span>
+        </div>
+        <div class="result-box err">🚨 <strong>DRUG_NOT_FOUND</strong> — #99999 doesn't exist at all. Any QR for an unregistered drug is rejected immediately.</div>
+      </div>
+</div>
+<div class="live-demo-row">
+      <button class="btn btn-danger" onclick="liveDemoFake()">🔴 Try: Send a non-existent drug_id</button>
 </div>`;
                 }
             },
 
             delay: {
-                title: '⏱️ هجوم التأخير المتعمد — DELIBERATE_DELAY',
+                title: { ar: '⏱️ هجوم التأخير المتعمد — DELIBERATE_DELAY', en: '⏱️ Deliberate Delay Attack — DELIBERATE_DELAY' },
                 body: function () {
-                    return `
+                    var _a = PharmaLang.get() === 'ar';
+                    return _a ? `
 <div class="sim-step">
       <div class="sim-step-num">1</div>
       <div class="sim-step-content">
@@ -2498,17 +2654,84 @@
 </div>
 <div class="live-demo-row">
       <button class="btn btn-primary" onclick="switchTab('chain', document.querySelectorAll('.page-tab')[2]); loadDrugsChain();">⛓️ افتح فحص السلسلة</button>
+</div>` : `
+<div class="sim-step">
+      <div class="sim-step-num">1</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">What does the attacker do?</div>
+        <div class="sim-step-body">
+          A distributor or pharmacist receives the drug but <strong>delays registering the receipt</strong> in Blockchain.
+          During this delay they can: sell the drug on the black market, substitute it, or tamper with quantities.
+        </div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num red">2</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">How it looks in Blockchain</div>
+        <div class="chain-visual">
+          <div class="block-box ok">
+            <div class="block-num">Block #1</div>
+            <div class="block-field"><span class="block-key">From</span><span class="block-v green">Factory</span></div>
+            <div class="block-field"><span class="block-key">To</span><span class="block-v">Distributor</span></div>
+            <div class="block-field"><span class="block-key">Time</span><span class="block-v">2024-01-01</span></div>
+            <div class="block-field"><span class="block-key">Delay</span><span class="block-v green">—</span></div>
+          </div>
+          <div class="block-box tampered">
+            <div class="block-num">Block #2</div>
+            <div class="block-field"><span class="block-key">From</span><span class="block-v">Distributor</span></div>
+            <div class="block-field"><span class="block-key">To</span><span class="block-v">Pharmacy</span></div>
+            <div class="block-field"><span class="block-key">Time</span><span class="block-v red">2024-03-15</span></div>
+            <div class="block-field"><span class="block-key">Delay</span><span class="block-v red">1704h ⚠</span></div>
+          </div>
+          <div class="block-box ok">
+            <div class="block-num">Block #3</div>
+            <div class="block-field"><span class="block-key">From</span><span class="block-v">Pharmacy</span></div>
+            <div class="block-field"><span class="block-key">To</span><span class="block-v">Customer</span></div>
+            <div class="block-field"><span class="block-key">Time</span><span class="block-v">2024-03-16</span></div>
+            <div class="block-field"><span class="block-key">Delay</span><span class="block-v green">24h</span></div>
+          </div>
+        </div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num green">3</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">How does the system detect it?</div>
+        <div class="code-block">
+<span class="code-gray">// System calculates time difference between each pair of transfers:</span>
+<span class="code-white">diffHours = (tx[i].timestamp - tx[i-1].timestamp) / 3600000</span>
+<span class="code-white">if (diffHours &gt; 168)  </span><span class="code-err">→ CRITICAL_DELAY 🚨</span>
+<span class="code-white">elif (diffHours &gt; 48) </span><span class="code-warn">→ WARNING_DELAY ⚠️</span>
+        </div>
+        <div class="result-box warn">⚠️ Delay of <strong>1704 hours</strong> (71 days!) — highly suspicious. System alerts the admin and flags it.</div>
+      </div>
+</div>
+<div class="sim-step">
+      <div class="sim-step-num orange">4</div>
+      <div class="sim-step-content">
+        <div class="sim-step-title">Why can't the attacker modify the Timestamp?</div>
+        <div class="sim-step-body">
+          Every Timestamp is part of the <strong>blockHash</strong> computed with SHA256.
+          Any modification → different blockHash → breaks the chain. Blockchain makes dates immutable.
+        </div>
+      </div>
+</div>
+<div class="live-demo-row">
+      <button class="btn btn-primary" onclick="switchTab('chain', document.querySelectorAll('.page-tab')[2]); loadDrugsChain();">⛓️ Open Chain Inspector</button>
 </div>`;
                 }
             }
         };
 
+        var lastSimType = null;
         function showAttack(type) {
+            lastSimType = type;
             document.querySelectorAll('.attack-card').forEach(function (c) { c.classList.remove('selected'); });
             document.getElementById('card-' + type).classList.add('selected');
             var atk = attacks[type];
             var panel = document.getElementById('simPanel');
-            document.getElementById('simTitle').textContent = atk.title;
+            document.getElementById('simTitle').textContent = atk.title[PharmaLang.get()] || atk.title.ar;
             document.getElementById('simBody').innerHTML = atk.body();
             panel.style.display = 'block';
             panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -2791,8 +3014,10 @@
         // Language change → re-render dynamic content
         // ══════════════════════════════════════════════
         window.addEventListener('pharmaLangChanged', function () {
-            // Re-render attack description if one is selected
+            // Re-render QR lab attack description if one is selected
             if (attackMode) selectAttack(attackMode);
+            // Re-render sim panel (tab 2) if an attack card is showing
+            if (lastSimType) showAttack(lastSimType);
             // Re-render chain analysis if data is showing
             var mainArea = document.getElementById('mainArea');
             if (mainArea && !mainArea.querySelector('.empty') && !mainArea.querySelector('.loading')) {
