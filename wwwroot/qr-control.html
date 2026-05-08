@@ -230,11 +230,11 @@
                             <div style="font-size:12px;color:var(--gray-500);" data-i18n="qr_quotas_sub">لكل دور — تُجدَّد تلقائياً في أول الشهر</div>
                         </div>
                     </div>
-                    <button class="btn btn-outline" onclick="loadQuotas()" style="font-size:12px;">🔄 تحديث</button>
+                    <button class="btn btn-outline" onclick="loadQuotas()" style="font-size:12px;" data-i18n="btn_refresh">🔄 تحديث</button>
                 </div>
                 <div style="padding:20px">
                     <div class="quota-grid" id="quotaGrid">
-                        <div class="loading-area"><div class="ai-spinner"></div><div style="font-size:13px;color:var(--gray-500);">جاري التحميل...</div></div>
+                        <div class="loading-area"><div class="ai-spinner"></div><div style="font-size:13px;color:var(--gray-500);" data-i18n="loading_text">جاري التحميل...</div></div>
                     </div>
                 </div>
             </div>
@@ -258,7 +258,7 @@
                         <div class="form-fld" style="flex:1;min-width:200px;">
                             <label data-i18n="qr_gen_drug_label">اختر الدواء <span style="color:#dc2626">*</span></label>
                             <select id="genDrugSelect">
-                                <option value="">— جاري التحميل... —</option>
+                                <option value="" id="genDrugSelectPh">— جاري التحميل... —</option>
                             </select>
                         </div>
                         <div>
@@ -316,7 +316,7 @@
                             <div style="font-size:12px;color:var(--gray-500);" data-i18n="qr_scanlogs_sub">كل عملية تحقق مسجلة — كشف التزوير والتلاعب فوري</div>
                         </div>
                     </div>
-                    <button class="btn btn-outline" onclick="loadScanLogs()" style="font-size:12px;">🔄 تحديث</button>
+                    <button class="btn btn-outline" onclick="loadScanLogs()" style="font-size:12px;" data-i18n="btn_refresh">🔄 تحديث</button>
                 </div>
                 <div style="padding:20px">
                     <div id="scanStatsRow" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;"></div>
