@@ -1,0 +1,5 @@
+# Python dependencies for running PharmaChain on Google Colab
+# Install with: pip install -r requirements.txt
+
+pyngrok>=6.0.0
+requests>=2.31.0
