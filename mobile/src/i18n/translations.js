@@ -1,0 +1,137 @@
+// Bilingual string table — Arabic (ar) + English (en)
+const translations = {
+  // ── App-level ──────────────────────────────────────────────
+  appName:       { ar: 'فارما تشين', en: 'PharmaChain' },
+  loading:       { ar: 'جاري التحميل...', en: 'Loading...' },
+  error:         { ar: 'خطأ', en: 'Error' },
+  success:       { ar: 'نجاح', en: 'Success' },
+  cancel:        { ar: 'إلغاء', en: 'Cancel' },
+  confirm:       { ar: 'تأكيد', en: 'Confirm' },
+  save:          { ar: 'حفظ', en: 'Save' },
+  delete:        { ar: 'حذف', en: 'Delete' },
+  edit:          { ar: 'تعديل', en: 'Edit' },
+  search:        { ar: 'بحث', en: 'Search' },
+  refresh:       { ar: 'تحديث', en: 'Refresh' },
+  retry:         { ar: 'إعادة المحاولة', en: 'Retry' },
+  close:         { ar: 'إغلاق', en: 'Close' },
+  back:          { ar: 'رجوع', en: 'Back' },
+  noData:        { ar: 'لا توجد بيانات', en: 'No data available' },
+  networkError:  { ar: 'خطأ في الاتصال بالخادم', en: 'Cannot connect to server' },
+
+  // ── Auth ───────────────────────────────────────────────────
+  login:         { ar: 'تسجيل الدخول', en: 'Login' },
+  logout:        { ar: 'تسجيل الخروج', en: 'Logout' },
+  username:      { ar: 'اسم المستخدم', en: 'Username' },
+  password:      { ar: 'كلمة المرور', en: 'Password' },
+  loginBtn:      { ar: 'دخول', en: 'Sign In' },
+  loginError:    { ar: 'اسم المستخدم أو كلمة المرور غير صحيحة', en: 'Invalid username or password' },
+  loginWelcome:  { ar: 'مرحباً بك في نظام سلسلة الدواء', en: 'Welcome to Drug Chain System' },
+  logoutConfirm: { ar: 'هل تريد تسجيل الخروج؟', en: 'Do you want to logout?' },
+
+  // ── Navigation ─────────────────────────────────────────────
+  dashboard:     { ar: 'لوحة التحكم', en: 'Dashboard' },
+  addDrug:       { ar: 'إضافة دواء', en: 'Add Drug' },
+  transfer:      { ar: 'نقل الدواء', en: 'Transfer Drug' },
+  blockchain:    { ar: 'البلوكتشين', en: 'Blockchain' },
+  verifyQR:      { ar: 'التحقق من QR', en: 'Verify QR' },
+  qrControl:     { ar: 'إدارة الكوتا', en: 'QR Control' },
+  auditLog:      { ar: 'سجل المراجعة', en: 'Audit Log' },
+  drugInfo:      { ar: 'معلومات الدواء', en: 'Drug Info' },
+  generateQR:    { ar: 'توليد QR', en: 'Generate QR' },
+
+  // ── Dashboard ──────────────────────────────────────────────
+  totalDrugs:    { ar: 'إجمالي الأدوية', en: 'Total Drugs' },
+  expiredDrugs:  { ar: 'منتهية الصلاحية', en: 'Expired' },
+  lowStock:      { ar: 'مخزون منخفض', en: 'Low Stock' },
+  recentDrugs:   { ar: 'الأدوية الأخيرة', en: 'Recent Drugs' },
+  viewAll:       { ar: 'عرض الكل', en: 'View All' },
+  drugList:      { ar: 'قائمة الأدوية', en: 'Drug List' },
+  noDrugs:       { ar: 'لا توجد أدوية مسجلة', en: 'No drugs registered' },
+
+  // ── Drug fields ────────────────────────────────────────────
+  drugName:      { ar: 'اسم الدواء', en: 'Drug Name' },
+  batchNumber:   { ar: 'رقم الدفعة', en: 'Batch Number' },
+  expiryDate:    { ar: 'تاريخ الانتهاء', en: 'Expiry Date' },
+  manufacturer:  { ar: 'الشركة المصنعة', en: 'Manufacturer' },
+  quantity:      { ar: 'الكمية', en: 'Quantity' },
+  aiToken:       { ar: 'رمز التحقق', en: 'AI Token' },
+  status:        { ar: 'الحالة', en: 'Status' },
+  createdAt:     { ar: 'تاريخ الإضافة', en: 'Added On' },
+  expired:       { ar: 'منتهي الصلاحية', en: 'Expired' },
+  valid:         { ar: 'صالح', en: 'Valid' },
+  addDrugTitle:  { ar: 'إضافة دواء جديد', en: 'Add New Drug' },
+  addDrugBtn:    { ar: 'إضافة الدواء', en: 'Add Drug' },
+  addDrugSuccess:{ ar: 'تم إضافة الدواء بنجاح', en: 'Drug added successfully' },
+  addDrugError:  { ar: 'فشل في إضافة الدواء', en: 'Failed to add drug' },
+  expiryFormat:  { ar: 'الصيغة: YYYY-MM-DD', en: 'Format: YYYY-MM-DD' },
+
+  // ── Transfer ───────────────────────────────────────────────
+  transferTitle: { ar: 'نقل الدواء', en: 'Transfer Drug' },
+  selectDrug:    { ar: 'اختر الدواء', en: 'Select Drug' },
+  toUser:        { ar: 'إلى المستخدم', en: 'To User' },
+  fromRole:      { ar: 'من', en: 'From' },
+  toRole:        { ar: 'إلى', en: 'To' },
+  transferBtn:   { ar: 'نقل', en: 'Transfer' },
+  transferSuccess:{ ar: 'تم النقل بنجاح', en: 'Transfer successful' },
+  transferError: { ar: 'فشل النقل', en: 'Transfer failed' },
+  noPermission:  { ar: 'لا توجد صلاحية', en: 'No permission' },
+  blockMined:    { ar: 'تم تعدين البلوك', en: 'Block mined' },
+
+  // ── Blockchain ─────────────────────────────────────────────
+  blockchainTitle:{ ar: 'سجل البلوكتشين', en: 'Blockchain Ledger' },
+  blockNumber:   { ar: 'رقم البلوك', en: 'Block #' },
+  blockHash:     { ar: 'هاش البلوك', en: 'Block Hash' },
+  prevHash:      { ar: 'الهاش السابق', en: 'Previous Hash' },
+  nonce:         { ar: 'النونس', en: 'Nonce' },
+  merkleRoot:    { ar: 'جذر ميركل', en: 'Merkle Root' },
+  timestamp:     { ar: 'الوقت', en: 'Timestamp' },
+  verifyChain:   { ar: 'التحقق من السلسلة', en: 'Verify Chain' },
+  chainValid:    { ar: '✅ السلسلة سليمة', en: '✅ Chain is valid' },
+  chainInvalid:  { ar: '⚠️ تم اكتشاف تلاعب', en: '⚠️ Tampering detected' },
+  noBlocks:      { ar: 'لا توجد بلوكات بعد', en: 'No blocks yet' },
+  totalBlocks:   { ar: 'إجمالي البلوكات', en: 'Total Blocks' },
+  difficulty:    { ar: 'الصعوبة', en: 'Difficulty' },
+
+  // ── Verify QR ──────────────────────────────────────────────
+  verifyTitle:   { ar: 'التحقق من رمز QR', en: 'Verify QR Code' },
+  scanQR:        { ar: 'مسح رمز QR', en: 'Scan QR Code' },
+  manualVerify:  { ar: 'إدخال يدوي', en: 'Manual Entry' },
+  drugId:        { ar: 'معرف الدواء', en: 'Drug ID' },
+  prodDate:      { ar: 'تاريخ الإنتاج', en: 'Production Date' },
+  signature:     { ar: 'التوقيع', en: 'Signature' },
+  sequence:      { ar: 'رقم التسلسل', en: 'Sequence' },
+  verifyBtn:     { ar: 'تحقق', en: 'Verify' },
+  verifyValid:   { ar: '✅ الدواء أصلي وآمن', en: '✅ Drug is authentic' },
+  verifyInvalid: { ar: '⚠️ تحذير: دواء مشبوه!', en: '⚠️ Warning: Suspicious drug!' },
+  attackType:    { ar: 'نوع الهجوم', en: 'Attack Type' },
+  cameraPermission:{ ar: 'يرجى السماح بالوصول للكاميرا', en: 'Camera permission required' },
+  openSettings:  { ar: 'فتح الإعدادات', en: 'Open Settings' },
+
+  // ── QR Control ─────────────────────────────────────────────
+  qrControlTitle:{ ar: 'إدارة كوتا QR', en: 'QR Quota Control' },
+  quotaLimit:    { ar: 'الحد الأقصى', en: 'Quota Limit' },
+  issuedCount:   { ar: 'الصادرة', en: 'Issued' },
+  remaining:     { ar: 'المتبقية', en: 'Remaining' },
+  periodType:    { ar: 'نوع الفترة', en: 'Period' },
+  selectDrugQR:  { ar: 'اختر الدواء لتوليد QR', en: 'Select drug to generate QR' },
+  qrGenerated:   { ar: 'تم توليد رمز QR', en: 'QR code generated' },
+  quotaExceeded: { ar: 'تم تجاوز الكوتا', en: 'Quota exceeded' },
+  shareQR:       { ar: 'مشاركة QR', en: 'Share QR' },
+
+  // ── Audit ──────────────────────────────────────────────────
+  auditTitle:    { ar: 'سجل المراجعة', en: 'Audit Log' },
+  action:        { ar: 'الإجراء', en: 'Action' },
+  ipAddress:     { ar: 'عنوان IP', en: 'IP Address' },
+  details:       { ar: 'التفاصيل', en: 'Details' },
+  noAuditLogs:   { ar: 'لا توجد سجلات', en: 'No audit logs' },
+
+  // ── Roles ──────────────────────────────────────────────────
+  roleFactory:   { ar: 'المصنع', en: 'Factory' },
+  roleDistrib:   { ar: 'الموزع', en: 'Distributor' },
+  rolePharmacy:  { ar: 'الصيدلية', en: 'Pharmacy' },
+  roleCustomer:  { ar: 'العميل', en: 'Customer' },
+  roleAdmin:     { ar: 'المدير', en: 'Admin' },
+  myRole:        { ar: 'دوري', en: 'My Role' },
+};
+
+export default translations;
