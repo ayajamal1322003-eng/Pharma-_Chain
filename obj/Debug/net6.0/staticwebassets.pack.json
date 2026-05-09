@@ -25,12 +25,32 @@
       "PackagePath": "staticwebassets\\drug-info.html"
     },
     {
+      "Id": "C:\\Users\\DELL\\Desktop\\PharmaChain\\wwwroot\\icon.svg",
+      "PackagePath": "staticwebassets\\icon.svg"
+    },
+    {
       "Id": "C:\\Users\\DELL\\Desktop\\PharmaChain\\wwwroot\\login.html",
       "PackagePath": "staticwebassets\\login.html"
     },
     {
+      "Id": "C:\\Users\\DELL\\Desktop\\PharmaChain\\wwwroot\\manifest.json",
+      "PackagePath": "staticwebassets\\manifest.json"
+    },
+    {
       "Id": "C:\\Users\\DELL\\Desktop\\PharmaChain\\wwwroot\\patient-chat.html",
       "PackagePath": "staticwebassets\\patient-chat.html"
+    },
+    {
+      "Id": "C:\\Users\\DELL\\Desktop\\PharmaChain\\wwwroot\\pharma-lang.js",
+      "PackagePath": "staticwebassets\\pharma-lang.js"
+    },
+    {
+      "Id": "C:\\Users\\DELL\\Desktop\\PharmaChain\\wwwroot\\pharma-styles.css",
+      "PackagePath": "staticwebassets\\pharma-styles.css"
+    },
+    {
+      "Id": "C:\\Users\\DELL\\Desktop\\PharmaChain\\wwwroot\\qr-control.html",
+      "PackagePath": "staticwebassets\\qr-control.html"
     },
     {
       "Id": "C:\\Users\\DELL\\Desktop\\PharmaChain\\wwwroot\\risk-analyst.html",
@@ -39,6 +59,10 @@
     {
       "Id": "C:\\Users\\DELL\\Desktop\\PharmaChain\\wwwroot\\supply-advisor.html",
       "PackagePath": "staticwebassets\\supply-advisor.html"
+    },
+    {
+      "Id": "C:\\Users\\DELL\\Desktop\\PharmaChain\\wwwroot\\sw.js",
+      "PackagePath": "staticwebassets\\sw.js"
     },
     {
       "Id": "C:\\Users\\DELL\\Desktop\\PharmaChain\\wwwroot\\transfer.html",

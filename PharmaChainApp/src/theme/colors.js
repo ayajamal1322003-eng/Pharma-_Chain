@@ -1,0 +1,57 @@
+// PharmaChain Teal Design System — exact match to pharma-styles.css
+export const C = {
+  teal900: '#0d3d38',
+  teal800: '#0f4c45',
+  teal700: '#0d6158',
+  teal600: '#0d9488',
+  teal500: '#14b8a6',
+  teal400: '#2dd4bf',
+  teal300: '#5eead4',
+  teal200: '#99f6e4',
+  teal100: '#ccfbf1',
+  teal50:  '#f0fdfa',
+
+  cyan600: '#0891b2',
+  cyan500: '#06b6d4',
+  cyan400: '#22d3ee',
+
+  emerald700: '#047857',
+  emerald600: '#059669',
+  emerald500: '#10b981',
+  emerald200: '#a7f3d0',
+  emerald100: '#d1fae5',
+  emerald50:  '#f0fdf4',
+
+  amber600: '#d97706',
+  amber500: '#f59e0b',
+  amber200: '#fde68a',
+  amber100: '#fef3c7',
+  amber50:  '#fffbeb',
+
+  rose700: '#be123c',
+  rose600: '#e11d48',
+  rose500: '#f43f5e',
+  rose200: '#fecdd3',
+  rose100: '#ffe4e6',
+  rose50:  '#fff1f2',
+
+  purple600: '#7c3aed',
+  purple500: '#8b5cf6',
+  purple200: '#ddd6fe',
+  purple100: '#ede9fe',
+  purple50:  '#f5f3ff',
+
+  gray900: '#111827',
+  gray800: '#1f2937',
+  gray700: '#374151',
+  gray600: '#4b5563',
+  gray500: '#6b7280',
+  gray400: '#9ca3af',
+  gray300: '#d1d5db',
+  gray200: '#e5e7eb',
+  gray100: '#f3f4f6',
+  gray50:  '#f9fafb',
+
+  white:   '#ffffff',
+  bg:      '#f1f5f9',
+};
