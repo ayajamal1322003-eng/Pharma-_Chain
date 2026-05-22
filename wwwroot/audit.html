@@ -15,22 +15,79 @@
     <link rel="stylesheet" href="/pharma-styles.css">
     <script src="/pharma-lang.js"></script>
     <style>
-        .mini-stats {
-            display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+        /* ── Stats chips ── */
+        .stats-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+        .stat-chip {
+            background:white; border:1px solid var(--gray-100); border-radius:var(--radius-lg);
+            padding:13px 16px; display:flex; align-items:center; gap:10px;
+            box-shadow:var(--shadow-sm); flex:1; min-width:130px;
+            cursor:pointer; transition:box-shadow .15s,border-color .15s;
         }
-        .mini-stat-card {
-            background: white; border: 1px solid var(--gray-100);
-            border-radius: var(--radius-lg); padding: 14px 18px;
-            box-shadow: var(--shadow-sm); flex: 1; min-width: 140px;
+        .stat-chip:hover { box-shadow:var(--shadow-md); }
+        .stat-chip.active { border-color:var(--blue-400); background:var(--blue-50); }
+        .stat-chip-icon { font-size:20px; }
+        .stat-chip-val  { font-size:21px; font-weight:800; color:var(--gray-900); line-height:1; }
+        .stat-chip-lbl  { font-size:10.5px; color:var(--gray-500); margin-top:2px; }
+
+        /* ── Source badge ── */
+        .src-badge {
+            display:inline-flex; align-items:center; gap:4px;
+            font-size:10.5px; font-weight:700; padding:2px 9px;
+            border-radius:11px; white-space:nowrap;
         }
-        .mini-stat-val   { font-size: 24px; font-weight: 800; color: var(--gray-900); }
-        .mini-stat-label { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; }
+        .src-SYSTEM     { background:#fef3c7; color:#92400e; }
+        .src-QR_SCAN    { background:#ffe4e6; color:#9f1239; }
+        .src-QR_ISSUED  { background:#dbeafe; color:#1e40af; }
+        .src-BLOCKCHAIN { background:#ede9fe; color:#4c1d95; }
 
-        .ip-mono { font-family:'Consolas',monospace; font-size:11px; color:var(--gray-500); background:var(--gray-100); padding:2px 7px; border-radius:4px; }
+        /* ── Event-type badge ── */
+        .ev-badge {
+            font-size:10px; font-weight:700; padding:2px 8px;
+            border-radius:10px; white-space:nowrap;
+        }
+        /* system */
+        .ev-Login          { background:#d1fae5; color:#065f46; }
+        .ev-FailedLogin    { background:#ffe4e6; color:#9f1239; }
+        .ev-Register       { background:#fef3c7; color:#92400e; }
+        .ev-AddDrug        { background:#dbeafe; color:#1e40af; }
+        .ev-DeleteDrug     { background:#ffe4e6; color:#9f1239; }
+        .ev-TransferDrug   { background:#ede9fe; color:#4c1d95; }
+        .ev-TamperDetected { background:#ffe4e6; color:#9f1239; font-weight:900; }
+        /* scans */
+        .ev-SCAN_VALID  { background:#d1fae5; color:#065f46; }
+        .ev-SCAN_ATTACK { background:#ffe4e6; color:#9f1239; }
+        /* issuances */
+        .ev-QR_ISSUED   { background:#dbeafe; color:#1e40af; }
+        /* blockchain */
+        .ev-DRUG_REGISTERED { background:#d1fae5; color:#065f46; }
+        .ev-QR_GENERATED    { background:#dbeafe; color:#1e40af; }
+        .ev-TRANSFER        { background:#ede9fe; color:#4c1d95; }
+        .ev-CUSTOMER_SCAN   { background:#ccfbf1; color:#134e4a; }
 
-        .log-tamper td { background: var(--rose-50) !important; }
+        /* ── Status pill ── */
+        .st-pill {
+            font-size:10px; font-weight:700; padding:2px 8px;
+            border-radius:10px; white-space:nowrap;
+        }
+        .st-Valid     { background:#d1fae5; color:#065f46; }
+        .st-Attack    { background:#ffe4e6; color:#9f1239; }
+        .st-Blocked   { background:#ffe4e6; color:#9f1239; }
+        .st-Suspicious{ background:#fef3c7; color:#92400e; }
+        .st-Registered{ background:#d1fae5; color:#065f46; }
+        .st-Issued    { background:#dbeafe; color:#1e40af; }
+        .st-Transferred{ background:#ede9fe; color:#4c1d95; }
+        .st-Verified  { background:#ccfbf1; color:#134e4a; }
 
-        .no-access { text-align:center; padding:60px; color:#881337; font-size:15px; }
+        /* ── Table tweaks ── */
+        .audit-table td { vertical-align:middle; font-size:12.5px; }
+        .ip-mono  { font-family:'Consolas',monospace; font-size:10.5px; color:var(--gray-500); background:var(--gray-100); padding:2px 6px; border-radius:4px; }
+        .hash-pill{ font-family:'Consolas',monospace; font-size:10.5px; color:#0d9488; background:#f0fdfa; padding:2px 6px; border-radius:4px; }
+        .row-tamper td { background:#fff1f2 !important; }
+        .row-attack td { background:#fff8f8 !important; }
+
+        /* ── Filter bar ── */
+        .filter-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+        .filter-row .search-wrap { flex:1; min-width:240px; }
     </style>
 </head>
 <body>
@@ -41,15 +98,13 @@
         <div class="sidebar-logo"><h2>PharmaChain</h2><p data-i18n="sidebar_sub">نظام تتبع الأدوية</p></div>
         <button class="lang-toggle-btn" onclick="PharmaLang.toggle()">🇬🇧 EN</button>
         <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> <span data-i18n="nav_dashboard">لوحة التحكم</span></a>
-        <a class="nav-item" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> <span data-i18n="nav_add_drug">إضافة دواء</span></a>
-        <a class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> <span data-i18n="nav_transfer">نقل دواء</span></a>
+        <a class="nav-item" id="navAddDrug" style="display:none" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> <span data-i18n="nav_add_drug">إضافة دواء</span></a>
+        <a class="nav-item" id="navTransfer" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> <span data-i18n="nav_transfer">نقل دواء</span></a>
         <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> <span data-i18n="nav_blockchain">Blockchain</span></a>
+        <a class="nav-item" id="navLedger" style="display:none" onclick="goTo('ledger.html')"><span class="nav-icon">📒</span> Ledger</a>
         <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> <span data-i18n="nav_verify">التحقق من دواء</span></a>
         <a class="nav-item active"><span class="nav-icon">📋</span> <span data-i18n="nav_audit">سجل العمليات</span></a>
-        <div class="nav-section-hdr" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
-        <a class="nav-item" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
-        <a class="nav-item" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
-        <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span>إدارة QR Code</span></a>
+        <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span data-i18n="nav_qr_control">إدارة QR Code</span></a>
         <div class="user-info-bar">
             <div class="user-row">
                 <div class="user-avatar">👤</div>
@@ -66,152 +121,323 @@
     <div class="main">
         <div class="page-header">
             <div>
-                <div class="page-title" data-i18n="audit_title">سجل العمليات</div>
-                <div class="page-subtitle" data-i18n="audit_subtitle">Audit Log — جميع العمليات الأمنية والإدارية مسجلة هنا</div>
+                <div class="page-title">📋 سجل العمليات الشامل</div>
+                <div class="page-subtitle" id="pageSubtitle">جميع الأحداث على النظام — scans · إصدار QR · Blockchain · دخول وخروج</div>
             </div>
             <div class="header-actions">
-                <button class="btn btn-outline" onclick="loadLogs()" data-i18n="btn_refresh">🔄 تحديث</button>
+                <button class="btn btn-outline" onclick="load()" style="font-size:13px;">🔄 تحديث</button>
             </div>
         </div>
 
-        <div class="mini-stats" id="statsRow"></div>
+        <!-- Stats chips (clickable source filter) -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-chip active" id="chip-ALL" onclick="setSource('ALL')">
+                <div class="stat-chip-icon">📋</div>
+                <div><div class="stat-chip-val" id="cnt-ALL">—</div><div class="stat-chip-lbl">إجمالي الأحداث</div></div>
+            </div>
+            <div class="stat-chip" id="chip-SYSTEM" onclick="setSource('SYSTEM')">
+                <div class="stat-chip-icon">⚙️</div>
+                <div><div class="stat-chip-val" id="cnt-SYSTEM">—</div><div class="stat-chip-lbl">عمليات النظام</div></div>
+            </div>
+            <div class="stat-chip" id="chip-QR_SCAN" onclick="setSource('QR_SCAN')">
+                <div class="stat-chip-icon">📷</div>
+                <div><div class="stat-chip-val" id="cnt-QR_SCAN">—</div><div class="stat-chip-lbl">مسح QR</div></div>
+            </div>
+            <div class="stat-chip" id="chip-QR_ISSUED" onclick="setSource('QR_ISSUED')">
+                <div class="stat-chip-icon">📱</div>
+                <div><div class="stat-chip-val" id="cnt-QR_ISSUED">—</div><div class="stat-chip-lbl">QR أُصدر</div></div>
+            </div>
+            <div class="stat-chip" id="chip-BLOCKCHAIN" onclick="setSource('BLOCKCHAIN')">
+                <div class="stat-chip-icon">⛓️</div>
+                <div><div class="stat-chip-val" id="cnt-BLOCKCHAIN">—</div><div class="stat-chip-lbl">Blockchain</div></div>
+            </div>
+            <div class="stat-chip" style="border-color:var(--rose-200);background:var(--rose-50);" id="chip-ATTACKS" onclick="setSource('QR_SCAN','SCAN_ATTACK')">
+                <div class="stat-chip-icon">🚨</div>
+                <div><div class="stat-chip-val" id="cnt-ATTACKS" style="color:#9f1239;">—</div><div class="stat-chip-lbl">هجمات مكتشفة</div></div>
+            </div>
+        </div>
 
+        <!-- Filter bar -->
+        <div class="filter-row">
+            <div class="search-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput"
+                       placeholder="ابحث بالمستخدم · IP · اسم الدواء · نوع الحدث..."
+                       oninput="applyLocal()">
+            </div>
+            <select class="filter-select" id="srcFilter" onchange="load()">
+                <option value="ALL">كل المصادر</option>
+                <option value="SYSTEM">⚙️ عمليات النظام</option>
+                <option value="QR_SCAN">📷 مسح QR</option>
+                <option value="QR_ISSUED">📱 إصدار QR</option>
+                <option value="BLOCKCHAIN">⛓️ Blockchain</option>
+            </select>
+            <select class="filter-select" id="limitSel" onchange="load()">
+                <option value="200">200 حدث</option>
+                <option value="500" selected>500 حدث</option>
+                <option value="1000">1000 حدث</option>
+            </select>
+        </div>
+
+        <!-- Table card -->
         <div class="card">
             <div class="card-header">
                 <div class="card-header-left">
                     <div class="card-icon ci-purple">📋</div>
                     <div>
-                        <div class="card-title"><span data-i18n="audit_card_title">جميع العمليات</span> <span class="count-badge" id="logCount">0</span></div>
-                        <div class="card-subtitle" data-i18n="audit_card_sub">مرتبة من الأحدث للأقدم</div>
+                        <div class="card-title">
+                            جميع العمليات
+                            <span class="count-badge" id="evCount">0</span>
+                        </div>
+                        <div class="card-subtitle">مرتبة من الأحدث — مصادر مدمجة: النظام · QR · Blockchain</div>
                     </div>
                 </div>
-                <select id="filterAction" onchange="filterLogs()" class="filter-select">
-                    <option value="" data-i18n="audit_filter_all">كل العمليات</option>
-                    <option value="Login" data-i18n="audit_login">دخول ناجح</option>
-                    <option value="FailedLogin" data-i18n="audit_fail_login">دخول فاشل</option>
-                    <option value="Register" data-i18n="audit_register">تسجيل حساب</option>
-                    <option value="AddDrug" data-i18n="audit_add_drug">إضافة دواء</option>
-                    <option value="DeleteDrug" data-i18n="audit_del_drug">حذف دواء</option>
-                    <option value="TransferDrug" data-i18n="audit_transfer">نقل دواء</option>
-                    <option value="TamperDetected" data-i18n="audit_tamper_f">تلاعب مكتشف 🚨</option>
-                </select>
             </div>
-            <div class="table-wrap" id="logsTable">
-                <div class="loading-state"><div class="spinner"></div><span data-i18n="loading_log">جاري تحميل السجل...</span></div>
+            <div class="table-wrap" id="tableWrap">
+                <div class="loading-state"><div class="spinner"></div>جاري تحميل السجل...</div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    var API = 'http://localhost:7036';
-    var token = localStorage.getItem('token');
-    var role  = localStorage.getItem('role');
+    var API    = 'http://localhost:7036';
+    var token  = localStorage.getItem('token');
+    var role   = localStorage.getItem('role');
 
-    if (!token) { window.location.replace(API + '/login.html'); }
+    if (!token) window.location.replace(API + '/login.html');
+    if (role !== 'Admin' && role !== 'LedgerAdmin')
+        window.location.replace(API + '/dashboard.html');
 
     document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
     document.getElementById('sidebarRole').textContent = role || '';
 
-    var allLogs = [];
+    // Sidebar role-based visibility
+    if (role === 'Admin') {
+        document.getElementById('navAddDrug').style.display = 'flex';
+        document.getElementById('navLedger').style.display = 'flex';
+    }
+    if (role === 'LedgerAdmin') {
+        document.getElementById('navLedger').style.display = 'flex';
+        document.getElementById('navTransfer').style.display = 'none';
+    }
 
-    function goTo(page) { window.location.replace(API + '/' + page); }
+    function goTo(p)  { window.location.replace(API + '/' + p); }
     function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
 
-    function loadLogs() {
-        if (role !== 'Admin') {
-            document.getElementById('logsTable').innerHTML = '<div class="no-access" style="text-align:center;padding:60px;color:#881337;font-size:15px;">⛔ ' + (PharmaLang.get() === 'ar' ? 'سجل العمليات متاح للمدير فقط' : 'Audit Log is available for Admin only') + '</div>';
-            return;
-        }
-        document.getElementById('logsTable').innerHTML = '<div class="loading-state"><div class="spinner"></div><span>' + PharmaLang.t('loading_log') + '</span></div>';
+    /* ══════════════════════════════════════════════════════
+       Metadata maps
+    ══════════════════════════════════════════════════════ */
+    var SRC_META = {
+        SYSTEM     : { icon:'⚙️',  label:'نظام',        labelEn:'System',     cls:'src-SYSTEM'     },
+        QR_SCAN    : { icon:'📷',  label:'مسح QR',      labelEn:'QR Scan',    cls:'src-QR_SCAN'    },
+        QR_ISSUED  : { icon:'📱',  label:'إصدار QR',    labelEn:'QR Issued',  cls:'src-QR_ISSUED'  },
+        BLOCKCHAIN : { icon:'⛓️', label:'Blockchain',   labelEn:'Blockchain', cls:'src-BLOCKCHAIN' },
+    };
+
+    var EV_LABELS_AR = {
+        Login           : 'دخول ناجح',
+        FailedLogin     : 'دخول فاشل',
+        Register        : 'تسجيل حساب',
+        AddDrug         : 'إضافة دواء',
+        DeleteDrug      : 'حذف دواء',
+        TransferDrug    : 'نقل دواء',
+        TamperDetected  : '🚨 تلاعب مكتشف',
+        SCAN_VALID      : 'مسح صحيح ✅',
+        SCAN_ATTACK     : 'هجوم 🚨',
+        QR_ISSUED       : 'QR أُصدر',
+        DRUG_REGISTERED : 'تسجيل دواء',
+        QR_GENERATED    : 'QR توليد',
+        TRANSFER        : 'نقل ملكية',
+        CUSTOMER_SCAN   : 'مسح عميل',
+    };
+    var EV_LABELS_EN = {
+        Login           : 'Login',
+        FailedLogin     : 'Failed Login',
+        Register        : 'Register',
+        AddDrug         : 'Add Drug',
+        DeleteDrug      : 'Delete Drug',
+        TransferDrug    : 'Transfer Drug',
+        TamperDetected  : '🚨 Tamper Detected',
+        SCAN_VALID      : 'Valid Scan ✅',
+        SCAN_ATTACK     : 'Attack 🚨',
+        QR_ISSUED       : 'QR Issued',
+        DRUG_REGISTERED : 'Drug Registered',
+        QR_GENERATED    : 'QR Generated',
+        TRANSFER        : 'Transfer',
+        CUSTOMER_SCAN   : 'Customer Scan',
+    };
+
+    function evLabel(et) {
+        return (PharmaLang.get() === 'ar' ? EV_LABELS_AR : EV_LABELS_EN)[et] || et;
+    }
+    function evCls(et) { return 'ev-badge ev-' + et.replace(/[^a-zA-Z0-9_]/g,''); }
+
+    var attackTypeLabels = {
+        SIGNATURE_MISMATCH : 'توقيع مزيف',
+        DATE_MISMATCH      : 'تاريخ مزيف',
+        DRUG_NOT_FOUND     : 'دواء غير موجود',
+        QR_EXPIRED         : 'QR منتهي',
+        QUOTA_EXCEEDED     : 'تجاوز الحصة',
+        MISSING_PARAMS     : 'بيانات ناقصة',
+        NONE               : '—',
+    };
+
+    /* ══════════════════════════════════════════════════════
+       Source filter chips
+    ══════════════════════════════════════════════════════ */
+    var activeEventFilter = null;
+
+    function setSource(src, evType) {
+        activeEventFilter = evType || null;
+        document.querySelectorAll('.stat-chip').forEach(function(c) { c.classList.remove('active'); });
+        var chipId = evType ? 'chip-ATTACKS' : 'chip-' + src;
+        var el = document.getElementById(chipId);
+        if (el) el.classList.add('active');
+        document.getElementById('srcFilter').value = src;
+        load();
+    }
+
+    /* ══════════════════════════════════════════════════════
+       Load from API
+    ══════════════════════════════════════════════════════ */
+    var allEvents = [];
+
+    function load() {
+        var src = document.getElementById('srcFilter').value;
+        var lim = document.getElementById('limitSel').value;
+        var url = API + '/api/audit/full?limit=' + lim;
+        if (src && src !== 'ALL') url += '&source=' + encodeURIComponent(src);
+
+        document.getElementById('tableWrap').innerHTML =
+            '<div class="loading-state"><div class="spinner"></div>جاري التحميل...</div>';
+
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', API + '/api/audit', true);
+        xhr.open('GET', url, true);
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-        xhr.onload = function () {
+        xhr.onload = function() {
             if (xhr.status === 401) { window.location.replace(API + '/login.html'); return; }
-            allLogs = JSON.parse(xhr.responseText);
+            if (xhr.status !== 200) {
+                document.getElementById('tableWrap').innerHTML =
+                    '<div class="loading-state">⚠️ تعذر تحميل السجل (' + xhr.status + ')</div>';
+                return;
+            }
+            var d = JSON.parse(xhr.responseText);
+            allEvents = d.events || [];
 
-            var logins = allLogs.filter(function(l){return l.action==='Login';}).length;
-            var failed = allLogs.filter(function(l){return l.action==='FailedLogin';}).length;
-            var tamper = allLogs.filter(function(l){return l.action==='TamperDetected';}).length;
-            var adds   = allLogs.filter(function(l){return l.action==='AddDrug';}).length;
-            var transfers = allLogs.filter(function(l){return l.action==='TransferDrug';}).length;
+            // Update stat chips
+            document.getElementById('cnt-ALL').textContent       = d.stats.total;
+            document.getElementById('cnt-SYSTEM').textContent    = d.stats.system;
+            document.getElementById('cnt-QR_SCAN').textContent   = d.stats.qrScans;
+            document.getElementById('cnt-QR_ISSUED').textContent = d.stats.qrIssued;
+            document.getElementById('cnt-BLOCKCHAIN').textContent= d.stats.blockchain;
+            document.getElementById('cnt-ATTACKS').textContent   = d.stats.attacks;
 
-            document.getElementById('statsRow').innerHTML =
-                '<div class="mini-stat-card"><div class="mini-stat-val">' + allLogs.length + '</div><div class="mini-stat-label">' + PharmaLang.t('audit_total') + '</div></div>' +
-                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#065f46">' + logins + '</div><div class="mini-stat-label">' + PharmaLang.t('audit_logins') + '</div></div>' +
-                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#9f1239">' + failed + '</div><div class="mini-stat-label">' + PharmaLang.t('audit_failed') + '</div></div>' +
-                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#9f1239">' + tamper + '</div><div class="mini-stat-label">' + PharmaLang.t('audit_tamper') + '</div></div>' +
-                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#1e40af">' + adds + '</div><div class="mini-stat-label">' + PharmaLang.t('audit_added') + '</div></div>' +
-                '<div class="mini-stat-card"><div class="mini-stat-val" style="color:#4c1d95">' + transfers + '</div><div class="mini-stat-label">' + PharmaLang.t('audit_transfers') + '</div></div>';
-
-            renderLogs(allLogs);
+            applyLocal();
         };
-        xhr.onerror = function () { document.getElementById('logsTable').innerHTML = '<div class="loading-state">⚠️ ' + (PharmaLang.get() === 'ar' ? 'تعذر تحميل السجل' : 'Failed to load audit log') + '</div>'; };
+        xhr.onerror = function() {
+            document.getElementById('tableWrap').innerHTML =
+                '<div class="loading-state">⚠️ تعذر الاتصال بالسيرفر</div>';
+        };
         xhr.send();
     }
 
-    var pillMap = {
-        'Login':          'badge-green',
-        'FailedLogin':    'badge-red',
-        'Register':       'badge-amber',
-        'AddDrug':        'badge-blue',
-        'DeleteDrug':     'badge-red',
-        'TransferDrug':   'badge-purple',
-        'TamperDetected': 'badge-red'
-    };
-    function getLabelMap() {
-        return {
-            'Login': PharmaLang.t('audit_login'), 'FailedLogin': PharmaLang.t('audit_fail_login'),
-            'Register': PharmaLang.t('audit_register'), 'AddDrug': PharmaLang.t('audit_add_drug'),
-            'DeleteDrug': PharmaLang.t('audit_del_drug'), 'TransferDrug': PharmaLang.t('audit_transfer'),
-            'TamperDetected': PharmaLang.t('audit_tamper_f')
-        };
+    /* ══════════════════════════════════════════════════════
+       Local filter (search + eventType chip)
+    ══════════════════════════════════════════════════════ */
+    function applyLocal() {
+        var q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+        var filtered = allEvents.filter(function(e) {
+            if (activeEventFilter && e.eventType !== activeEventFilter) return false;
+            if (!q) return true;
+            return (e.actor     || '').toLowerCase().includes(q) ||
+                   (e.drugName  || '').toLowerCase().includes(q) ||
+                   (e.eventType || '').toLowerCase().includes(q) ||
+                   (e.details   || '').toLowerCase().includes(q) ||
+                   (e.ipAddress || '').toLowerCase().includes(q) ||
+                   (e.actorRole || '').toLowerCase().includes(q);
+        });
+        document.getElementById('evCount').textContent = filtered.length;
+        render(filtered);
     }
 
-    function renderLogs(logs) {
-        document.getElementById('logCount').textContent = logs.length;
-        if (logs.length === 0) {
-            document.getElementById('logsTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">' + (PharmaLang.get() === 'ar' ? 'لا توجد عمليات مسجلة' : 'No operations recorded') + '</div></div>';
+    /* ══════════════════════════════════════════════════════
+       Render table
+    ══════════════════════════════════════════════════════ */
+    function render(events) {
+        var ar = PharmaLang.get() === 'ar';
+        var locale = ar ? 'ar-JO' : 'en-GB';
+
+        if (events.length === 0) {
+            document.getElementById('tableWrap').innerHTML =
+                '<div style="text-align:center;padding:50px;color:var(--gray-400);font-size:14px;">📭 لا توجد نتائج</div>';
             return;
         }
-        var labelMap = getLabelMap();
-        var html = '<table><thead><tr>'
-            + '<th>' + PharmaLang.t('th_id') + '</th>'
-            + '<th>' + PharmaLang.t('th_username') + '</th>'
-            + '<th>' + PharmaLang.t('th_action') + '</th>'
-            + '<th>' + PharmaLang.t('th_details') + '</th>'
-            + '<th>' + PharmaLang.t('th_datetime') + '</th>'
-            + '<th>' + PharmaLang.t('th_ip') + '</th>'
+
+        var html = '<table class="audit-table"><thead><tr>'
+            + '<th>#</th>'
+            + '<th>' + (ar ? 'المصدر' : 'Source') + '</th>'
+            + '<th>' + (ar ? 'نوع الحدث' : 'Event') + '</th>'
+            + '<th>' + (ar ? 'المستخدم / IP' : 'Actor / IP') + '</th>'
+            + '<th>' + (ar ? 'الدواء' : 'Drug') + '</th>'
+            + '<th>' + (ar ? 'التفاصيل' : 'Details') + '</th>'
+            + '<th>' + (ar ? 'الحالة' : 'Status') + '</th>'
+            + '<th>' + (ar ? 'التاريخ والوقت' : 'Timestamp') + '</th>'
             + '</tr></thead><tbody>';
-        logs.forEach(function (log, i) {
-            var date = new Date(log.timestamp).toLocaleString(PharmaLang.get() === 'ar' ? 'ar-JO' : 'en-US');
-            var cls  = pillMap[log.action]  || 'badge-gray';
-            var lbl  = labelMap[log.action] || log.action;
-            var rowCls = log.action === 'TamperDetected' ? 'log-tamper' : '';
+
+        events.forEach(function(e, i) {
+            var srcMeta = SRC_META[e.source] || { icon:'?', label:e.source, labelEn:e.source, cls:'src-SYSTEM' };
+            var srcLabel = ar ? srcMeta.label : srcMeta.labelEn;
+            var ts   = new Date(e.timestamp).toLocaleString(locale);
+            var stCls = e.status ? ('st-pill st-' + e.status.replace(/\s/g,'')) : '';
+
+            // Row highlight
+            var rowCls = '';
+            if (e.eventType === 'TamperDetected') rowCls = 'row-tamper';
+            else if (e.eventType === 'SCAN_ATTACK' || e.eventType === 'FailedLogin') rowCls = 'row-attack';
+
+            // Drug cell
+            var drugCell = (e.drugName || e.drugId)
+                ? '<strong>' + (e.drugName||'') + '</strong>'
+                  + (e.drugId ? ' <small style="color:var(--gray-400);">#' + e.drugId + '</small>' : '')
+                : '—';
+
+            // Details cell — for attack type show AR label
+            var details = e.details || '';
+            if (e.source === 'QR_SCAN' && e.attackType && e.attackType !== 'NONE') {
+                var atLabel = ar ? (attackTypeLabels[e.attackType] || e.attackType) : e.attackType;
+                details = '<span style="color:#9f1239;font-weight:700;">' + atLabel + '</span>'
+                        + (details ? '<br><small style="color:var(--gray-500);">' + details + '</small>' : '');
+            } else if (e.blockHash) {
+                details = details.replace(
+                    e.blockHash,
+                    '<span class="hash-pill">' + e.blockHash + '</span>'
+                );
+            }
+
             html += '<tr class="' + rowCls + '">'
-                + '<td style="color:var(--gray-400);font-size:12px;">' + (i+1) + '</td>'
-                + '<td><strong>' + log.username + '</strong></td>'
-                + '<td><span class="badge ' + cls + '">' + lbl + '</span></td>'
-                + '<td style="font-size:12.5px;color:var(--gray-600);max-width:320px;">' + log.details + '</td>'
-                + '<td style="font-size:12px;white-space:nowrap;">' + date + '</td>'
-                + '<td><span class="ip-mono">' + log.ipAddress + '</span></td>'
+                + '<td style="color:var(--gray-400);font-size:11px;">' + (i + 1) + '</td>'
+                + '<td><span class="src-badge ' + srcMeta.cls + '">' + srcMeta.icon + ' ' + srcLabel + '</span></td>'
+                + '<td><span class="' + evCls(e.eventType) + '">' + evLabel(e.eventType) + '</span></td>'
+                + '<td>'
+                    + (e.actor ? '<strong style="font-size:12.5px;">' + e.actor + '</strong>' : '—')
+                    + (e.actorRole ? '<br><span style="font-size:10.5px;color:var(--gray-400);">' + e.actorRole + '</span>' : '')
+                + '</td>'
+                + '<td>' + drugCell + '</td>'
+                + '<td style="font-size:12px;color:var(--gray-600);max-width:280px;word-break:break-word;">' + details + '</td>'
+                + '<td>' + (e.status ? '<span class="' + stCls + '">' + e.status + '</span>' : '—') + '</td>'
+                + '<td style="font-size:11.5px;white-space:nowrap;color:var(--gray-500);">' + ts + '</td>'
                 + '</tr>';
         });
+
         html += '</tbody></table>';
-        document.getElementById('logsTable').innerHTML = html;
+        document.getElementById('tableWrap').innerHTML = html;
     }
 
-    function filterLogs() {
-        var action = document.getElementById('filterAction').value;
-        renderLogs(action ? allLogs.filter(function(l){ return l.action === action; }) : allLogs);
-    }
+    window.addEventListener('pharmaLangChanged', function() { applyLocal(); });
 
-    loadLogs();
-
-    window.addEventListener('pharmaLangChanged', function () {
-        loadLogs();
-    });
+    // Init
+    load();
 </script>
 </body>
 </html>
