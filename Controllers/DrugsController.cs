@@ -94,6 +94,14 @@ namespace PharmaChain.Controllers
                 if (drug.ExpiryDate <= DateTime.UtcNow)
                     return BadRequest("لا يمكن إضافة دواء منتهي الصلاحية");
 
+                // ── ManufactureDate validation ──
+                if (drug.ManufactureDate == default || drug.ManufactureDate == DateTime.MinValue)
+                    drug.ManufactureDate = DateTime.UtcNow.Date;
+                if (drug.ManufactureDate > DateTime.UtcNow.AddDays(1))
+                    return BadRequest("تاريخ الإنتاج لا يمكن أن يكون في المستقبل");
+                if (drug.ManufactureDate >= drug.ExpiryDate)
+                    return BadRequest("تاريخ الإنتاج يجب أن يكون قبل تاريخ انتهاء الصلاحية");
+
                 // ── Sanitize ──
                 drug.Name         = System.Net.WebUtility.HtmlEncode(drug.Name.Trim());
                 drug.Manufacturer = System.Net.WebUtility.HtmlEncode(drug.Manufacturer.Trim());
@@ -214,7 +222,9 @@ namespace PharmaChain.Controllers
 
         private static string ComputeChecksum(Drug drug)
         {
+            // ManufactureDate + ExpiryDate included so tampering with dates breaks checksum
             var data = drug.Id + drug.Name + drug.BatchNumber +
+                       drug.ManufactureDate.ToString("yyyy-MM-dd") +
                        drug.ExpiryDate.ToString("yyyy-MM-dd") +
                        drug.Manufacturer + drug.Quantity + drug.AiToken;
             using var sha256 = SHA256.Create();

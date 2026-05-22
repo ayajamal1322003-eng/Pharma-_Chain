@@ -459,15 +459,17 @@
         var activeTab = 'name';
         var qrSigResult = null;
 
-        function verifyQrSignature(id, prod, ts, sig) {
+        function verifyQrSignature(id, mfg, exp, ts, sig) {
             var ar = PharmaLang.get() === 'ar';
             var alert = document.getElementById('qrAlert');
             alert.className = 'qr-alert checking show';
             alert.innerHTML = '<div class="qr-alert-title">🔍 ' + (ar ? 'جارٍ التحقق من توقيع QR Code...' : 'Verifying QR Code Signature...') + '</div>'
-                + '<div>' + (ar ? 'يتم التحقق من صحة الـ HMAC-SHA256 Signature' : 'Validating HMAC-SHA256 Signature integrity') + '</div>';
+                + '<div>' + (ar ? 'يتم التحقق من صحة الـ HMAC-SHA256 Signature والتواريخ الثلاثة' : 'Validating HMAC-SHA256 Signature + three-date binding') + '</div>';
 
+            // Build URL: new format (mfg+exp) or legacy (prod only)
             var url = API + '/api/qr/verify-signature?id=' + encodeURIComponent(id)
-                + '&prod=' + encodeURIComponent(prod)
+                + '&mfg=' + encodeURIComponent(mfg)
+                + (exp ? '&exp=' + encodeURIComponent(exp) : '')
                 + '&ts=' + encodeURIComponent(ts)
                 + '&sig=' + encodeURIComponent(sig);
 
@@ -504,20 +506,30 @@
 
         var attackLabelsAr = {
             'SIGNATURE_MISMATCH': '⚠️ تبديل ملصق — هذا الـ QR ينتمي لدواء مختلف',
-            'DATE_MISMATCH': '⚠️ تلاعب بالتاريخ — تاريخ الإنتاج لا يطابق السجل',
-            'DRUG_NOT_FOUND': '❌ دواء وهمي — الرقم غير موجود في النظام',
-            'QR_EXPIRED': '⏰ QR منتهي الصلاحية — مضى عليه أكثر من سنة',
-            'DELAY_DETECTED': '⚠️ تأخير مشبوه — فجوة زمنية كبيرة في السلسلة',
+            'DATE_MISMATCH':      '⚠️ تلاعب بالتاريخ — تاريخ الإنتاج لا يطابق السجل',
+            'MFG_DATE_MISMATCH':  '⚠️ تلاعب بتاريخ الإنتاج — لا يطابق قاعدة البيانات',
+            'EXPIRY_MISMATCH':    '⚠️ تلاعب بتاريخ الصلاحية — تاريخ الانتهاء مزيّف',
+            'DRUG_EXPIRED':       '⏰ الدواء منتهي الصلاحية — QR Code غير صالح تلقائياً',
+            'DRUG_NOT_FOUND':     '❌ دواء وهمي — الرقم غير موجود في النظام',
+            'QR_EXPIRED':         '⏰ QR منتهي الصلاحية — مضى عليه أكثر من سنة',
+            'QUOTA_EXCEEDED':     '🚫 تجاوز الحصة — QR صدر خارج النطاق المصرّح به',
+            'DELAY_DETECTED':     '⚠️ تأخير مشبوه — فجوة زمنية كبيرة في السلسلة',
+            'MISSING_PARAMS':     '❌ بيانات QR ناقصة — محاولة تزوير محتملة',
             'SERVER_ERROR': '🔴 خطأ في السيرفر',
             'NETWORK_ERROR': '🔴 خطأ في الشبكة',
             'PARSE_ERROR': '🔴 خطأ في البيانات'
         };
         var attackLabelsEn = {
             'SIGNATURE_MISMATCH': '⚠️ Label Swap — this QR belongs to a different drug',
-            'DATE_MISMATCH': '⚠️ Date Tampering — production date does not match the record',
-            'DRUG_NOT_FOUND': '❌ Fake Drug — ID not found in system',
-            'QR_EXPIRED': '⏰ QR Expired — older than one year',
-            'DELAY_DETECTED': '⚠️ Suspicious Delay — large time gap in the chain',
+            'DATE_MISMATCH':      '⚠️ Date Tampering — production date does not match the record',
+            'MFG_DATE_MISMATCH':  '⚠️ Manufacture Date Tampered — does not match database',
+            'EXPIRY_MISMATCH':    '⚠️ Expiry Date Forged — expiry date was altered',
+            'DRUG_EXPIRED':       '⏰ Drug Expired — QR Code automatically invalid',
+            'DRUG_NOT_FOUND':     '❌ Fake Drug — ID not found in system',
+            'QR_EXPIRED':         '⏰ QR Expired — older than one year',
+            'QUOTA_EXCEEDED':     '🚫 Quota Exceeded — QR issued outside authorised quota',
+            'DELAY_DETECTED':     '⚠️ Suspicious Delay — large time gap in the chain',
+            'MISSING_PARAMS':     '❌ Incomplete QR — possible label tampering',
             'SERVER_ERROR': '🔴 Server Error',
             'NETWORK_ERROR': '🔴 Network Error',
             'PARSE_ERROR': '🔴 Data Error'
@@ -555,11 +567,16 @@
             if (result.isValid) {
                 strip.className = 'qr-security-strip sig-ok';
                 title.textContent = ar ? '🔐 التحقق من QR Signature: سليم' : '🔐 QR Signature Verification: Valid';
-                detail.innerHTML = ar
-                    ? 'الـ HMAC-SHA256 Signature صحيحة ✓<br>تاريخ الإنتاج متطابق ✓<br>الـ QR لم يتعرض لأي تلاعب ✓'
-                    : 'HMAC-SHA256 Signature valid ✓<br>Production date matches ✓<br>QR has not been tampered with ✓';
+                var mfgLine  = result.manufactureDate  ? (ar ? 'تاريخ الإنتاج: '          : 'Manufacture date: ')  + result.manufactureDate  + ' ✓' : '';
+                var expLine  = result.expiryDate       ? (ar ? 'انتهاء صلاحية الدواء: '   : 'Drug expiry: ')       + result.expiryDate       + ' ✓' : '';
+                var qrLine   = result.qrExpiryDate     ? (ar ? 'انتهاء صلاحية QR Code: '  : 'QR Code expiry: ')    + result.qrExpiryDate     + ' ✓' : '';
+                detail.innerHTML = (ar
+                    ? 'الـ HMAC-SHA256 Signature صحيحة ✓<br>'
+                    : 'HMAC-SHA256 Signature valid ✓<br>')
+                    + [mfgLine, expLine, qrLine].filter(Boolean).join('<br>');
             } else {
-                var isCritical = ['DRUG_NOT_FOUND', 'SIGNATURE_MISMATCH', 'DATE_MISMATCH'].indexOf(result.attackType) > -1;
+                var isCritical = ['DRUG_NOT_FOUND','SIGNATURE_MISMATCH','DATE_MISMATCH',
+                                  'MFG_DATE_MISMATCH','EXPIRY_MISMATCH'].indexOf(result.attackType) > -1;
                 strip.className = 'qr-security-strip ' + (isCritical ? 'sig-bad' : 'sig-warn');
                 var label = getAttackLabel(result.attackType);
                 title.textContent = ar ? '🚨 تحذير أمني: ' + label : '🚨 Security Warning: ' + label;
@@ -705,10 +722,14 @@
                         + '<div class="result-sub">' + (ar ? 'تم التحقق من الأصالة عبر Blockchain' : 'Authenticity verified via Blockchain') + '</div>';
                 }
 
+                var mfgDate  = data.manufactureDate ? new Date(data.manufactureDate).toLocaleDateString(locale) : '—';
+                var qrExpiry = data.qrExpiryDate   ? new Date(data.qrExpiryDate).toLocaleDateString(locale)   : expiry.toLocaleDateString(locale);
                 var html = '<div class="info-grid">'
                     + '<div class="info-item"><div class="info-label">' + (ar ? 'اسم الدواء' : 'Drug Name') + '</div><div class="info-value">' + data.name + '</div></div>'
                     + '<div class="info-item"><div class="info-label">' + (ar ? 'الشركة المصنعة' : 'Manufacturer') + '</div><div class="info-value">' + data.manufacturer + '</div></div>'
-                    + '<div class="info-item"><div class="info-label">' + (ar ? 'تاريخ الانتهاء' : 'Expiry Date') + '</div><div class="info-value">' + expiry.toLocaleDateString(locale) + '</div></div>'
+                    + '<div class="info-item"><div class="info-label">📅 ' + (ar ? 'تاريخ الإنتاج' : 'Manufacture Date') + '</div><div class="info-value">' + mfgDate + '</div></div>'
+                    + '<div class="info-item"><div class="info-label">⏳ ' + (ar ? 'انتهاء صلاحية الدواء' : 'Drug Expiry') + '</div><div class="info-value">' + expiry.toLocaleDateString(locale) + '</div></div>'
+                    + '<div class="info-item"><div class="info-label">🔒 ' + (ar ? 'انتهاء صلاحية QR Code' : 'QR Code Expiry') + '</div><div class="info-value">' + qrExpiry + '</div></div>'
                     + '<div class="info-item"><div class="info-label">' + (ar ? 'الحالة' : 'Status') + '</div><div class="info-value">' + data.status + '</div></div>'
                     + '</div>';
 
@@ -793,18 +814,19 @@
         loadAllDrugs();
 
         var params = new URLSearchParams(window.location.search);
-        var idFromUrl = params.get('id');
-        var prodFromUrl = params.get('prod');
-        var tsFromUrl = params.get('ts');
+        var idFromUrl  = params.get('id');
+        var mfgFromUrl = params.get('mfg') || params.get('prod'); // new | legacy
+        var expFromUrl = params.get('exp');
+        var tsFromUrl  = params.get('ts');
         var sigFromUrl = params.get('sig');
 
         if (idFromUrl) {
             switchTab('id');
             document.getElementById('idInput').value = idFromUrl;
 
-            if (sigFromUrl && prodFromUrl && tsFromUrl) {
+            if (sigFromUrl && mfgFromUrl && tsFromUrl) {
                 setTimeout(function () {
-                    verifyQrSignature(idFromUrl, prodFromUrl, tsFromUrl, sigFromUrl);
+                    verifyQrSignature(idFromUrl, mfgFromUrl, expFromUrl, tsFromUrl, sigFromUrl);
                 }, 200);
             } else {
                 document.getElementById('qrAlert').classList.remove('show');

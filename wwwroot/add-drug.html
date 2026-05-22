@@ -1395,9 +1395,11 @@
             document.getElementById('submitText').textContent = PharmaLang.t('add_submitting');
             document.getElementById('errorMsg').classList.remove('show');
 
+            var mfgVal = document.getElementById('productionDate').value;
             var payload = {
                 name: document.getElementById('name').value.trim(),
                 batchNumber: document.getElementById('batchNumber').value.trim(),
+                manufactureDate: mfgVal || new Date().toISOString().slice(0, 10),
                 expiryDate: document.getElementById('expiryDate').value,
                 manufacturer: document.getElementById('manufacturer').value.trim(),
                 addedByRole: role,

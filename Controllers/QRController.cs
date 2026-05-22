@@ -111,10 +111,12 @@ namespace PharmaChain.Controllers
                 suspicionReason = $"Burst detected: {recentCount + 1} QR codes generated within 60 seconds by {username}.";
             }
 
-            // 4. Build signed payload
-            var productionDate = drug.CreatedAt.ToString("yyyy-MM-dd");
-            var generatedAt    = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
-            var signature      = ComputeHmac(drugId, productionDate, generatedAt, drug.AiToken);
+            // 4. Build signed payload — mathematically binds all three dates
+            var mfgDate    = drug.ManufactureDate.ToString("yyyy-MM-dd");
+            var expDate    = drug.ExpiryDate.ToString("yyyy-MM-dd");
+            var generatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+            // HMAC payload: drugId | manufactureDate | expiryDate | timestamp | aiToken
+            var signature  = ComputeHmac(drugId, mfgDate, expDate, generatedAt, drug.AiToken);
 
             // 5. Increment quota & record issuance
             quota.IssuedCount++;
@@ -136,11 +138,12 @@ namespace PharmaChain.Controllers
             _context.SaveChanges();
             _blockchain.SaveChainToJson();
 
-            // 7. Build QR URL
+            // 7. Build QR URL — all three dates embedded in URL + HMAC
             var baseUrl   = _config["App:BaseUrl"] ?? "http://localhost:7036";
             var verifyUrl = $"{baseUrl}/verify.html"
                           + $"?id={drugId}"
-                          + $"&prod={Uri.EscapeDataString(productionDate)}"
+                          + $"&mfg={Uri.EscapeDataString(mfgDate)}"
+                          + $"&exp={Uri.EscapeDataString(expDate)}"
                           + $"&ts={generatedAt}"
                           + $"&sig={Uri.EscapeDataString(signature)}";
 
@@ -162,22 +165,34 @@ namespace PharmaChain.Controllers
         }
 
         // ══════════════════════════════════════════════════════════════
-        // GET /api/qr/verify-signature?id=&prod=&ts=&sig=
-        // Validates QR authenticity.  On success, records a CUSTOMER_SCAN
-        // block on the ledger.
+        // GET /api/qr/verify-signature
+        //   New format : ?id=&mfg=&exp=&ts=&sig=
+        //   Legacy     : ?id=&prod=&ts=&sig=   (backward-compatible)
+        //
+        // Three-date mathematical binding (new format):
+        //   HMAC = SHA256( drugId | mfgDate | expDate | timestamp | aiToken )
+        //   • mfg  = تاريخ إنتاج الدواء  — must match DB ManufactureDate
+        //   • exp  = تاريخ انتهاء الصلاحية — must match DB ExpiryDate (QR expiry = drug expiry)
+        //   • ts   = وقت إصدار الـ QR     — prevents replay after 365 days
         // ══════════════════════════════════════════════════════════════
         [HttpGet("verify-signature")]
         public IActionResult VerifySignature(
-            [FromQuery] int    id,
-            [FromQuery] string prod,
-            [FromQuery] string ts,
-            [FromQuery] string sig)
+            [FromQuery] int     id,
+            [FromQuery] string? mfg  = null,   // تاريخ الإنتاج (new)
+            [FromQuery] string? prod = null,   // legacy alias for mfg
+            [FromQuery] string? exp  = null,   // تاريخ انتهاء الصلاحية (new)
+            [FromQuery] string  ts   = "",
+            [FromQuery] string  sig  = "")
         {
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            var ip       = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            var mfgParam = mfg ?? prod ?? "";
+            var expParam = exp ?? "";
+            bool isNewFormat = !string.IsNullOrEmpty(expParam);
 
-            if (string.IsNullOrEmpty(prod) || string.IsNullOrEmpty(ts) || string.IsNullOrEmpty(sig))
+            // ── 1. Missing params ──
+            if (string.IsNullOrEmpty(mfgParam) || string.IsNullOrEmpty(ts) || string.IsNullOrEmpty(sig))
             {
-                SaveLog(id, prod ?? "", ts ?? "", false, "MISSING_PARAMS",
+                SaveLog(id, mfgParam, ts, false, "MISSING_PARAMS",
                     "QR Code is incomplete — possible label tampering detected.", ip);
                 return BadRequest(new
                 {
@@ -187,67 +202,112 @@ namespace PharmaChain.Controllers
                 });
             }
 
+            // ── 2. Drug exists ──
             var drug = _context.Drugs.Find(id);
             if (drug == null)
             {
-                SaveLog(id, prod, ts, false, "DRUG_NOT_FOUND",
+                SaveLog(id, mfgParam, ts, false, "DRUG_NOT_FOUND",
                     "Drug ID not found. QR code may be counterfeit.", ip);
-                return Ok(new
-                {
-                    isValid    = false,
-                    attackType = "DRUG_NOT_FOUND",
-                    message    = "Drug ID not found in system. QR code may be counterfeit."
-                });
+                return Ok(new { isValid = false, attackType = "DRUG_NOT_FOUND",
+                    message = "Drug ID not found in system. QR code may be counterfeit." });
             }
 
-            var expectedSig = ComputeHmac(id, prod, ts, drug.AiToken);
+            // ── 3. HMAC verification (new format vs legacy) ──
+            string expectedSig = isNewFormat
+                ? ComputeHmac(id, mfgParam, expParam, ts, drug.AiToken)
+                : ComputeHmacLegacy(id, mfgParam, ts, drug.AiToken);
+
             if (!CryptographicEquals(expectedSig, sig))
             {
-                SaveLog(id, prod, ts, false, "SIGNATURE_MISMATCH",
+                SaveLog(id, mfgParam, ts, false, "SIGNATURE_MISMATCH",
                     $"Invalid signature for drug {id}. Label substitution attack suspected.", ip);
-                return Ok(new
-                {
-                    isValid    = false,
-                    attackType = "SIGNATURE_MISMATCH",
-                    message    = "QR Code signature is invalid. This product may have been tampered with or its label substituted."
-                });
+                return Ok(new { isValid = false, attackType = "SIGNATURE_MISMATCH",
+                    message = "QR Code signature is invalid. This product may have been tampered with or its label substituted." });
             }
 
-            var dbProductionDate = drug.CreatedAt.ToString("yyyy-MM-dd");
-            if (dbProductionDate != prod)
+            if (isNewFormat)
             {
-                SaveLog(id, prod, ts, false, "DATE_MISMATCH",
-                    $"QR date ({prod}) != DB date ({dbProductionDate}). Date-based attack detected.", ip);
-                return Ok(new
+                // ── 4a. Manufacture date check ──
+                var dbMfg = drug.ManufactureDate.ToString("yyyy-MM-dd");
+                if (dbMfg != mfgParam)
                 {
-                    isValid      = false,
-                    attackType   = "DATE_MISMATCH",
-                    message      = "Production date in QR does not match database record.",
-                    qrDate       = prod,
-                    databaseDate = dbProductionDate,
-                    detail       = "Date-based attack detected: QR label was likely copied from a different batch."
-                });
+                    SaveLog(id, mfgParam, ts, false, "MFG_DATE_MISMATCH",
+                        $"QR manufacture date ({mfgParam}) ≠ DB ({dbMfg}).", ip);
+                    return Ok(new { isValid = false, attackType = "MFG_DATE_MISMATCH",
+                        message    = "Manufacture date in QR does not match the database record.",
+                        qrDate     = mfgParam,
+                        dbDate     = dbMfg,
+                        detail     = "The manufacture date embedded in the QR has been altered." });
+                }
+
+                // ── 4b. Expiry date check ──
+                var dbExp = drug.ExpiryDate.ToString("yyyy-MM-dd");
+                if (dbExp != expParam)
+                {
+                    SaveLog(id, mfgParam, ts, false, "EXPIRY_MISMATCH",
+                        $"QR expiry ({expParam}) ≠ DB ({dbExp}).", ip);
+                    return Ok(new { isValid = false, attackType = "EXPIRY_MISMATCH",
+                        message    = "Expiry date in QR does not match the database record.",
+                        qrExpiry   = expParam,
+                        dbExpiry   = dbExp,
+                        detail     = "The expiry date in the QR has been altered — possible forgery." });
+                }
+
+                // ── 4c. Drug / QR expired (QR expiry = drug expiry) ──
+                if (drug.ExpiryDate < DateTime.UtcNow)
+                {
+                    var daysExpired = (int)(DateTime.UtcNow - drug.ExpiryDate).TotalDays;
+                    SaveLog(id, mfgParam, ts, false, "DRUG_EXPIRED",
+                        $"Drug expired {daysExpired} day(s) ago on {drug.ExpiryDate:yyyy-MM-dd}. QR also invalid.", ip);
+                    return Ok(new { isValid = false, attackType = "DRUG_EXPIRED",
+                        message     = $"This drug expired {daysExpired} day(s) ago. The QR Code is also no longer valid.",
+                        expiryDate  = drug.ExpiryDate.ToString("yyyy-MM-dd"),
+                        qrExpiryDate = drug.ExpiryDate.ToString("yyyy-MM-dd"),
+                        detail      = "QR Code validity is bound to the drug expiry date." });
+                }
+            }
+            else
+            {
+                // ── Legacy: check CreatedAt date only ──
+                var dbLegacyDate = drug.CreatedAt.ToString("yyyy-MM-dd");
+                if (dbLegacyDate != mfgParam)
+                {
+                    SaveLog(id, mfgParam, ts, false, "DATE_MISMATCH",
+                        $"QR date ({mfgParam}) != DB date ({dbLegacyDate}). Date-based attack detected.", ip);
+                    return Ok(new { isValid = false, attackType = "DATE_MISMATCH",
+                        message      = "Production date in QR does not match database record.",
+                        qrDate       = mfgParam,
+                        databaseDate = dbLegacyDate,
+                        detail       = "Date-based attack detected: QR label was likely copied from a different batch." });
+                }
+                // Also check drug expiry for legacy codes
+                if (drug.ExpiryDate < DateTime.UtcNow)
+                {
+                    var daysExpired = (int)(DateTime.UtcNow - drug.ExpiryDate).TotalDays;
+                    SaveLog(id, mfgParam, ts, false, "DRUG_EXPIRED",
+                        $"Drug expired {daysExpired} day(s) ago.", ip);
+                    return Ok(new { isValid = false, attackType = "DRUG_EXPIRED",
+                        message    = $"This drug expired {daysExpired} day(s) ago. The QR Code is no longer valid.",
+                        expiryDate = drug.ExpiryDate.ToString("yyyy-MM-dd") });
+                }
             }
 
+            // ── 5. QR age check (>365 days old regardless of format) ──
             if (long.TryParse(ts, out var tsLong))
             {
                 var generated = DateTimeOffset.FromUnixTimeSeconds(tsLong);
                 var age       = DateTimeOffset.UtcNow - generated;
                 if (age.TotalDays > 365)
                 {
-                    SaveLog(id, prod, ts, false, "QR_EXPIRED",
+                    SaveLog(id, mfgParam, ts, false, "QR_EXPIRED",
                         $"QR expired — generated {(int)age.TotalDays} days ago.", ip);
-                    return Ok(new
-                    {
-                        isValid     = false,
-                        attackType  = "QR_EXPIRED",
+                    return Ok(new { isValid = false, attackType = "QR_EXPIRED",
                         message     = $"This QR Code was generated {(int)age.TotalDays} days ago and has expired.",
-                        generatedAt = generated.ToString("yyyy-MM-dd HH:mm:ss UTC")
-                    });
+                        generatedAt = generated.ToString("yyyy-MM-dd HH:mm:ss UTC") });
                 }
             }
 
-            // Check issuance record for quota anomalies
+            // ── 6. Quota / issuance anomaly check ──
             var sigPrefix = sig.Length >= 16 ? sig[..16] : sig;
             var issuance  = _context.QrIssuances
                 .Where(q => q.DrugId == id && q.Signature == sigPrefix)
@@ -257,23 +317,18 @@ namespace PharmaChain.Controllers
             string quotaNote = "";
             if (issuance != null && issuance.Status == "Blocked")
             {
-                SaveLog(id, prod, ts, false, "QUOTA_EXCEEDED",
+                SaveLog(id, mfgParam, ts, false, "QUOTA_EXCEEDED",
                     "QR was generated after quota was exceeded. Possible forgery.", ip);
-                return Ok(new
-                {
-                    isValid    = false,
-                    attackType = "QUOTA_EXCEEDED",
-                    message    = "This QR code was generated outside the authorized issuance quota and is flagged as suspicious.",
-                    detail     = issuance.SuspicionReason
-                });
+                return Ok(new { isValid = false, attackType = "QUOTA_EXCEEDED",
+                    message = "This QR code was generated outside the authorized issuance quota and is flagged as suspicious.",
+                    detail  = issuance.SuspicionReason });
             }
             if (issuance != null && issuance.Status == "Suspicious")
                 quotaNote = $" ⚠️ Issuance #{issuance.SequenceNumber}/{issuance.QuotaLimit} was flagged: {issuance.SuspicionReason}";
 
-            // ── Successful verification ──
-            SaveLog(id, prod, ts, true, "NONE", "QR verified successfully." + quotaNote, ip);
+            // ── 7. Successful verification ──
+            SaveLog(id, mfgParam, ts, true, "NONE", "QR verified successfully." + quotaNote, ip);
 
-            // Blockchain: CUSTOMER_SCAN — only on genuine successful scans
             _blockchain.CreateTransaction(
                 id, drug.Name,
                 fromRole: "Customer", fromUsername: ip,
@@ -283,23 +338,27 @@ namespace PharmaChain.Controllers
             _context.SaveChanges();
             _blockchain.SaveChainToJson();
 
+            long.TryParse(ts, out var tsGen);
             return Ok(new
             {
-                isValid        = true,
-                attackType     = "NONE",
-                message        = "QR Code is authentic and verified.",
-                drugId         = id,
-                drugName       = drug.Name,
-                manufacturer   = drug.Manufacturer,
-                productionDate = prod,
-                generatedAt    = DateTimeOffset.FromUnixTimeSeconds(long.Parse(ts))
-                                               .ToString("yyyy-MM-dd HH:mm:ss UTC"),
-                expiryDate     = drug.ExpiryDate.ToString("yyyy-MM-dd"),
-                aiToken        = string.IsNullOrEmpty(drug.AiToken) ? null : drug.AiToken[..8] + "...",
-                aiSecured      = !string.IsNullOrEmpty(drug.AiToken),
-                issuanceSeq    = issuance?.SequenceNumber,
-                issuanceStatus = issuance?.Status ?? "Unknown",
-                quotaWarning   = issuance?.Status == "Suspicious" ? issuance.SuspicionReason : null,
+                isValid          = true,
+                attackType       = "NONE",
+                message          = "QR Code is authentic and verified.",
+                isNewFormat      = isNewFormat,
+                drugId           = id,
+                drugName         = drug.Name,
+                manufacturer     = drug.Manufacturer,
+                manufactureDate  = drug.ManufactureDate.ToString("yyyy-MM-dd"),
+                expiryDate       = drug.ExpiryDate.ToString("yyyy-MM-dd"),
+                qrExpiryDate     = drug.ExpiryDate.ToString("yyyy-MM-dd"),   // QR expires = drug expires
+                generatedAt      = tsGen > 0
+                                    ? DateTimeOffset.FromUnixTimeSeconds(tsGen).ToString("yyyy-MM-dd HH:mm:ss UTC")
+                                    : "",
+                aiToken          = string.IsNullOrEmpty(drug.AiToken) ? null : drug.AiToken[..8] + "...",
+                aiSecured        = !string.IsNullOrEmpty(drug.AiToken),
+                issuanceSeq      = issuance?.SequenceNumber,
+                issuanceStatus   = issuance?.Status ?? "Unknown",
+                quotaWarning     = issuance?.Status == "Suspicious" ? issuance.SuspicionReason : null,
                 blockchainRecorded = true
             });
         }
@@ -593,7 +652,21 @@ namespace PharmaChain.Controllers
             _context.SaveChanges();
         }
 
-        private string ComputeHmac(int drugId, string productionDate, string timestamp, string aiToken = "")
+        // ── New format: binds drugId | mfgDate | expDate | timestamp | aiToken ──
+        private string ComputeHmac(int drugId, string mfgDate, string expDate,
+                                   string timestamp, string aiToken = "")
+        {
+            var secret  = _config["Jwt:Key"] ?? "PharmaChainSecretKey";
+            var payload = $"{drugId}|{mfgDate}|{expDate}|{timestamp}";
+            if (!string.IsNullOrEmpty(aiToken)) payload += $"|{aiToken}";
+            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
+            var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(payload));
+            return Convert.ToHexString(hash)[..32];
+        }
+
+        // ── Legacy format (v1 QR codes: drugId | prod | timestamp | aiToken) ──
+        private string ComputeHmacLegacy(int drugId, string productionDate,
+                                         string timestamp, string aiToken = "")
         {
             var secret  = _config["Jwt:Key"] ?? "PharmaChainSecretKey";
             var payload = string.IsNullOrEmpty(aiToken)

@@ -77,6 +77,12 @@ using (var scope = app.Services.CreateScope())
             "ALTER TABLE Drugs ADD AiToken NVARCHAR(MAX) NOT NULL DEFAULT ''"); }
         catch { }
 
+        // ── ManufactureDate (v3) — تاريخ إنتاج الدواء ──
+        try { db.Database.ExecuteSqlRaw(
+            "IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'Drugs') AND name = N'ManufactureDate') " +
+            "ALTER TABLE Drugs ADD ManufactureDate DATETIME2 NOT NULL DEFAULT GETUTCDATE()"); }
+        catch { }
+
         db.Database.ExecuteSqlRaw(
             "IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = N'QrQuotas') " +
             "CREATE TABLE QrQuotas (" +
@@ -126,6 +132,10 @@ using (var scope = app.Services.CreateScope())
     else
     {
         // ── SQLite: EnsureCreated handles fresh DBs; patch existing ones ──
+        try { db.Database.ExecuteSqlRaw(
+            "ALTER TABLE Drugs ADD COLUMN ManufactureDate TEXT NOT NULL DEFAULT (datetime('now'))"); }
+        catch { }
+
         try { db.Database.ExecuteSqlRaw(
             "ALTER TABLE DrugTransactions ADD COLUMN ActionType TEXT NOT NULL DEFAULT 'TRANSFER'"); }
         catch { }
