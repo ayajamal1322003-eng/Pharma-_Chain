@@ -188,7 +188,7 @@
     var role  = localStorage.getItem('role');
 
     if (!token) window.location.replace(API + '/login.html');
-    if (role !== 'Admin' && role !== 'LedgerAdmin') window.location.replace(API + '/dashboard.html');
+    if (role !== 'LedgerAdmin') window.location.replace(API + '/dashboard.html');
 
     document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
     document.getElementById('sidebarRole').textContent = role || '';

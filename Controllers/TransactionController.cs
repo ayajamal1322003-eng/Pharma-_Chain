@@ -149,7 +149,7 @@ namespace PharmaChain.Controllers
         //  fromDate, toDate, status, limit.
         // ════════════════════════════════════════════════════════
         [HttpGet("search")]
-        [Authorize(Roles = "Admin,LedgerAdmin")]
+        [Authorize(Roles = "LedgerAdmin")]
         public IActionResult Search(
             [FromQuery] string? actionType = null,
             [FromQuery] int?    drugId     = null,
