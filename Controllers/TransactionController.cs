@@ -293,6 +293,90 @@ namespace PharmaChain.Controllers
         }
 
         // ════════════════════════════════════════════════════════
+        //  GET /api/transaction/attack-scenarios
+        //  Returns all ATTACK_DETECTED ledger entries plus a summary
+        //  of each attack type, for the Attack Demo screen.
+        // ════════════════════════════════════════════════════════
+        [HttpGet("attack-scenarios")]
+        public IActionResult GetAttackScenarios()
+        {
+            var attackBlocks = _context.DrugTransactions
+                .Where(t => t.ActionType == "ATTACK_DETECTED")
+                .OrderByDescending(t => t.BlockNumber)
+                .Take(30)
+                .Select(t => new
+                {
+                    t.BlockNumber, t.DrugId, t.DrugName,
+                    t.FromRole, t.FromUsername, t.ToRole, t.ToUsername,
+                    t.Status, t.ActionType,
+                    timestamp  = t.Timestamp,
+                    t.BlockHash, t.Nonce
+                })
+                .ToList();
+
+            var duplicateQrCount     = _context.QrScanLogs.Count(l => l.AttackType == "DUPLICATE_QR");
+            var inventoryViolations  = _context.DrugTransactions
+                .Count(t => t.ActionType == "ATTACK_DETECTED" && t.ToUsername == "INVENTORY_GUARD");
+            var duplicateQrBlocks    = _context.DrugTransactions
+                .Count(t => t.ActionType == "ATTACK_DETECTED" && t.ToUsername == "DUPLICATE_QR_BLOCKED");
+
+            return Ok(new
+            {
+                summary = new
+                {
+                    totalAttackBlocks   = attackBlocks.Count,
+                    duplicateQrAttempts = duplicateQrCount,
+                    inventoryViolations,
+                    duplicateQrBlocks
+                },
+                recentAttacks = attackBlocks
+            });
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  GET /api/transaction/inventory-status/{drugId}
+        //  Returns real-time inventory stats for a drug:
+        //  registered qty, QR codes issued, customer scans, and
+        //  whether new QR generation is locked.
+        // ════════════════════════════════════════════════════════
+        [HttpGet("inventory-status/{drugId}")]
+        public IActionResult GetInventoryStatus(int drugId)
+        {
+            var drug = _context.Drugs.Find(drugId);
+            if (drug == null) return NotFound("الدواء غير موجود");
+
+            var qrIssued      = _context.DrugTransactions
+                .Count(t => t.DrugId == drugId && t.ActionType == "QR_GENERATED" && t.Status == "Issued");
+            var customerScans = _context.DrugTransactions
+                .Count(t => t.DrugId == drugId && t.ActionType == "CUSTOMER_SCAN");
+            var unconsumed    = Math.Max(0, qrIssued - customerScans);
+            var remaining     = Math.Max(0, drug.Quantity - qrIssued);
+            var inventoryPct  = drug.Quantity > 0
+                ? Math.Round(qrIssued * 100.0 / drug.Quantity, 1) : 0;
+            var consumedPct   = qrIssued > 0
+                ? Math.Round(customerScans * 100.0 / qrIssued, 1) : 0;
+            var isLocked      = qrIssued >= drug.Quantity;
+
+            return Ok(new
+            {
+                drugId        = drug.Id,
+                drugName      = drug.Name,
+                registeredQty = drug.Quantity,
+                qrIssued,
+                customerScans,
+                unconsumed,
+                remaining,
+                inventoryPct,
+                consumedPct,
+                isLocked,
+                status  = isLocked ? "INVENTORY_FULL" : "AVAILABLE",
+                message = isLocked
+                    ? $"الجرد مقفل: الكمية المسجلة ({drug.Quantity}) استُنفدت — {unconsumed} وحدة لم تُصرف بعد."
+                    : $"متاح: {remaining} وحدة متبقية من أصل {drug.Quantity}."
+            });
+        }
+
+        // ════════════════════════════════════════════════════════
         //  GET /api/transaction/nodes
         // ════════════════════════════════════════════════════════
         [HttpGet("nodes")]

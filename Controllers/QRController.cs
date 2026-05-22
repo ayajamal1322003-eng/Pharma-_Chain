@@ -78,6 +78,45 @@ namespace PharmaChain.Controllers
             var drug = _context.Drugs.Find(drugId);
             if (drug == null) return NotFound("الدواء غير موجود");
 
+            // 3a. Inventory guard: cannot issue more QR codes than the drug's registered quantity.
+            //     This blocks the "Inventory Manipulation Attack" — attacker tries to generate
+            //     QR codes beyond the registered stock, fabricating phantom units.
+            var qrIssuedForDrug    = _context.DrugTransactions
+                .Count(t => t.DrugId == drugId && t.ActionType == "QR_GENERATED" && t.Status == "Issued");
+            var customerScansForDrug = _context.DrugTransactions
+                .Count(t => t.DrugId == drugId && t.ActionType == "CUSTOMER_SCAN");
+
+            if (qrIssuedForDrug >= drug.Quantity)
+            {
+                var unconsumedUnits = Math.Max(0, qrIssuedForDrug - customerScansForDrug);
+
+                // Record this violation as an ATTACK_DETECTED block in the immutable ledger
+                _blockchain.CreateTransaction(
+                    drugId, drug.Name,
+                    fromRole: role,    fromUsername: username,
+                    toRole: "System",  toUsername: "INVENTORY_GUARD",
+                    status: "ATTACK_DETECTED", actionType: "ATTACK_DETECTED"
+                );
+                _context.SaveChanges();
+                _blockchain.SaveChainToJson();
+
+                return StatusCode(409, new
+                {
+                    blocked          = true,
+                    attackType       = "INVENTORY_EXCEEDED",
+                    message          = $"محاولة تجاوز الكمية المسجلة! الكمية ({drug.Quantity} وحدة) استُنفدت في السجل.",
+                    registeredQty    = drug.Quantity,
+                    qrIssued         = qrIssuedForDrug,
+                    customerScans    = customerScansForDrug,
+                    unconsumedUnits,
+                    detail           = $"الدواء '{drug.Name}' يحتوي على {drug.Quantity} وحدة مسجلة. " +
+                                       $"تم إصدار {qrIssuedForDrug} QR codes. " +
+                                       $"{unconsumedUnits} وحدة لم تُصرف للمستخدمين بعد. " +
+                                       $"لا يمكن إصدار QR جديد حتى تُثبت السجلات صرف الكميات السابقة.",
+                    blockchainRecorded = true
+                });
+            }
+
             // 3. Quota enforcement
             var quota  = GetOrCreateQuota(role, username);
             var status = "Valid";
@@ -326,6 +365,43 @@ namespace PharmaChain.Controllers
             if (issuance != null && issuance.Status == "Suspicious")
                 quotaNote = $" ⚠️ Issuance #{issuance.SequenceNumber}/{issuance.QuotaLimit} was flagged: {issuance.SuspicionReason}";
 
+            // ── 6b. Duplicate QR scan check (Replay / Reuse Attack) ──
+            //   Each QR is uniquely identified by (DrugId + generation timestamp).
+            //   If a previous valid scan exists with the same ts, this is a replay attempt.
+            var previousValidScan = _context.QrScanLogs
+                .Where(l => l.DrugId == id && l.Timestamp == ts && l.IsValid && l.AttackType == "NONE")
+                .OrderBy(l => l.ScannedAt)
+                .FirstOrDefault();
+
+            if (previousValidScan != null)
+            {
+                SaveLog(id, mfgParam, ts, false, "DUPLICATE_QR",
+                    $"QR Code reuse attempt detected — first dispensed on " +
+                    $"{previousValidScan.ScannedAt:yyyy-MM-dd HH:mm:ss} UTC by IP {previousValidScan.IpAddress}.", ip);
+
+                // Record attack attempt as immutable block in the ledger
+                _blockchain.CreateTransaction(
+                    id, drug.Name,
+                    fromRole: "ATTACKER",  fromUsername: ip,
+                    toRole: "System",      toUsername: "DUPLICATE_QR_BLOCKED",
+                    status: "ATTACK_DETECTED", actionType: "ATTACK_DETECTED"
+                );
+                _context.SaveChanges();
+                _blockchain.SaveChainToJson();
+
+                return Ok(new
+                {
+                    isValid      = false,
+                    attackType   = "DUPLICATE_QR",
+                    message      = "هذا الـ QR Code تم استخدامه مسبقاً — محاولة الإعادة مرفوضة ومسجلة في الـ Blockchain.",
+                    firstScanned = previousValidScan.ScannedAt.ToString("yyyy-MM-dd HH:mm:ss UTC"),
+                    firstScanIp  = previousValidScan.IpAddress,
+                    detail       = "Each QR Code is single-use only. Replay/reuse attacks are detected " +
+                                   "via the immutable scan log and recorded as ATTACK_DETECTED blocks on the ledger.",
+                    blockchainRecorded = true
+                });
+            }
+
             // ── 7. Successful verification ──
             SaveLog(id, mfgParam, ts, true, "NONE", "QR verified successfully." + quotaNote, ip);
 
@@ -564,6 +640,7 @@ namespace PharmaChain.Controllers
                 drugNotFound      = _context.QrScanLogs.Count(l => l.AttackType == "DRUG_NOT_FOUND"),
                 qrExpired         = _context.QrScanLogs.Count(l => l.AttackType == "QR_EXPIRED"),
                 quotaExceeded     = _context.QrScanLogs.Count(l => l.AttackType == "QUOTA_EXCEEDED"),
+                duplicateQr       = _context.QrScanLogs.Count(l => l.AttackType == "DUPLICATE_QR"),
             };
 
             return Ok(new { stats, logs });

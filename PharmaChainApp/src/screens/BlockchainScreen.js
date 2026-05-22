@@ -144,41 +144,83 @@ export default function BlockchainScreen({ navigation }) {
   );
 }
 
+const ACTION_META = {
+  DRUG_REGISTERED:  { icon: '💊', color: C.teal600,    label: 'DRUG_REGISTERED'  },
+  QR_GENERATED:     { icon: '🔷', color: C.purple600,  label: 'QR_GENERATED'    },
+  TRANSFER:         { icon: '🚛', color: C.amber600,   label: 'TRANSFER'        },
+  CUSTOMER_SCAN:    { icon: '✅', color: C.emerald600, label: 'CUSTOMER_SCAN'   },
+  ATTACK_DETECTED:  { icon: '🚨', color: C.rose600,    label: 'ATTACK_DETECTED' },
+};
+
 function BlockCard({ block, index, isLast }) {
   const [expanded, setExpanded] = useState(index === 0);
-  const isGenesis = index === 0;
+  const isGenesis   = index === 0;
+  const isAttack    = block.actionType === 'ATTACK_DETECTED';
+  const meta        = ACTION_META[block.actionType] ?? ACTION_META['TRANSFER'];
+  const numBg       = isAttack ? C.rose600 : isGenesis ? C.teal600 : meta.color;
+  const cardBorder  = isAttack ? { borderLeftWidth: 3, borderLeftColor: C.rose500 } : {};
 
   return (
-    <TouchableOpacity style={styles.blockCard} onPress={() => setExpanded(v => !v)} activeOpacity={0.8}>
+    <TouchableOpacity
+      style={[styles.blockCard, isAttack && styles.blockCardAttack]}
+      onPress={() => setExpanded(v => !v)}
+      activeOpacity={0.8}
+    >
       <View style={styles.blockHeader}>
-        <View style={[styles.blockNum, { backgroundColor: isGenesis ? C.teal600 : C.purple600 }]}>
-          <Text style={styles.blockNumText}>#{index}</Text>
+        <View style={[styles.blockNum, { backgroundColor: numBg }]}>
+          <Text style={styles.blockNumText}>{isAttack ? '🚨' : `#${index}`}</Text>
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.blockTitle}>{isGenesis ? '🌱 Genesis Block' : `Block #${index}`}</Text>
-          <Text style={styles.blockMeta} numberOfLines={1}>Hash: {block.hash?.slice(0, 20)}...</Text>
+          <View style={styles.blockTitleRow}>
+            <Text style={[styles.blockTitle, isAttack && { color: C.rose700 }]}>
+              {isGenesis ? '🌱 Genesis Block' : `Block #${block.blockNumber ?? index}`}
+            </Text>
+            {/* Action type badge */}
+            <View style={[styles.actionBadge, { backgroundColor: meta.color + '22', borderColor: meta.color }]}>
+              <Text style={[styles.actionBadgeText, { color: meta.color }]}>
+                {meta.icon} {meta.label}
+              </Text>
+            </View>
+          </View>
+          <Text style={styles.blockMeta} numberOfLines={1}>
+            Hash: {(block.hash || block.blockHash)?.slice(0, 20)}...
+          </Text>
         </View>
         <Text style={{ color: C.gray400, fontSize: 16 }}>{expanded ? '▲' : '▼'}</Text>
       </View>
+
+      {isAttack && !expanded && (
+        <View style={styles.attackWarning}>
+          <Text style={styles.attackWarningText}>
+            ⚠️ {block.toUsername === 'INVENTORY_GUARD' ? 'Inventory Manipulation Attempt' : 'QR Replay/Duplicate Attempt'} — Blocked &amp; Recorded
+          </Text>
+        </View>
+      )}
+
       {expanded && (
         <View style={styles.blockDetails}>
           {[
+            { label: 'Action',      value: block.actionType },
             { label: 'From',        value: block.fromUsername || 'System' },
             { label: 'To',          value: block.toUsername || '—' },
+            { label: 'Status',      value: block.status },
             { label: 'Timestamp',   value: block.timestamp?.split('T')[0] || '—' },
             { label: 'Nonce',       value: String(block.nonce ?? '—') },
-            { label: 'Hash',        value: block.hash },
+            { label: 'Hash',        value: block.hash || block.blockHash },
             { label: 'Prev. Hash',  value: block.previousHash },
             { label: 'Merkle Root', value: block.merkleRoot },
           ].map(row => (
             <View key={row.label} style={styles.blockRow}>
               <Text style={styles.blockLabel}>{row.label}</Text>
-              <Text style={styles.blockValue} numberOfLines={2}>{row.value || '—'}</Text>
+              <Text style={[
+                styles.blockValue,
+                row.label === 'Action' && isAttack && { color: C.rose600, fontWeight: '700' },
+              ]} numberOfLines={2}>{row.value || '—'}</Text>
             </View>
           ))}
         </View>
       )}
-      {!isLast && <View style={styles.chainLine} />}
+      {!isLast && <View style={[styles.chainLine, isAttack && { backgroundColor: C.rose300 }]} />}
     </TouchableOpacity>
   );
 }
@@ -236,14 +278,30 @@ const styles = StyleSheet.create({
     marginHorizontal: 12, marginBottom: 4, padding: 14,
     shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 4, elevation: 1,
   },
-  blockHeader:  { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  blockCardAttack: {
+    backgroundColor: '#fff5f5', borderLeftWidth: 3, borderLeftColor: C.rose500,
+  },
+  blockHeader:   { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  blockTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap', flex: 1 },
   blockNum: {
     width: 36, height: 36, borderRadius: 10,
     alignItems: 'center', justifyContent: 'center',
   },
   blockNumText: { color: C.white, fontSize: 12, fontWeight: '900' },
-  blockTitle:   { fontSize: 14, fontWeight: '700', color: C.gray900 },
-  blockMeta:    { fontSize: 11, color: C.gray400, marginTop: 2, fontFamily: 'monospace' },
+  blockTitle:   { fontSize: 13, fontWeight: '700', color: C.gray900 },
+  blockMeta:    { fontSize: 10, color: C.gray400, marginTop: 2, fontFamily: 'monospace' },
+
+  actionBadge: {
+    borderRadius: 5, borderWidth: 1,
+    paddingHorizontal: 5, paddingVertical: 2,
+  },
+  actionBadgeText: { fontSize: 9, fontWeight: '700', fontFamily: 'monospace' },
+
+  attackWarning: {
+    marginTop: 6, backgroundColor: '#fef2f2', borderRadius: 6, padding: 6,
+  },
+  attackWarningText: { fontSize: 10, color: C.rose700, fontWeight: '600' },
+
   blockDetails: { marginTop: 12, gap: 6 },
   blockRow:     { flexDirection: 'row', gap: 8 },
   blockLabel:   { fontSize: 11, color: C.gray500, width: 80, flexShrink: 0 },

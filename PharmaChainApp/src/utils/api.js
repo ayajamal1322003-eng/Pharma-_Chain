@@ -61,6 +61,10 @@ export const getQRIssuances = ()        => request('/api/qr/issuances');
 export const getQRScanLogs  = ()        => request('/api/qr/scanlogs');
 export const setQRQuota     = (body)    => request('/api/qr/set-quota', { method: 'POST', body: JSON.stringify(body) });
 
+// ── Attack Scenarios ──────────────────────────────────────────
+export const getAttackScenarios = ()       => request('/api/transaction/attack-scenarios');
+export const getInventoryStatus = (drugId) => request(`/api/transaction/inventory-status/${drugId}`);
+
 // ── Drug Info (AI) ────────────────────────────────────────────
 export const getDrugInfo = (name, level) =>
   request('/api/druginfo', { method: 'POST', body: JSON.stringify({ drugName: name, level }) });
