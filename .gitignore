@@ -1,0 +1,43 @@
+## .NET / ASP.NET Core
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+
+## Visual Studio
+.vs/
+*.vsidx
+*.dtbcache.v2
+*.futdcache.v2
+
+## Build output
+*.dll
+*.pdb
+*.cache
+
+## Publish / deployment
+publish/
+*.nupkg
+
+## Environment / secrets
+appsettings.Production.json
+appsettings.Local.json
+*.env
+.env
+
+## Blockchain backup (runtime file)
+blockchain_chain.json
+
+## Database (local SQLite)
+*.db
+*.db-shm
+*.db-wal
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## Claude Code worktrees (internal)
+.claude/worktrees/
+.claude/settings.local.json
