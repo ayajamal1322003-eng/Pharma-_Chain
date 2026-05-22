@@ -1,4 +1,4 @@
-const CACHE = 'pharmachain-v1';
+const CACHE = 'pharmachain-v2';
 const ASSETS = [
   '/login.html', '/dashboard.html', '/add-drug.html', '/transfer.html',
   '/blockchain.html', '/verify.html', '/audit.html', '/attack-demo.html',
