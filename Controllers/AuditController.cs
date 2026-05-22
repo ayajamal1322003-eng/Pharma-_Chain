@@ -6,7 +6,7 @@ namespace PharmaChain.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,LedgerAdmin")]
     public class AuditController : ControllerBase
     {
         private readonly AppDbContext _context;
