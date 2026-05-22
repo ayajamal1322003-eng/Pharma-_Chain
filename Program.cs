@@ -58,6 +58,7 @@ builder.Services.AddSingleton<PharmaChain.Services.SecurityService>();
 builder.Services.AddSingleton<PharmaChain.Services.NodeSyncService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<PharmaChain.Services.AiTokenService>();
+builder.Services.AddScoped<PharmaChain.Services.BlockchainService>();
 
 var app = builder.Build();
 
@@ -67,18 +68,14 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
 
-    // SQL Server-specific migration patches for existing databases that predate
-    // the AiToken column and QR control tables. Skipped for SQLite because
-    // EnsureCreated() builds the full schema from models on a fresh database.
     if (!dbProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase))
     {
-        try
-        {
-            db.Database.ExecuteSqlRaw(
-                "IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'Drugs') AND name = N'AiToken') " +
-                "ALTER TABLE Drugs ADD AiToken NVARCHAR(MAX) NOT NULL DEFAULT ''");
-        }
-        catch { /* ignored on fresh databases */ }
+        // ── SQL Server: patch columns that predate the current schema ──
+
+        try { db.Database.ExecuteSqlRaw(
+            "IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'Drugs') AND name = N'AiToken') " +
+            "ALTER TABLE Drugs ADD AiToken NVARCHAR(MAX) NOT NULL DEFAULT ''"); }
+        catch { }
 
         db.Database.ExecuteSqlRaw(
             "IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = N'QrQuotas') " +
@@ -114,6 +111,28 @@ using (var scope = app.Services.CreateScope())
             "  IpAddress NVARCHAR(60) NOT NULL DEFAULT ''," +
             "  IssuedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE()" +
             ")");
+
+        // ── QR lifecycle columns on DrugTransactions (added in v2) ──
+        try { db.Database.ExecuteSqlRaw(
+            "IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'DrugTransactions') AND name = N'ActionType') " +
+            "ALTER TABLE DrugTransactions ADD ActionType NVARCHAR(50) NOT NULL DEFAULT 'TRANSFER'"); }
+        catch { }
+
+        try { db.Database.ExecuteSqlRaw(
+            "IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'DrugTransactions') AND name = N'QrIssuanceId') " +
+            "ALTER TABLE DrugTransactions ADD QrIssuanceId INT NULL"); }
+        catch { }
+    }
+    else
+    {
+        // ── SQLite: EnsureCreated handles fresh DBs; patch existing ones ──
+        try { db.Database.ExecuteSqlRaw(
+            "ALTER TABLE DrugTransactions ADD COLUMN ActionType TEXT NOT NULL DEFAULT 'TRANSFER'"); }
+        catch { }
+
+        try { db.Database.ExecuteSqlRaw(
+            "ALTER TABLE DrugTransactions ADD COLUMN QrIssuanceId INTEGER NULL"); }
+        catch { }
     }
 }
 // ─────────────────────────────────────────────────────────────────────────

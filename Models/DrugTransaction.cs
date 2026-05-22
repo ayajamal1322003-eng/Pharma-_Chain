@@ -14,7 +14,11 @@
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         public string BlockHash { get; set; } = string.Empty;
         public string PreviousHash { get; set; } = string.Empty;
-        public int Nonce { get; set; }                              // ← جديد
-        public string MerkleRoot { get; set; } = string.Empty;     // ← جديد
+        public int Nonce { get; set; }
+        public string MerkleRoot { get; set; } = string.Empty;
+        // QR lifecycle: DRUG_REGISTERED | QR_GENERATED | TRANSFER | CUSTOMER_SCAN
+        public string ActionType { get; set; } = "TRANSFER";
+        // Links to QrIssuances.Id when ActionType is QR_GENERATED
+        public int? QrIssuanceId { get; set; }
     }
 }

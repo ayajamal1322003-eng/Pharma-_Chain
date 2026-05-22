@@ -99,15 +99,25 @@
             z-index: 1; position: relative;
         }
 
-        /* Block card */
-        .block-card {
-            background: white; border-radius: var(--radius-lg);
-            border: 2px solid var(--gray-100); overflow: hidden;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            box-shadow: var(--shadow-md);
-        }
+        /* Action-type colours on block cards */
+        .block-card { background: white; border-radius: var(--radius-lg); border: 2px solid var(--gray-100); overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; box-shadow: var(--shadow-md); }
         .block-card:hover { border-color: var(--blue-300); box-shadow: 0 4px 16px rgba(59,130,246,0.12); }
         .block-card.tampered { border-color: var(--rose-400) !important; background: var(--rose-50); animation: shake 0.4s ease; }
+        .block-card.at-DRUG_REGISTERED { border-left: 4px solid #10b981; }
+        .block-card.at-QR_GENERATED    { border-left: 4px solid #3b82f6; }
+        .block-card.at-TRANSFER        { border-left: 4px solid #8b5cf6; }
+        .block-card.at-CUSTOMER_SCAN   { border-left: 4px solid #0d9488; }
+
+        .at-badge {
+            display:inline-flex; align-items:center; gap:4px;
+            font-size:10px; font-weight:700; padding:2px 8px;
+            border-radius:10px; margin-right:6px;
+        }
+        .at-DRUG_REGISTERED { background:#d1fae5; color:#065f46; }
+        .at-QR_GENERATED    { background:#dbeafe; color:#1e40af; }
+        .at-TRANSFER        { background:#ede9fe; color:#4c1d95; }
+        .at-CUSTOMER_SCAN   { background:#ccfbf1; color:#134e4a; }
+        .at-UNKNOWN         { background:var(--gray-100); color:var(--gray-600); }
 
         .block-top {
             padding: 12px 16px; border-bottom: 1px solid var(--gray-100);
@@ -182,6 +192,7 @@
         <a class="nav-item active"><span class="nav-icon">⛓️</span> <span data-i18n="nav_blockchain">Blockchain</span></a>
         <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> <span data-i18n="nav_verify">التحقق من دواء</span></a>
         <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> <span data-i18n="nav_audit">سجل العمليات</span></a>
+        <a class="nav-item" id="navLedger" style="display:none" onclick="goTo('ledger.html')"><span class="nav-icon">📒</span> Ledger</a>
         <div class="nav-section-hdr" id="navAISection" style="display:none" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
         <a class="nav-item" id="navRisk"    style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
         <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
@@ -275,7 +286,19 @@
         document.getElementById('navAdvisor').style.display = 'flex';
         document.getElementById('navAISection').style.display = 'block';
         document.getElementById('demoCard').style.display = 'block';
+        document.getElementById('navLedger').style.display = 'flex';
     }
+    if (role === 'LedgerAdmin') {
+        document.getElementById('navLedger').style.display = 'flex';
+    }
+
+    var AT_META = {
+        DRUG_REGISTERED : { icon: '🏭', label: 'تسجيل دواء',  labelEn: 'Drug Registered'  },
+        QR_GENERATED    : { icon: '📱', label: 'QR صدر',      labelEn: 'QR Generated'      },
+        TRANSFER        : { icon: '🚚', label: 'نقل ملكية',   labelEn: 'Transfer'           },
+        CUSTOMER_SCAN   : { icon: '✅', label: 'مسح عميل',    labelEn: 'Customer Scan'      }
+    };
+    function getAtMeta(at) { return AT_META[at] || { icon:'❓', label:at, labelEn:at }; }
 
     var roleIcons  = { Factory:'🏭', Distributor:'🚚', Pharmacy:'🏥', Customer:'👤' };
     function getRoleLabel(r) {
@@ -374,11 +397,17 @@
     }
 
     function buildBlockHtml(t, bNum) {
-        var ar = PharmaLang.get() === 'ar';
+        var ar     = PharmaLang.get() === 'ar';
         var locale = ar ? 'ar-JO' : 'en-GB';
-        return '<div class="block-card" id="block-' + t.id + '">'
+        var atMeta = getAtMeta(t.actionType || 'TRANSFER');
+        var atLabel = ar ? atMeta.label : atMeta.labelEn;
+        var atCls  = 'at-' + (t.actionType || 'TRANSFER');
+        return '<div class="block-card ' + atCls + '" id="block-' + t.id + '">'
             + '<div class="block-top">'
+            + '<span>'
             + '<span class="block-num" id="badge-' + t.id + '">' + (ar ? 'كتلة #' : 'Block #') + bNum + '</span>'
+            + '<span class="at-badge ' + atCls + '">' + atMeta.icon + ' ' + atLabel + '</span>'
+            + '</span>'
             + '<span class="block-time">' + new Date(t.timestamp).toLocaleString(locale) + '</span>'
             + '</div><div class="block-body">'
             + '<div class="block-grid">'

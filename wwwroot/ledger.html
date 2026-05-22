@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaChain — Ledger</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0d9488">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PharmaChain">
+    <link rel="apple-touch-icon" href="/icon.svg">
+    <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');</script>
+    <link rel="stylesheet" href="/pharma-styles.css">
+    <script src="/pharma-lang.js"></script>
+    <style>
+        /* ── Stats chips ── */
+        .stats-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px; }
+        .stat-chip {
+            background:white; border:1px solid var(--gray-100);
+            border-radius:var(--radius-lg); padding:14px 18px;
+            display:flex; align-items:center; gap:12px;
+            box-shadow:var(--shadow-sm); flex:1; min-width:150px;
+            cursor:pointer; transition:box-shadow 0.18s;
+        }
+        .stat-chip:hover { box-shadow:var(--shadow-md); }
+        .stat-chip.active { border-color:var(--blue-400); background:var(--blue-50); }
+        .stat-chip-icon  { font-size:22px; }
+        .stat-chip-val   { font-size:22px; font-weight:800; color:var(--gray-900); line-height:1; }
+        .stat-chip-lbl   { font-size:11px; color:var(--gray-500); margin-top:2px; }
+
+        /* ── Filter bar ── */
+        .filter-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+        .filter-row .search-wrap { flex:1; min-width:220px; }
+
+        /* ── Action-type badges ── */
+        .at-badge {
+            display:inline-flex; align-items:center; gap:5px;
+            font-size:11px; font-weight:700; padding:3px 10px;
+            border-radius:12px; white-space:nowrap;
+        }
+        .at-DRUG_REGISTERED  { background:#d1fae5; color:#065f46; }
+        .at-QR_GENERATED     { background:#dbeafe; color:#1e40af; }
+        .at-TRANSFER         { background:#ede9fe; color:#4c1d95; }
+        .at-CUSTOMER_SCAN    { background:#ccfbf1; color:#134e4a; }
+        .at-UNKNOWN          { background:var(--gray-100); color:var(--gray-600); }
+
+        /* ── Status badge ── */
+        .st-badge {
+            font-size:10.5px; font-weight:700; padding:2px 8px;
+            border-radius:10px;
+        }
+        .st-Registered { background:#d1fae5; color:#065f46; }
+        .st-Issued     { background:#dbeafe; color:#1e40af; }
+        .st-Transferred{ background:#ede9fe; color:#4c1d95; }
+        .st-Verified   { background:#ccfbf1; color:#134e4a; }
+        .st-Blocked    { background:#ffe4e6; color:#9f1239; }
+        .st-Suspicious { background:#fef3c7; color:#92400e; }
+
+        /* ── Table tweaks ── */
+        .ledger-table td { vertical-align:middle; font-size:12.5px; }
+        .hash-mono { font-family:'Consolas',monospace; font-size:11px; color:#0d9488; background:#f0fdfa; padding:2px 6px; border-radius:4px; }
+        .block-num-badge { background:var(--blue-600); color:white; font-size:11px; font-weight:700; padding:2px 9px; border-radius:10px; }
+        .detail-btn { background:none; border:1px solid var(--gray-200); padding:3px 10px; border-radius:6px; font-size:11.5px; cursor:pointer; color:var(--gray-600); }
+        .detail-btn:hover { background:var(--blue-50); border-color:var(--blue-300); color:var(--blue-700); }
+
+        /* ── Detail drawer ── */
+        .detail-row { display:none; }
+        .detail-row.open { display:table-row; }
+        .detail-cell { background:#f8fafc; border-top:none !important; padding:14px 18px !important; }
+        .detail-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
+        .detail-field { background:white; border:1px solid var(--gray-100); border-radius:8px; padding:9px 12px; }
+        .detail-label { font-size:10px; color:var(--gray-400); font-weight:700; text-transform:uppercase; margin-bottom:3px; }
+        .detail-val   { font-size:12.5px; color:var(--gray-700); font-weight:500; word-break:break-all; }
+
+        /* ── Empty / loading ── */
+        .table-msg { text-align:center; padding:48px 16px; color:var(--gray-400); font-size:14px; }
+    </style>
+</head>
+<body>
+<div class="layout">
+
+    <!-- ══ SIDEBAR ══ -->
+    <div class="sidebar">
+        <div class="sidebar-logo"><h2>PharmaChain</h2><p data-i18n="sidebar_sub">نظام تتبع الأدوية</p></div>
+        <button class="lang-toggle-btn" onclick="PharmaLang.toggle()">🇬🇧 EN</button>
+        <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> <span data-i18n="nav_dashboard">لوحة التحكم</span></a>
+        <a class="nav-item" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> <span data-i18n="nav_add_drug">إضافة دواء</span></a>
+        <a class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> <span data-i18n="nav_transfer">نقل دواء</span></a>
+        <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> <span data-i18n="nav_blockchain">Blockchain</span></a>
+        <a class="nav-item active"><span class="nav-icon">📒</span> <span>Ledger</span></a>
+        <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> <span data-i18n="nav_verify">التحقق من دواء</span></a>
+        <a class="nav-item" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> <span data-i18n="nav_audit">سجل العمليات</span></a>
+        <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span data-i18n="nav_qr_control">إدارة QR Code</span></a>
+        <div class="user-info-bar">
+            <div class="user-row">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div class="user-name" id="sidebarUsername">...</div>
+                    <div class="user-role" id="sidebarRole">...</div>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪 تسجيل خروج</button>
+        </div>
+    </div>
+
+    <!-- ══ MAIN ══ -->
+    <div class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title">📒 Ledger — سجل Blockchain الكامل</div>
+                <div class="page-subtitle">كل حدث في دورة حياة QR Code مسجَّل كـ Block دائم — من تسجيل الدواء حتى مسح العميل</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline" onclick="load()" style="font-size:13px;">🔄 تحديث</button>
+            </div>
+        </div>
+
+        <!-- Stats chips (clickable filters) -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-chip" id="chip-ALL" onclick="setFilter('ALL')">
+                <div class="stat-chip-icon">⛓️</div>
+                <div><div class="stat-chip-val" id="cnt-ALL">—</div><div class="stat-chip-lbl">إجمالي الـ Blocks</div></div>
+            </div>
+            <div class="stat-chip" id="chip-DRUG_REGISTERED" onclick="setFilter('DRUG_REGISTERED')">
+                <div class="stat-chip-icon">🏭</div>
+                <div><div class="stat-chip-val" id="cnt-DRUG_REGISTERED">—</div><div class="stat-chip-lbl">تسجيل دواء</div></div>
+            </div>
+            <div class="stat-chip" id="chip-QR_GENERATED" onclick="setFilter('QR_GENERATED')">
+                <div class="stat-chip-icon">📱</div>
+                <div><div class="stat-chip-val" id="cnt-QR_GENERATED">—</div><div class="stat-chip-lbl">QR صدر</div></div>
+            </div>
+            <div class="stat-chip" id="chip-TRANSFER" onclick="setFilter('TRANSFER')">
+                <div class="stat-chip-icon">🚚</div>
+                <div><div class="stat-chip-val" id="cnt-TRANSFER">—</div><div class="stat-chip-lbl">نقل ملكية</div></div>
+            </div>
+            <div class="stat-chip" id="chip-CUSTOMER_SCAN" onclick="setFilter('CUSTOMER_SCAN')">
+                <div class="stat-chip-icon">✅</div>
+                <div><div class="stat-chip-val" id="cnt-CUSTOMER_SCAN">—</div><div class="stat-chip-lbl">مسح عميل</div></div>
+            </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="filter-row">
+            <div class="search-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput"
+                       placeholder="ابحث باسم الدواء أو Drug ID أو Block Hash..."
+                       oninput="applyLocalFilter()">
+            </div>
+            <select class="filter-select" id="actionFilter" onchange="load()">
+                <option value="ALL">كل أنواع الأحداث</option>
+                <option value="DRUG_REGISTERED">🏭 تسجيل دواء</option>
+                <option value="QR_GENERATED">📱 QR صدر</option>
+                <option value="TRANSFER">🚚 نقل ملكية</option>
+                <option value="CUSTOMER_SCAN">✅ مسح عميل</option>
+            </select>
+            <select class="filter-select" id="limitSelect" onchange="load()">
+                <option value="50">50 نتيجة</option>
+                <option value="100" selected>100 نتيجة</option>
+                <option value="200">200 نتيجة</option>
+                <option value="500">500 نتيجة</option>
+            </select>
+        </div>
+
+        <!-- Table -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <div class="card-icon ci-blue">📒</div>
+                    <div>
+                        <div class="card-title">سجل المعاملات <span class="count-badge" id="tableCount">0</span></div>
+                        <div class="card-subtitle">كل إدخال مرتبط بـ SHA-256 Proof-of-Work + Merkle Root</div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-wrap" id="tableWrap">
+                <div class="loading-state"><div class="spinner"></div>جاري تحميل السجل...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var API   = 'http://localhost:7036';
+    var token = localStorage.getItem('token');
+    var role  = localStorage.getItem('role');
+
+    if (!token) window.location.replace(API + '/login.html');
+    if (role !== 'Admin' && role !== 'LedgerAdmin') window.location.replace(API + '/dashboard.html');
+
+    document.getElementById('sidebarUsername').textContent = localStorage.getItem('username') || '';
+    document.getElementById('sidebarRole').textContent = role || '';
+
+    function goTo(p) { window.location.replace(API + '/' + p); }
+    function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+
+    var allRows = [];
+    var activeFilter = 'ALL';
+
+    /* ── Action-type metadata ── */
+    var AT_META = {
+        DRUG_REGISTERED : { icon: '🏭', label: 'تسجيل دواء',  labelEn: 'Drug Registered',  cls: 'at-DRUG_REGISTERED'  },
+        QR_GENERATED    : { icon: '📱', label: 'QR صدر',      labelEn: 'QR Generated',      cls: 'at-QR_GENERATED'     },
+        TRANSFER        : { icon: '🚚', label: 'نقل ملكية',   labelEn: 'Transfer',           cls: 'at-TRANSFER'         },
+        CUSTOMER_SCAN   : { icon: '✅', label: 'مسح عميل',    labelEn: 'Customer Scan',      cls: 'at-CUSTOMER_SCAN'    },
+    };
+    function getMeta(at) { return AT_META[at] || { icon:'❓', label: at, labelEn: at, cls:'at-UNKNOWN' }; }
+
+    /* ── Load stats chips ── */
+    function loadStats() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', API + '/api/transaction/stats', true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function() {
+            if (xhr.status !== 200) return;
+            var d = JSON.parse(xhr.responseText);
+            document.getElementById('cnt-ALL').textContent              = d.totalBlocks;
+            document.getElementById('cnt-DRUG_REGISTERED').textContent  = d.byAction.drugRegistered;
+            document.getElementById('cnt-QR_GENERATED').textContent     = d.byAction.qrGenerated;
+            document.getElementById('cnt-TRANSFER').textContent         = d.byAction.transfer;
+            document.getElementById('cnt-CUSTOMER_SCAN').textContent    = d.byAction.customerScan;
+        };
+        xhr.send();
+    }
+
+    /* ── Set active filter chip ── */
+    function setFilter(at) {
+        activeFilter = at;
+        document.querySelectorAll('.stat-chip').forEach(function(c) { c.classList.remove('active'); });
+        var el = document.getElementById('chip-' + at);
+        if (el) el.classList.add('active');
+        document.getElementById('actionFilter').value = at;
+        load();
+    }
+
+    /* ── Load transactions from API ── */
+    function load() {
+        var at    = document.getElementById('actionFilter').value;
+        var lim   = document.getElementById('limitSelect').value;
+        var url   = API + '/api/transaction/search?limit=' + lim;
+        if (at && at !== 'ALL') url += '&actionType=' + encodeURIComponent(at);
+
+        document.getElementById('tableWrap').innerHTML = '<div class="loading-state"><div class="spinner"></div>جاري التحميل...</div>';
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function() {
+            if (xhr.status === 401) { window.location.replace(API + '/login.html'); return; }
+            if (xhr.status !== 200) { document.getElementById('tableWrap').innerHTML = '<div class="table-msg">⚠️ تعذر التحميل</div>'; return; }
+            var d = JSON.parse(xhr.responseText);
+            allRows = d.results || [];
+            loadStats();
+            applyLocalFilter();
+        };
+        xhr.onerror = function() { document.getElementById('tableWrap').innerHTML = '<div class="table-msg">⚠️ تعذر الاتصال بالسيرفر</div>'; };
+        xhr.send();
+    }
+
+    /* ── Local search filter (no API call) ── */
+    function applyLocalFilter() {
+        var q = document.getElementById('searchInput').value.toLowerCase().trim();
+        var filtered = q ? allRows.filter(function(r) {
+            return (r.drugName||'').toLowerCase().includes(q)
+                || String(r.drugId).includes(q)
+                || (r.blockHash||'').toLowerCase().includes(q)
+                || (r.fromUsername||'').toLowerCase().includes(q)
+                || (r.toUsername||'').toLowerCase().includes(q);
+        }) : allRows;
+
+        document.getElementById('tableCount').textContent = filtered.length;
+        renderTable(filtered);
+    }
+
+    /* ── Render table ── */
+    function renderTable(rows) {
+        var ar = PharmaLang.get() === 'ar';
+        if (rows.length === 0) {
+            document.getElementById('tableWrap').innerHTML = '<div class="table-msg">📭 لا توجد نتائج</div>';
+            return;
+        }
+        var html = '<table class="ledger-table"><thead><tr>'
+            + '<th>Block #</th>'
+            + '<th>' + (ar ? 'نوع الحدث' : 'Action') + '</th>'
+            + '<th>' + (ar ? 'اسم الدواء' : 'Drug') + '</th>'
+            + '<th>' + (ar ? 'من' : 'From') + '</th>'
+            + '<th>' + (ar ? 'إلى' : 'To') + '</th>'
+            + '<th>' + (ar ? 'الحالة' : 'Status') + '</th>'
+            + '<th>' + (ar ? 'التاريخ' : 'Timestamp') + '</th>'
+            + '<th>Block Hash</th>'
+            + '<th></th>'
+            + '</tr></thead><tbody>';
+
+        rows.forEach(function(r) {
+            var meta = getMeta(r.actionType);
+            var atLabel = ar ? meta.label : meta.labelEn;
+            var ts = new Date(r.timestamp).toLocaleString(ar ? 'ar-JO' : 'en-GB');
+            var stCls = 'st-badge st-' + (r.status || 'Transferred');
+            var detailId = 'det-' + r.id;
+
+            html += '<tr onclick="toggleDetail(\'' + r.id + '\')" style="cursor:pointer;">'
+                + '<td><span class="block-num-badge">#' + r.blockNumber + '</span></td>'
+                + '<td><span class="at-badge ' + meta.cls + '">' + meta.icon + ' ' + atLabel + '</span></td>'
+                + '<td><strong>' + (r.drugName||'—') + '</strong> <small style="color:var(--gray-400);">#' + r.drugId + '</small></td>'
+                + '<td>' + roleIcon(r.fromRole) + ' ' + (r.fromRole||'—') + '</td>'
+                + '<td>' + roleIcon(r.toRole)   + ' ' + (r.toRole  ||'—') + '</td>'
+                + '<td><span class="' + stCls + '">' + (r.status||'—') + '</span></td>'
+                + '<td style="font-size:11.5px;color:var(--gray-500);">' + ts + '</td>'
+                + '<td><span class="hash-mono">' + (r.blockHash||'—') + '</span></td>'
+                + '<td><button class="detail-btn" onclick="event.stopPropagation();toggleDetail(\'' + r.id + '\')">' + (ar?'تفاصيل':'Details') + '</button></td>'
+                + '</tr>';
+
+            // Hidden detail row
+            html += '<tr class="detail-row" id="' + detailId + '">'
+                + '<td colspan="9" class="detail-cell">'
+                + '<div class="detail-grid">'
+                + field('Previous Hash', r.previousHash)
+                + field('Block Hash',    r.blockHash)
+                + field('Merkle Root',   r.merkleRoot)
+                + field('Nonce (PoW)',   r.nonce)
+                + field('Drug ID',       r.drugId)
+                + field('From Username', r.fromUsername||'—')
+                + field('To Username',   r.toUsername||'—')
+                + field('ActionType',    r.actionType)
+                + (r.qrIssuanceId ? field('QR Issuance ID', r.qrIssuanceId) : '')
+                + field('Timestamp UTC', new Date(r.timestamp).toISOString())
+                + '</div>'
+                + '</td></tr>';
+        });
+
+        html += '</tbody></table>';
+        document.getElementById('tableWrap').innerHTML = html;
+    }
+
+    function field(label, val) {
+        return '<div class="detail-field"><div class="detail-label">' + label + '</div><div class="detail-val">' + (val||'—') + '</div></div>';
+    }
+
+    function roleIcon(r) {
+        return ({Factory:'🏭',Distributor:'🚚',Pharmacy:'🏥',Customer:'👤',SYSTEM:'⚙️'}[r]||'');
+    }
+
+    function toggleDetail(id) {
+        var el = document.getElementById('det-' + id);
+        if (el) el.classList.toggle('open');
+    }
+
+    window.addEventListener('pharmaLangChanged', function() { applyLocalFilter(); });
+
+    // Init
+    document.getElementById('chip-ALL').classList.add('active');
+    load();
+</script>
+</body>
+</html>

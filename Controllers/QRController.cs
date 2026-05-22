@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PharmaChain.Data;
 using PharmaChain.Models;
+using PharmaChain.Services;
 using QRCoder;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -18,8 +19,8 @@ namespace PharmaChain.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _config;
+        private readonly BlockchainService _blockchain;
 
-        // ── Default monthly QR quota per role ──
         private static readonly Dictionary<string, int> DefaultQuotas = new(StringComparer.OrdinalIgnoreCase)
         {
             { "Factory",      500  },
@@ -29,23 +30,24 @@ namespace PharmaChain.Controllers
             { "LedgerAdmin",  9999 }
         };
 
-        public QRController(AppDbContext context, IConfiguration config)
+        public QRController(AppDbContext context, IConfiguration config, BlockchainService blockchain)
         {
-            _context = context;
-            _config  = config;
+            _context    = context;
+            _config     = config;
+            _blockchain = blockchain;
         }
 
         // ══════════════════════════════════════════════════════════════
         // GET /api/qr/{drugId}?token=...
         // Generates a time-bound, cryptographically signed QR Code.
-        // Enforces per-role quota; records every issuance.
+        // Enforces per-role quota; records every issuance on the ledger.
         // ══════════════════════════════════════════════════════════════
         [HttpGet("{drugId}")]
         public IActionResult GenerateQR(int drugId, [FromQuery] string token)
         {
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
-            // ── 1. Validate JWT & extract claims ──
+            // 1. Validate JWT
             if (string.IsNullOrEmpty(token))
                 return Unauthorized("Token مطلوب");
 
@@ -65,76 +67,84 @@ namespace PharmaChain.Controllers
                     ValidateLifetime         = true
                 }, out _);
             }
-            catch
-            {
-                return Unauthorized("Token غير صحيح");
-            }
+            catch { return Unauthorized("Token غير صحيح"); }
 
             var userIdStr = principal.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
             var username  = principal.FindFirstValue(ClaimTypes.Name)           ?? "unknown";
             var role      = principal.FindFirstValue(ClaimTypes.Role)           ?? "Unknown";
             int.TryParse(userIdStr, out var userId);
 
-            // ── 2. Load drug ──
+            // 2. Load drug
             var drug = _context.Drugs.Find(drugId);
             if (drug == null) return NotFound("الدواء غير موجود");
 
-            // ── 3. Quota Enforcement ──
+            // 3. Quota enforcement
             var quota  = GetOrCreateQuota(role, username);
             var status = "Valid";
             string? suspicionReason = null;
 
             if (quota.IssuedCount >= quota.QuotaLimit)
             {
-                // Record the blocked attempt
-                RecordIssuance(drugId, drug.Name, userId, username, role,
-                               quota, "Blocked",
+                RecordIssuance(drugId, drug.Name, userId, username, role, quota,
+                               "Blocked",
                                $"Quota exceeded: {quota.IssuedCount}/{quota.QuotaLimit} for period {quota.PeriodStart:yyyy-MM-dd} → {quota.PeriodEnd:yyyy-MM-dd}",
                                "", ip);
+                _context.SaveChanges();
 
                 return StatusCode(429, new
                 {
-                    blocked      = true,
-                    message      = $"QR quota exceeded. You have issued {quota.IssuedCount} of {quota.QuotaLimit} allowed QR codes this period.",
-                    issued       = quota.IssuedCount,
-                    limit        = quota.QuotaLimit,
-                    periodEnd    = quota.PeriodEnd.ToString("yyyy-MM-dd"),
+                    blocked   = true,
+                    message   = $"QR quota exceeded. You have issued {quota.IssuedCount} of {quota.QuotaLimit} allowed QR codes this period.",
+                    issued    = quota.IssuedCount,
+                    limit     = quota.QuotaLimit,
+                    periodEnd = quota.PeriodEnd.ToString("yyyy-MM-dd"),
                     role
                 });
             }
 
-            // Detect suspicious burst: >10 QR from same user in last 60 seconds
+            // Burst detection: >10 QR from same user in last 60 seconds
             var recentCount = _context.QrIssuances
-                .Count(q => q.UserId == userId
-                         && q.IssuedAt >= DateTime.UtcNow.AddSeconds(-60));
+                .Count(q => q.UserId == userId && q.IssuedAt >= DateTime.UtcNow.AddSeconds(-60));
             if (recentCount >= 10)
             {
                 status          = "Suspicious";
                 suspicionReason = $"Burst detected: {recentCount + 1} QR codes generated within 60 seconds by {username}.";
             }
 
-            // ── 4. Build signed payload (AI Token included for stronger security) ──
+            // 4. Build signed payload
             var productionDate = drug.CreatedAt.ToString("yyyy-MM-dd");
             var generatedAt    = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
             var signature      = ComputeHmac(drugId, productionDate, generatedAt, drug.AiToken);
 
-            // ── 5. Increment quota & record issuance ──
+            // 5. Increment quota & record issuance
             quota.IssuedCount++;
             quota.UpdatedAt = DateTime.UtcNow;
-            RecordIssuance(drugId, drug.Name, userId, username, role,
-                           quota, status, suspicionReason, signature[..16], ip);
+            var issuance = RecordIssuance(drugId, drug.Name, userId, username, role,
+                                          quota, status, suspicionReason, signature[..16], ip);
             _context.SaveChanges();
+            // issuance.Id is now populated after SaveChanges
 
-            // ── 6. Build QR URL ──
+            // 6. Blockchain: QR_GENERATED
+            _blockchain.CreateTransaction(
+                drugId, drug.Name,
+                fromRole: role,       fromUsername: username,
+                toRole:   "Customer", toUsername:   "QR-Recipient",
+                status:   status == "Blocked" ? "Blocked" : "Issued",
+                actionType: "QR_GENERATED",
+                qrIssuanceId: issuance.Id
+            );
+            _context.SaveChanges();
+            _blockchain.SaveChainToJson();
+
+            // 7. Build QR URL
             var baseUrl   = _config["App:BaseUrl"] ?? "http://localhost:7036";
-            var verifyUrl =
-                $"{baseUrl}/verify.html"
-                + $"?id={drugId}"
-                + $"&prod={Uri.EscapeDataString(productionDate)}"
-                + $"&ts={generatedAt}"
-                + $"&sig={Uri.EscapeDataString(signature)}";
+            var verifyUrl = $"{baseUrl}/verify.html"
+                          + $"?id={drugId}"
+                          + $"&prod={Uri.EscapeDataString(productionDate)}"
+                          + $"&ts={generatedAt}"
+                          + $"&sig={Uri.EscapeDataString(signature)}";
 
-            // ── 7. Generate QR image ──
+            // 8. Generate QR image
             using var qrGenerator = new QRCodeGenerator();
             var qrData  = qrGenerator.CreateQrCode(verifyUrl, QRCodeGenerator.ECCLevel.Q);
             using var qrCode = new PngByteQRCode(qrData);
@@ -143,14 +153,18 @@ namespace PharmaChain.Controllers
             Response.Headers["X-QR-Sequence"]  = quota.IssuedCount.ToString();
             Response.Headers["X-QR-Remaining"] = (quota.QuotaLimit - quota.IssuedCount).ToString();
             Response.Headers["X-QR-Status"]    = status;
+            Response.Headers["X-Block-Hash"]   = _context.DrugTransactions
+                                                     .OrderByDescending(t => t.BlockNumber)
+                                                     .Select(t => t.BlockHash)
+                                                     .FirstOrDefault() ?? "";
 
             return File(qrBytes, "image/png");
         }
 
         // ══════════════════════════════════════════════════════════════
         // GET /api/qr/verify-signature?id=&prod=&ts=&sig=
-        // Validates QR authenticity + logs every scan.
-        // Also checks whether the corresponding issuance is valid/suspicious.
+        // Validates QR authenticity.  On success, records a CUSTOMER_SCAN
+        // block on the ledger.
         // ══════════════════════════════════════════════════════════════
         [HttpGet("verify-signature")]
         public IActionResult VerifySignature(
@@ -165,7 +179,6 @@ namespace PharmaChain.Controllers
             {
                 SaveLog(id, prod ?? "", ts ?? "", false, "MISSING_PARAMS",
                     "QR Code is incomplete — possible label tampering detected.", ip);
-
                 return BadRequest(new
                 {
                     isValid    = false,
@@ -179,7 +192,6 @@ namespace PharmaChain.Controllers
             {
                 SaveLog(id, prod, ts, false, "DRUG_NOT_FOUND",
                     "Drug ID not found. QR code may be counterfeit.", ip);
-
                 return Ok(new
                 {
                     isValid    = false,
@@ -193,7 +205,6 @@ namespace PharmaChain.Controllers
             {
                 SaveLog(id, prod, ts, false, "SIGNATURE_MISMATCH",
                     $"Invalid signature for drug {id}. Label substitution attack suspected.", ip);
-
                 return Ok(new
                 {
                     isValid    = false,
@@ -207,15 +218,14 @@ namespace PharmaChain.Controllers
             {
                 SaveLog(id, prod, ts, false, "DATE_MISMATCH",
                     $"QR date ({prod}) != DB date ({dbProductionDate}). Date-based attack detected.", ip);
-
                 return Ok(new
                 {
-                    isValid       = false,
-                    attackType    = "DATE_MISMATCH",
-                    message       = "Production date in QR does not match database record.",
-                    qrDate        = prod,
-                    databaseDate  = dbProductionDate,
-                    detail        = "Date-based attack detected: QR label was likely copied from a different batch."
+                    isValid      = false,
+                    attackType   = "DATE_MISMATCH",
+                    message      = "Production date in QR does not match database record.",
+                    qrDate       = prod,
+                    databaseDate = dbProductionDate,
+                    detail       = "Date-based attack detected: QR label was likely copied from a different batch."
                 });
             }
 
@@ -227,7 +237,6 @@ namespace PharmaChain.Controllers
                 {
                     SaveLog(id, prod, ts, false, "QR_EXPIRED",
                         $"QR expired — generated {(int)age.TotalDays} days ago.", ip);
-
                     return Ok(new
                     {
                         isValid     = false,
@@ -238,9 +247,9 @@ namespace PharmaChain.Controllers
                 }
             }
 
-            // ── Check issuance record for range/quota anomalies ──
-            var sigPrefix  = sig.Length >= 16 ? sig[..16] : sig;
-            var issuance   = _context.QrIssuances
+            // Check issuance record for quota anomalies
+            var sigPrefix = sig.Length >= 16 ? sig[..16] : sig;
+            var issuance  = _context.QrIssuances
                 .Where(q => q.DrugId == id && q.Signature == sigPrefix)
                 .OrderByDescending(q => q.IssuedAt)
                 .FirstOrDefault();
@@ -249,8 +258,7 @@ namespace PharmaChain.Controllers
             if (issuance != null && issuance.Status == "Blocked")
             {
                 SaveLog(id, prod, ts, false, "QUOTA_EXCEEDED",
-                    $"QR was generated after quota was exceeded. Possible forgery.", ip);
-
+                    "QR was generated after quota was exceeded. Possible forgery.", ip);
                 return Ok(new
                 {
                     isValid    = false,
@@ -260,11 +268,20 @@ namespace PharmaChain.Controllers
                 });
             }
             if (issuance != null && issuance.Status == "Suspicious")
-            {
                 quotaNote = $" ⚠️ Issuance #{issuance.SequenceNumber}/{issuance.QuotaLimit} was flagged: {issuance.SuspicionReason}";
-            }
 
+            // ── Successful verification ──
             SaveLog(id, prod, ts, true, "NONE", "QR verified successfully." + quotaNote, ip);
+
+            // Blockchain: CUSTOMER_SCAN — only on genuine successful scans
+            _blockchain.CreateTransaction(
+                id, drug.Name,
+                fromRole: "Customer", fromUsername: ip,
+                toRole:   "Customer", toUsername:   ip,
+                status:   "Verified", actionType:   "CUSTOMER_SCAN"
+            );
+            _context.SaveChanges();
+            _blockchain.SaveChainToJson();
 
             return Ok(new
             {
@@ -282,7 +299,8 @@ namespace PharmaChain.Controllers
                 aiSecured      = !string.IsNullOrEmpty(drug.AiToken),
                 issuanceSeq    = issuance?.SequenceNumber,
                 issuanceStatus = issuance?.Status ?? "Unknown",
-                quotaWarning   = issuance?.Status == "Suspicious" ? issuance.SuspicionReason : null
+                quotaWarning   = issuance?.Status == "Suspicious" ? issuance.SuspicionReason : null,
+                blockchainRecorded = true
             });
         }
 
@@ -296,7 +314,6 @@ namespace PharmaChain.Controllers
             var username = User.FindFirstValue(ClaimTypes.Name) ?? "";
             var role     = User.FindFirstValue(ClaimTypes.Role) ?? "";
 
-            var now    = DateTime.UtcNow;
             var quota  = GetOrCreateQuota(role, username);
             var recent = _context.QrIssuances
                 .Where(q => q.Username == username && q.IssuedAt >= quota.PeriodStart)
@@ -313,16 +330,16 @@ namespace PharmaChain.Controllers
             {
                 role,
                 username,
-                quotaId      = quota.Id,
-                limit        = quota.QuotaLimit,
-                issued       = quota.IssuedCount,
-                remaining    = Math.Max(0, quota.QuotaLimit - quota.IssuedCount),
-                usedPct      = quota.QuotaLimit > 0
-                                 ? Math.Round(quota.IssuedCount * 100.0 / quota.QuotaLimit, 1)
-                                 : 0,
-                periodType   = quota.PeriodType,
-                periodStart  = quota.PeriodStart.ToString("yyyy-MM-dd"),
-                periodEnd    = quota.PeriodEnd.ToString("yyyy-MM-dd"),
+                quotaId     = quota.Id,
+                limit       = quota.QuotaLimit,
+                issued      = quota.IssuedCount,
+                remaining   = Math.Max(0, quota.QuotaLimit - quota.IssuedCount),
+                usedPct     = quota.QuotaLimit > 0
+                                ? Math.Round(quota.IssuedCount * 100.0 / quota.QuotaLimit, 1)
+                                : 0,
+                periodType  = quota.PeriodType,
+                periodStart = quota.PeriodStart.ToString("yyyy-MM-dd"),
+                periodEnd   = quota.PeriodEnd.ToString("yyyy-MM-dd"),
                 recentIssued = recent
             });
         }
@@ -337,26 +354,19 @@ namespace PharmaChain.Controllers
             var now    = DateTime.UtcNow;
             var quotas = _context.QrQuotas
                 .Where(q => q.IsActive && q.PeriodStart <= now && q.PeriodEnd > now)
-                .OrderBy(q => q.Role)
-                .ThenBy(q => q.Username)
+                .OrderBy(q => q.Role).ThenBy(q => q.Username)
                 .Select(q => new
                 {
-                    q.Id,
-                    q.Role,
-                    q.Username,
-                    q.QuotaLimit,
-                    q.IssuedCount,
-                    remaining   = Math.Max(0, q.QuotaLimit - q.IssuedCount),
-                    usedPct     = q.QuotaLimit > 0
-                                    ? Math.Round(q.IssuedCount * 100.0 / q.QuotaLimit, 1)
-                                    : 0,
+                    q.Id, q.Role, q.Username,
+                    q.QuotaLimit, q.IssuedCount,
+                    remaining = Math.Max(0, q.QuotaLimit - q.IssuedCount),
+                    usedPct   = q.QuotaLimit > 0 ? Math.Round(q.IssuedCount * 100.0 / q.QuotaLimit, 1) : 0,
                     q.PeriodType,
                     periodStart = q.PeriodStart.ToString("yyyy-MM-dd"),
                     periodEnd   = q.PeriodEnd.ToString("yyyy-MM-dd"),
                     q.UpdatedAt
                 }).ToList();
 
-            // Aggregate suspicious/blocked counts
             var flagged = _context.QrIssuances
                 .Where(q => q.Status != "Valid")
                 .GroupBy(q => q.Role)
@@ -367,8 +377,7 @@ namespace PharmaChain.Controllers
         }
 
         // ══════════════════════════════════════════════════════════════
-        // POST /api/qr/quota/set  — set or update quota for role [Admin]
-        // Body: { role, username(opt), limit, periodType }
+        // POST /api/qr/quota/set  [Admin]
         // ══════════════════════════════════════════════════════════════
         [HttpPost("quota/set")]
         [Authorize(Roles = "Admin")]
@@ -376,7 +385,6 @@ namespace PharmaChain.Controllers
         {
             if (req == null || string.IsNullOrWhiteSpace(req.Role))
                 return BadRequest("Role مطلوب");
-
             if (req.Limit < 0 || req.Limit > 99999)
                 return BadRequest("Limit يجب أن يكون بين 0 و 99999");
 
@@ -395,18 +403,11 @@ namespace PharmaChain.Controllers
                 periodEnd   = periodStart.AddMonths(1);
             }
 
-            // Deactivate any existing quota for this role/user in this period
             var existing = _context.QrQuotas
-                .Where(q => q.Role == req.Role
-                         && q.Username == req.Username
-                         && q.IsActive
-                         && q.PeriodStart == periodStart)
+                .Where(q => q.Role == req.Role && q.Username == req.Username
+                         && q.IsActive && q.PeriodStart == periodStart)
                 .ToList();
-            foreach (var e in existing)
-            {
-                e.IsActive   = false;
-                e.UpdatedAt  = now;
-            }
+            foreach (var e in existing) { e.IsActive = false; e.UpdatedAt = now; }
 
             var quota = new QrQuota
             {
@@ -436,20 +437,18 @@ namespace PharmaChain.Controllers
         }
 
         // ══════════════════════════════════════════════════════════════
-        // GET /api/qr/issuances  — full issuance history [Admin]
+        // GET /api/qr/issuances  [Admin]
         // ══════════════════════════════════════════════════════════════
         [HttpGet("issuances")]
         [Authorize(Roles = "Admin")]
         public IActionResult GetIssuances(
-            [FromQuery] string? status   = null,
-            [FromQuery] string? role     = null,
-            [FromQuery] int     limit    = 200)
+            [FromQuery] string? status = null,
+            [FromQuery] string? role   = null,
+            [FromQuery] int     limit  = 200)
         {
             var query = _context.QrIssuances.AsQueryable();
-
             if (!string.IsNullOrEmpty(status) && status != "ALL")
                 query = query.Where(q => q.Status == status);
-
             if (!string.IsNullOrEmpty(role) && role != "ALL")
                 query = query.Where(q => q.Role == role);
 
@@ -476,7 +475,7 @@ namespace PharmaChain.Controllers
         }
 
         // ══════════════════════════════════════════════════════════════
-        // GET /api/qr/scan-logs
+        // GET /api/qr/scan-logs  [Admin]
         // ══════════════════════════════════════════════════════════════
         [HttpGet("scan-logs")]
         [Authorize(Roles = "Admin")]
@@ -485,7 +484,6 @@ namespace PharmaChain.Controllers
             [FromQuery] int     limit      = 100)
         {
             var query = _context.QrScanLogs.AsQueryable();
-
             if (!string.IsNullOrEmpty(attackType) && attackType != "ALL")
                 query = query.Where(l => l.AttackType == attackType);
 
@@ -516,28 +514,18 @@ namespace PharmaChain.Controllers
         // Private helpers
         // ══════════════════════════════════════════════════════════════
 
-        /// <summary>
-        /// Returns the active quota for the given role+user in the current period.
-        /// Creates a default quota record if none exists.
-        /// User-specific quota takes priority over role-wide quota.
-        /// </summary>
         private QrQuota GetOrCreateQuota(string role, string username)
         {
             var now = DateTime.UtcNow;
-
-            // User-specific first, then role-wide
             var quota = _context.QrQuotas
-                .Where(q => q.IsActive
-                         && q.PeriodStart <= now
-                         && q.PeriodEnd   >  now
-                         && q.Role        == role
-                         && (q.Username   == username || q.Username == null))
-                .OrderByDescending(q => q.Username != null) // user-specific wins
+                .Where(q => q.IsActive && q.PeriodStart <= now && q.PeriodEnd > now
+                         && q.Role == role
+                         && (q.Username == username || q.Username == null))
+                .OrderByDescending(q => q.Username != null)
                 .FirstOrDefault();
 
             if (quota != null) return quota;
 
-            // Create default monthly quota
             var periodStart = new DateTime(now.Year, now.Month, 1);
             var periodEnd   = periodStart.AddMonths(1);
             var limit       = DefaultQuotas.TryGetValue(role, out var d) ? d : 100;
@@ -560,14 +548,15 @@ namespace PharmaChain.Controllers
             return quota;
         }
 
-        private void RecordIssuance(
+        /// <summary>Returns the newly created QrIssuance (Id populated after SaveChanges).</summary>
+        private QrIssuance RecordIssuance(
             int drugId, string drugName,
-            int userId,  string username, string role,
+            int userId, string username, string role,
             QrQuota quota,
             string status, string? reason,
             string sigPrefix, string ip)
         {
-            _context.QrIssuances.Add(new QrIssuance
+            var issuance = new QrIssuance
             {
                 DrugId          = drugId,
                 DrugName        = drugName,
@@ -582,7 +571,9 @@ namespace PharmaChain.Controllers
                 Signature       = sigPrefix,
                 IpAddress       = ip,
                 IssuedAt        = DateTime.UtcNow
-            });
+            };
+            _context.QrIssuances.Add(issuance);
+            return issuance;
         }
 
         private void SaveLog(int drugId, string prod, string ts,
@@ -590,14 +581,14 @@ namespace PharmaChain.Controllers
         {
             _context.QrScanLogs.Add(new QrScanLog
             {
-                DrugId        = drugId,
+                DrugId         = drugId,
                 ProductionDate = prod,
-                Timestamp     = ts,
-                IsValid       = isValid,
-                AttackType    = attackType,
-                Message       = message,
-                IpAddress     = ip,
-                ScannedAt     = DateTime.UtcNow
+                Timestamp      = ts,
+                IsValid        = isValid,
+                AttackType     = attackType,
+                Message        = message,
+                IpAddress      = ip,
+                ScannedAt      = DateTime.UtcNow
             });
             _context.SaveChanges();
         }

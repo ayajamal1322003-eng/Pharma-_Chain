@@ -16,13 +16,16 @@ namespace PharmaChain.Controllers
     {
         private readonly AppDbContext _context;
         private readonly AiTokenService _aiTokenService;
+        private readonly BlockchainService _blockchain;
         private readonly IConfiguration _config;
 
-        public DrugsController(AppDbContext context, AiTokenService aiTokenService, IConfiguration config)
+        public DrugsController(AppDbContext context, AiTokenService aiTokenService,
+                                BlockchainService blockchain, IConfiguration config)
         {
-            _context = context;
+            _context        = context;
             _aiTokenService = aiTokenService;
-            _config = config;
+            _blockchain     = blockchain;
+            _config         = config;
         }
 
         [HttpGet]
@@ -132,7 +135,16 @@ namespace PharmaChain.Controllers
                     Timestamp = DateTime.UtcNow,
                     IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown"
                 });
+
+                // ── Blockchain: DRUG_REGISTERED ──
+                _blockchain.CreateTransaction(
+                    drug.Id, drug.Name,
+                    fromRole: "SYSTEM", fromUsername: "SYSTEM",
+                    toRole: role, toUsername: username,
+                    status: "Registered", actionType: "DRUG_REGISTERED"
+                );
                 _context.SaveChanges();
+                _blockchain.SaveChainToJson();
 
                 // ── Build QR URL to return ──
                 var prodDate  = drug.CreatedAt.ToString("yyyy-MM-dd");

@@ -70,6 +70,19 @@
         .drug-name { font-weight: 600; color: var(--gray-800); }
 
         td strong { color: var(--gray-900); }
+
+        /* Blockchain activity card */
+        .bc-stats-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+        .bc-stat { background:var(--gray-50); border:1px solid var(--gray-100); border-radius:10px; padding:10px 14px; flex:1; min-width:110px; }
+        .bc-stat-val { font-size:20px; font-weight:800; color:var(--gray-900); }
+        .bc-stat-lbl { font-size:10.5px; color:var(--gray-500); margin-top:1px; }
+        .bc-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--gray-50); font-size:12.5px; }
+        .bc-row:last-child { border-bottom:none; }
+        .bc-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; white-space:nowrap; }
+        .bc-DRUG_REGISTERED { background:#d1fae5; color:#065f46; }
+        .bc-QR_GENERATED    { background:#dbeafe; color:#1e40af; }
+        .bc-TRANSFER        { background:#ede9fe; color:#4c1d95; }
+        .bc-CUSTOMER_SCAN   { background:#ccfbf1; color:#134e4a; }
     </style>
 </head>
 <body>
@@ -91,6 +104,7 @@
         <a class="nav-item" id="navVerify" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> <span data-i18n="nav_verify">التحقق من دواء</span></a>
         <a class="nav-item" id="navAttack" style="display:none" onclick="goTo('attack-demo.html')"><span class="nav-icon">🛡️</span> <span data-i18n="nav_tamper">كشف التلاعب</span></a>
         <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> <span data-i18n="nav_audit">سجل العمليات</span></a>
+        <a class="nav-item" id="navLedger" style="display:none" onclick="goTo('ledger.html')"><span class="nav-icon">📒</span> Ledger</a>
         <div class="nav-section-hdr" id="navAISection" style="display:none" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
         <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
         <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
@@ -218,6 +232,29 @@
                 <div class="pagination" id="pagination"></div>
             </div>
         </div>
+        <!-- Blockchain Activity Card (admin/ledgerAdmin only) -->
+        <div class="card" id="bcCard" style="display:none; margin-top:20px;">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <div class="card-icon ci-dark">⛓️</div>
+                    <div>
+                        <div class="card-title">نشاط Blockchain الأخير</div>
+                        <div class="card-subtitle">آخر 10 أحداث مسجَّلة على السلسلة — بيانات حقيقية من Ledger</div>
+                    </div>
+                </div>
+                <button class="btn btn-outline" onclick="goTo('ledger.html')" style="font-size:12px;">📒 عرض كامل السجل</button>
+            </div>
+            <div class="card-body" style="padding:16px 20px 4px;">
+                <div class="bc-stats-row" id="bcStatsRow">
+                    <div class="bc-stat"><div class="bc-stat-val" id="bcTotal">—</div><div class="bc-stat-lbl">⛓️ إجمالي Blocks</div></div>
+                    <div class="bc-stat"><div class="bc-stat-val" id="bcReg">—</div><div class="bc-stat-lbl">🏭 تسجيل أدوية</div></div>
+                    <div class="bc-stat"><div class="bc-stat-val" id="bcQr">—</div><div class="bc-stat-lbl">📱 QR صدرت</div></div>
+                    <div class="bc-stat"><div class="bc-stat-val" id="bcTr">—</div><div class="bc-stat-lbl">🚚 نقل ملكية</div></div>
+                    <div class="bc-stat"><div class="bc-stat-val" id="bcScan">—</div><div class="bc-stat-lbl">✅ مسح عميل</div></div>
+                </div>
+                <div id="bcFeed" style="padding-bottom:12px;"></div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -266,6 +303,12 @@
         document.getElementById('navRisk').style.display = 'flex';
         document.getElementById('navAdvisor').style.display = 'flex';
         document.getElementById('navAISection').style.display = 'block';
+        document.getElementById('navLedger').style.display = 'flex';
+        document.getElementById('bcCard').style.display = 'block';
+    }
+    if (isLedger) {
+        document.getElementById('navLedger').style.display = 'flex';
+        document.getElementById('bcCard').style.display = 'block';
     }
 
     function goTo(page) { window.location.replace(API + '/' + page); }
@@ -511,20 +554,55 @@
 
     function showToast(msg) { var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(function () { t.classList.remove('show'); }, 2800); }
 
+    /* ── Blockchain activity feed (admin/ledger only) ── */
+    var AT_META = {
+        DRUG_REGISTERED : { icon:'🏭', label:'تسجيل دواء',  labelEn:'Drug Registered'  },
+        QR_GENERATED    : { icon:'📱', label:'QR صدر',      labelEn:'QR Generated'      },
+        TRANSFER        : { icon:'🚚', label:'نقل ملكية',   labelEn:'Transfer'           },
+        CUSTOMER_SCAN   : { icon:'✅', label:'مسح عميل',    labelEn:'Customer Scan'      }
+    };
+
+    function loadBlockchainStats() {
+        if (!isAdmin && !isLedger) return;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', API + '/api/transaction/stats', true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function() {
+            if (xhr.status !== 200) return;
+            var d = JSON.parse(xhr.responseText);
+            document.getElementById('bcTotal').textContent = d.totalBlocks;
+            document.getElementById('bcReg').textContent   = d.byAction.drugRegistered;
+            document.getElementById('bcQr').textContent    = d.byAction.qrGenerated;
+            document.getElementById('bcTr').textContent    = d.byAction.transfer;
+            document.getElementById('bcScan').textContent  = d.byAction.customerScan;
+
+            var ar   = PharmaLang.get() === 'ar';
+            var feed = '';
+            (d.recent || []).forEach(function(r) {
+                var m    = AT_META[r.actionType] || { icon:'❓', label:r.actionType, labelEn:r.actionType };
+                var lbl  = ar ? m.label : m.labelEn;
+                var cls  = 'bc-badge bc-' + (r.actionType || 'TRANSFER');
+                var ts   = new Date(r.timestamp).toLocaleString(ar ? 'ar-JO' : 'en-GB');
+                feed += '<div class="bc-row">'
+                      + '<span class="' + cls + '">' + m.icon + ' ' + lbl + '</span>'
+                      + '<span style="flex:1;font-weight:600;">' + (r.drugName||'—') + ' <small style="color:var(--gray-400);">#' + r.drugId + '</small></span>'
+                      + '<span style="font-family:Consolas,monospace;font-size:10.5px;color:#0d9488;">' + (r.blockHash||'') + '</span>'
+                      + '<span style="color:var(--gray-400);font-size:11px;min-width:130px;text-align:end;">' + ts + '</span>'
+                      + '</div>';
+            });
+            document.getElementById('bcFeed').innerHTML = feed || '<div style="color:var(--gray-400);font-size:13px;padding:8px 0;">لا توجد عمليات بعد</div>';
+        };
+        xhr.send();
+    }
+
     window.addEventListener('pharmaLangChanged', function() {
-        // Re-render table with new language
-        if (allDrugs.length > 0) {
-            applyFilters();
-        }
-        // Update role info bar
+        if (allDrugs.length > 0) { applyFilters(); populateManufacturerFilter(); }
         document.getElementById('roleInfo').innerHTML = '<span>' + getRoleLabel(role) + '</span>';
-        // Re-populate manufacturer filter (translates the first option)
-        if (allDrugs.length > 0) {
-            populateManufacturerFilter();
-        }
+        loadBlockchainStats();
     });
 
     loadDrugs();
+    loadBlockchainStats();
 </script>
 </body>
 </html>
