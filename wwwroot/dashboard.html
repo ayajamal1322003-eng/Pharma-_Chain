@@ -15,17 +15,6 @@
     <link rel="stylesheet" href="/pharma-styles.css">
     <script src="/pharma-lang.js"></script>
     <style>
-        .ledger-banner {
-            background: linear-gradient(135deg, var(--amber-50), #fefce8);
-            border: 1.5px solid var(--amber-200);
-            border-radius: var(--radius-lg);
-            padding: 16px 20px;
-            margin-bottom: 18px;
-            display: flex; align-items: flex-start; gap: 14px;
-        }
-        .ledger-banner-icon { font-size: 22px; flex-shrink: 0; }
-        .ledger-banner-text { font-size: 13px; color: #78350f; line-height: 1.65; }
-        .ledger-banner-text strong { display: block; font-size: 14px; margin-bottom: 3px; }
 
         .tamper-alert {
             background: var(--rose-50);
@@ -137,13 +126,6 @@
 
         <div class="role-info-bar" id="roleInfo"></div>
 
-        <div class="ledger-banner" id="ledgerBanner" style="display:none">
-            <div class="ledger-banner-icon">⚖️</div>
-            <div class="ledger-banner-text">
-                <strong data-i18n="ledger_banner_title">وضع Ledger Admin — محايد تقنياً</strong>
-                <span data-i18n="ledger_banner_body">صلاحياتك مقتصرة على مراقبة سلسلة Blockchain والتحقق من سلامتها. لا تملك صلاحية إضافة أدوية أو نقلها أو حذفها.</span>
-            </div>
-        </div>
 
         <div class="tamper-alert" id="tamperAlert"><span>🚨</span><span id="tamperText"></span></div>
         <div class="alert-warn-bar" id="alertBox"></div>
@@ -293,7 +275,6 @@
         document.getElementById('navVerify').style.display = 'none';
         document.getElementById('navAttack').style.display = 'flex';
         document.getElementById('navAudit').style.display = 'flex';
-        document.getElementById('ledgerBanner').style.display = 'flex';
         document.getElementById('exportBtn').style.display = 'none';
         document.getElementById('statsSection').style.display = 'none';
     } else {
