@@ -152,18 +152,19 @@
             <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">
                 <div class="search-wrap" style="flex:1; min-width:220px;">
                     <input type="text" id="searchInput" class="search-box"
-                        placeholder="🔍 ابحث بالاسم أو رقم الدفعة..." oninput="applyFilters()">
+                        placeholder="🔍 ابحث بالاسم أو رقم الدفعة..."
+                        data-i18n-ph="inv_search_ph" oninput="applyFilters()">
                 </div>
                 <select id="catFilter" class="form-select" style="min-width:140px;" onchange="applyFilters()">
                     <option value="">كل الفئات</option>
                 </select>
             </div>
             <div class="filter-chips">
-                <span class="fchip active" id="chip-all"     onclick="setFilter('all')">الكل</span>
-                <span class="fchip"        id="chip-low"     onclick="setFilter('low')">⚠️ مخزون منخفض</span>
-                <span class="fchip"        id="chip-out"     onclick="setFilter('out')">🚫 نفد المخزون</span>
-                <span class="fchip"        id="chip-expired" onclick="setFilter('expired')">❌ منتهي</span>
-                <span class="fchip"        id="chip-near"    onclick="setFilter('near')">🕐 ينتهي قريباً</span>
+                <span class="fchip active" id="chip-all"     onclick="setFilter('all')"    data-i18n="inv_filter_all">الكل</span>
+                <span class="fchip"        id="chip-low"     onclick="setFilter('low')"    data-i18n="inv_filter_low">⚠️ مخزون منخفض</span>
+                <span class="fchip"        id="chip-out"     onclick="setFilter('out')"    data-i18n="inv_filter_out">🚫 نفد المخزون</span>
+                <span class="fchip"        id="chip-expired" onclick="setFilter('expired')"data-i18n="inv_filter_exp">❌ منتهي</span>
+                <span class="fchip"        id="chip-near"    onclick="setFilter('near')"   data-i18n="inv_filter_near">🕐 ينتهي قريباً</span>
             </div>
         </div>
 
@@ -173,8 +174,8 @@
                 <div class="card-header-left">
                     <div class="card-icon" style="background:#f0fdfa; color:#0d9488;">📦</div>
                     <div>
-                        <div class="card-title">المنتجات والأدوية المخزنة <span class="count-badge" id="tableCount">0</span></div>
-                        <div class="card-subtitle">سجل المخزون الكامل</div>
+                        <div class="card-title"><span data-i18n="inv_table_title">المنتجات والأدوية المخزنة</span> <span class="count-badge" id="tableCount">0</span></div>
+                        <div class="card-subtitle" data-i18n="inv_table_sub">سجل المخزون الكامل</div>
                     </div>
                 </div>
             </div>
@@ -186,14 +187,14 @@
 <!-- ══ ADD ITEM MODAL ══ -->
 <div class="modal-overlay" id="addModal">
     <div class="modal-box">
-        <div class="modal-title">📦 إضافة صنف جديد للمخزون</div>
+        <div class="modal-title" data-i18n="inv_modal_add">📦 إضافة صنف جديد للمخزون</div>
         <div class="form-row">
             <div class="form-group" style="flex:2">
-                <label class="form-label">اسم المنتج / الدواء *</label>
-                <input type="text" id="add-name" class="form-input" placeholder="مثال: Paracetamol 500mg">
+                <label class="form-label" data-i18n="inv_lbl_name">اسم المنتج / الدواء *</label>
+                <input type="text" id="add-name" class="form-input" placeholder="Paracetamol 500mg">
             </div>
             <div class="form-group" style="flex:1">
-                <label class="form-label">الفئة</label>
+                <label class="form-label" data-i18n="inv_lbl_cat">الفئة</label>
                 <select id="add-cat" class="form-select">
                     <option value="">— اختر —</option>
                     <option>Antibiotic</option><option>Painkiller</option><option>Supplement</option>
@@ -203,43 +204,43 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="form-label">الوصف</label>
-            <textarea id="add-desc" class="form-input" rows="2" placeholder="وصف مختصر (اختياري)"></textarea>
+            <label class="form-label" data-i18n="inv_lbl_desc">الوصف</label>
+            <textarea id="add-desc" class="form-input" rows="2" placeholder="..."></textarea>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">رقم الدفعة</label>
+                <label class="form-label" data-i18n="inv_lbl_batch">رقم الدفعة</label>
                 <input type="text" id="add-batch" class="form-input" placeholder="BATCH-2024-001">
             </div>
             <div class="form-group">
-                <label class="form-label">تاريخ الانتهاء *</label>
+                <label class="form-label" data-i18n="inv_lbl_expiry">تاريخ الانتهاء *</label>
                 <input type="date" id="add-expiry" class="form-input">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">سعر الشراء (JD)</label>
+                <label class="form-label" data-i18n="inv_lbl_purchase">سعر الشراء (JD)</label>
                 <input type="number" id="add-purchase" class="form-input" placeholder="0.00" min="0" step="0.01">
             </div>
             <div class="form-group">
-                <label class="form-label">سعر البيع (JD) *</label>
+                <label class="form-label" data-i18n="inv_lbl_selling">سعر البيع (JD) *</label>
                 <input type="number" id="add-selling" class="form-input" placeholder="0.00" min="0.01" step="0.01">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">الكمية الأولية</label>
+                <label class="form-label" data-i18n="inv_lbl_init_stock">الكمية الأولية</label>
                 <input type="number" id="add-stock" class="form-input" placeholder="0" min="0" value="0">
             </div>
             <div class="form-group">
-                <label class="form-label">حد التنبيه (أقل كمية)</label>
+                <label class="form-label" data-i18n="inv_lbl_threshold">حد التنبيه (أقل كمية)</label>
                 <input type="number" id="add-threshold" class="form-input" placeholder="10" min="1" value="10">
             </div>
         </div>
         <div id="addError" style="color:var(--rose-600);font-size:12px;margin:6px 0;display:none;"></div>
         <div style="display:flex;gap:10px;margin-top:10px;">
-            <button class="btn btn-outline" onclick="closeModal('addModal')" style="flex:1">إلغاء</button>
-            <button class="btn btn-primary" onclick="submitAdd()" id="addBtn" style="flex:2">+ إضافة الصنف</button>
+            <button class="btn btn-outline" onclick="closeModal('addModal')" style="flex:1" data-i18n="inv_btn_cancel">إلغاء</button>
+            <button class="btn btn-primary" onclick="submitAdd()" id="addBtn" style="flex:2" data-i18n="inv_btn_add_s">+ إضافة الصنف</button>
         </div>
     </div>
 </div>
@@ -247,20 +248,20 @@
 <!-- ══ RESTOCK MODAL ══ -->
 <div class="modal-overlay" id="restockModal">
     <div class="modal-box" style="max-width:400px;">
-        <div class="modal-title">📥 إضافة مخزون</div>
+        <div class="modal-title" data-i18n="inv_modal_rst">📥 إضافة مخزون</div>
         <div id="restock-item-name" style="font-size:14px;color:var(--gray-500);margin-bottom:16px;"></div>
         <input type="hidden" id="restock-id">
         <div class="form-group">
-            <label class="form-label">الكمية المضافة *</label>
+            <label class="form-label" data-i18n="inv_lbl_qty_add">الكمية المضافة *</label>
             <input type="number" id="restock-qty" class="form-input" placeholder="0" min="1">
         </div>
         <div class="form-group">
-            <label class="form-label">ملاحظات</label>
-            <input type="text" id="restock-notes" class="form-input" placeholder="اختياري">
+            <label class="form-label" data-i18n="inv_notes">ملاحظات</label>
+            <input type="text" id="restock-notes" class="form-input" placeholder="...">
         </div>
         <div style="display:flex;gap:10px;margin-top:10px;">
-            <button class="btn btn-outline" onclick="closeModal('restockModal')" style="flex:1">إلغاء</button>
-            <button class="btn btn-primary" onclick="submitRestock()" style="flex:2;background:var(--emerald-600);">✅ تأكيد الإضافة</button>
+            <button class="btn btn-outline" onclick="closeModal('restockModal')" style="flex:1" data-i18n="inv_btn_cancel">إلغاء</button>
+            <button class="btn btn-primary" onclick="submitRestock()" style="flex:2;background:var(--emerald-600);" data-i18n="inv_btn_confirm_r">✅ تأكيد الإضافة</button>
         </div>
     </div>
 </div>
@@ -268,32 +269,32 @@
 <!-- ══ SELL MODAL ══ -->
 <div class="modal-overlay" id="sellModal">
     <div class="modal-box" style="max-width:400px;">
-        <div class="modal-title">🛒 بيع / صرف دواء</div>
+        <div class="modal-title" data-i18n="inv_modal_sell">🛒 بيع / صرف دواء</div>
         <div id="sell-item-name" style="font-size:14px;color:var(--gray-500);margin-bottom:4px;"></div>
         <div id="sell-stock-info" style="font-size:12px;color:var(--amber-600);margin-bottom:16px;"></div>
         <input type="hidden" id="sell-id">
         <input type="hidden" id="sell-default-price">
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">الكمية *</label>
+                <label class="form-label" data-i18n="inv_lbl_qty_sell">الكمية *</label>
                 <input type="number" id="sell-qty" class="form-input" placeholder="0" min="1" oninput="updateSellTotal()">
             </div>
             <div class="form-group">
-                <label class="form-label">سعر الوحدة (JD)</label>
+                <label class="form-label" data-i18n="inv_lbl_unit_price">سعر الوحدة (JD)</label>
                 <input type="number" id="sell-price" class="form-input" placeholder="0.00" step="0.01" oninput="updateSellTotal()">
             </div>
         </div>
         <div class="total-preview" id="sellTotal">
-            <span style="color:var(--gray-600);font-size:13px;">الإجمالي</span>
+            <span style="color:var(--gray-600);font-size:13px;" data-i18n="inv_lbl_total">الإجمالي</span>
             <span class="total-amount" id="sellTotalVal">0.00 JD</span>
         </div>
         <div class="form-group">
-            <label class="form-label">ملاحظات</label>
-            <input type="text" id="sell-notes" class="form-input" placeholder="اختياري">
+            <label class="form-label" data-i18n="inv_notes">ملاحظات</label>
+            <input type="text" id="sell-notes" class="form-input" placeholder="...">
         </div>
         <div style="display:flex;gap:10px;margin-top:10px;">
-            <button class="btn btn-outline" onclick="closeModal('sellModal')" style="flex:1">إلغاء</button>
-            <button class="btn btn-primary" onclick="submitSell()" style="flex:2;">✅ تأكيد البيع</button>
+            <button class="btn btn-outline" onclick="closeModal('sellModal')" style="flex:1" data-i18n="inv_btn_cancel">إلغاء</button>
+            <button class="btn btn-primary" onclick="submitSell()" style="flex:2;" data-i18n="inv_btn_confirm_s">✅ تأكيد البيع</button>
         </div>
     </div>
 </div>
@@ -304,7 +305,7 @@
         <div class="modal-title" id="detail-title">تفاصيل الصنف</div>
         <div id="detail-body"></div>
         <div style="margin-top:16px; text-align:left;">
-            <button class="btn btn-outline" onclick="closeModal('detailModal')">إغلاق</button>
+            <button class="btn btn-outline" onclick="closeModal('detailModal')" data-i18n="inv_btn_close">إغلاق</button>
         </div>
     </div>
 </div>
@@ -312,10 +313,10 @@
 <!-- ══ EDIT MODAL ══ -->
 <div class="modal-overlay" id="editModal">
     <div class="modal-box" style="max-width:480px;">
-        <div class="modal-title">✏️ تعديل بيانات الصنف</div>
+        <div class="modal-title" data-i18n="inv_modal_edit">✏️ تعديل بيانات الصنف</div>
         <input type="hidden" id="edit-id">
         <div class="form-group">
-            <label class="form-label">الفئة / التصنيف</label>
+            <label class="form-label" data-i18n="inv_lbl_cat_type">الفئة / التصنيف</label>
             <select id="edit-cat" class="form-select">
                 <option value="Medication">Medication (دواء)</option>
                 <option value="Antibiotic">Antibiotic (مضاد حيوي)</option>
@@ -331,28 +332,28 @@
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">سعر الشراء (JD)</label>
+                <label class="form-label" data-i18n="inv_lbl_purchase">سعر الشراء (JD)</label>
                 <input type="number" id="edit-purchase" class="form-input" placeholder="0.00" min="0" step="0.01">
             </div>
             <div class="form-group">
-                <label class="form-label">سعر البيع (JD)</label>
+                <label class="form-label" data-i18n="inv_lbl_selling">سعر البيع (JD)</label>
                 <input type="number" id="edit-selling" class="form-input" placeholder="0.00" min="0" step="0.01">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">حد التنبيه (أدنى مخزون)</label>
+                <label class="form-label" data-i18n="inv_lbl_threshold2">حد التنبيه (أدنى مخزون)</label>
                 <input type="number" id="edit-threshold" class="form-input" placeholder="10" min="1">
             </div>
             <div class="form-group">
-                <label class="form-label">الوصف / الشركة</label>
-                <input type="text" id="edit-desc" class="form-input" placeholder="الشركة المصنعة...">
+                <label class="form-label" data-i18n="inv_lbl_desc_co">الوصف / الشركة</label>
+                <input type="text" id="edit-desc" class="form-input" placeholder="...">
             </div>
         </div>
         <div id="editError" style="color:var(--rose-600);font-size:12px;margin:6px 0;display:none;"></div>
         <div style="display:flex;gap:10px;margin-top:12px;">
-            <button class="btn btn-outline" onclick="closeModal('editModal')" style="flex:1">إلغاء</button>
-            <button class="btn btn-primary" onclick="submitEdit()" id="editBtn" style="flex:2">💾 حفظ التعديلات</button>
+            <button class="btn btn-outline" onclick="closeModal('editModal')" style="flex:1" data-i18n="inv_btn_cancel">إلغاء</button>
+            <button class="btn btn-primary" onclick="submitEdit()" id="editBtn" style="flex:2" data-i18n="inv_btn_save">💾 حفظ التعديلات</button>
         </div>
     </div>
 </div>
@@ -400,6 +401,8 @@
         r.send(body ? JSON.stringify(body) : null);
     }
 
+    var t = function(k) { return PharmaLang.t(k); };
+
     var allItems = [], currentFilter = 'all', now = new Date(), soon = new Date();
     soon.setDate(now.getDate() + 30);
 
@@ -407,19 +410,19 @@
     function syncQuantities() {
         xhr('POST', '/api/inventory/sync-quantities', {}, function(status, data) {
             if (status === 200) {
-                toast('✅ ' + (data.message || 'تمت المزامنة'));
+                toast(t('inv_toast_sync'));
                 loadItems();
             } else {
-                toast('❌ فشل في المزامنة', false);
+                toast(t('inv_fail_sync'), false);
             }
         });
     }
 
     function loadItems() {
-        document.getElementById('invTable').innerHTML = '<div class="loading-state"><div class="spinner"></div><span>جاري التحميل...</span></div>';
+        document.getElementById('invTable').innerHTML = '<div class="loading-state"><div class="spinner"></div><span>' + t('inv_loading') + '</span></div>';
         xhr('GET', '/api/inventory', null, function(status, data) {
             if (status !== 200) {
-                document.getElementById('invTable').innerHTML = '<div class="loading-state">⚠️ فشل تحميل البيانات — تأكد من تشغيل السيرفر</div>';
+                document.getElementById('invTable').innerHTML = '<div class="loading-state">' + t('inv_fail_load') + '</div>';
                 return;
             }
             allItems = data.items || [];
@@ -437,8 +440,8 @@
 
     function buildCategoryFilter(categories) {
         var sel = document.getElementById('catFilter');
-        var cur = sel.value; // preserve current selection
-        sel.innerHTML = '<option value="">كل الفئات</option>';
+        var cur = sel.value;
+        sel.innerHTML = '<option value="">' + t('inv_cat_all') + '</option>';
         categories.forEach(function(cat) {
             var opt = document.createElement('option');
             opt.value = cat;
@@ -479,36 +482,37 @@
 
     function renderTable(items) {
         if (!items.length) {
-            document.getElementById('invTable').innerHTML = '<div class="loading-state">📭 لا توجد أصناف</div>';
+            document.getElementById('invTable').innerHTML = '<div class="loading-state">' + t('inv_no_items_f') + '</div>';
             return;
         }
+        var locale = PharmaLang.get() === 'ar' ? 'ar-SA' : 'en-GB';
         var rows = items.map(function(i) {
             var expiry   = new Date(i.expiryDate);
             var isExp    = expiry < now;
             var isNear   = expiry >= now && expiry <= soon;
             var isLow    = i.currentStock > 0 && i.currentStock <= i.lowStockThreshold;
             var isOut    = i.currentStock === 0;
-            var expStr   = expiry.toLocaleDateString('ar-SA', { year:'numeric', month:'short', day:'numeric' });
+            var expStr   = expiry.toLocaleDateString(locale, { year:'numeric', month:'short', day:'numeric' });
             var stockCls = isOut ? 'stock-out' : isLow ? 'stock-low' : 'stock-ok';
-            var stockTxt = isOut ? '⛔ نفد' : i.currentStock;
+            var stockTxt = isOut ? t('inv_status_out') : i.currentStock;
             var catBadge = i.category ? '<span class="cat-badge cat-' + i.category + '">' + i.category + '</span>' : '—';
             var alerts   = '';
-            if (isOut)  alerts += '<span class="alert-badge alert-out">⛔ نفد</span> ';
-            if (isLow && !isOut) alerts += '<span class="alert-badge alert-low">⚠️ منخفض</span> ';
-            if (isExp)  alerts += '<span class="alert-badge alert-exp">❌ منتهي</span> ';
-            if (isNear && !isExp) alerts += '<span class="alert-badge alert-near">🕐 قريباً</span>';
+            if (isOut)            alerts += '<span class="alert-badge alert-out">'  + t('inv_alert_out_txt')  + '</span> ';
+            if (isLow && !isOut)  alerts += '<span class="alert-badge alert-low">'  + t('inv_alert_low_txt')  + '</span> ';
+            if (isExp)            alerts += '<span class="alert-badge alert-exp">'  + t('inv_alert_exp_txt')  + '</span> ';
+            if (isNear && !isExp) alerts += '<span class="alert-badge alert-near">' + t('inv_alert_near_txt') + '</span>';
             return '<tr>'
                 + '<td><strong>' + esc(i.name) + '</strong>' + (i.batchNumber ? '<br><span style="font-size:10px;color:var(--gray-400);">#' + esc(i.batchNumber) + '</span>' : '') + '</td>'
                 + '<td>' + catBadge + '</td>'
-                + '<td class="' + (isExp ? 'qty-low' : isNear ? '' : '') + '" style="' + (isExp ? 'color:#9f1239' : isNear ? 'color:#d97706' : '') + '">' + expStr + '</td>'
+                + '<td style="' + (isExp ? 'color:#9f1239' : isNear ? 'color:#d97706' : '') + '">' + expStr + '</td>'
                 + '<td style="text-align:center; color:var(--teal-600); font-weight:700;">' + (i.sellingPrice||0).toFixed(2) + '</td>'
                 + '<td style="text-align:center;"><span class="' + stockCls + '">' + stockTxt + '</span></td>'
                 + '<td>' + (alerts || '<span style="color:var(--gray-400);font-size:11px;">—</span>') + '</td>'
                 + '<td><div style="display:flex;gap:4px;flex-wrap:wrap;">'
-                + '<button class="btn btn-outline" style="padding:4px 8px;font-size:11px;" onclick="openRestock(' + i.id + ',\'' + esc(i.name) + '\')">📥 رفع</button>'
+                + '<button class="btn btn-outline" style="padding:4px 8px;font-size:11px;" onclick="openRestock(' + i.id + ',\'' + esc(i.name) + '\')">' + t('inv_btn_up') + '</button>'
                 + (isOut
-                    ? '<button class="btn btn-outline" style="padding:4px 8px;font-size:11px;opacity:.4;" disabled>🛒 بيع</button>'
-                    : '<button class="btn btn-primary" style="padding:4px 8px;font-size:11px;" onclick="openSell(' + i.id + ',\'' + esc(i.name) + '\',' + (i.sellingPrice||0) + ',' + i.currentStock + ')">🛒 بيع</button>')
+                    ? '<button class="btn btn-outline" style="padding:4px 8px;font-size:11px;opacity:.4;" disabled>' + t('inv_btn_sell_s') + '</button>'
+                    : '<button class="btn btn-primary" style="padding:4px 8px;font-size:11px;" onclick="openSell(' + i.id + ',\'' + esc(i.name) + '\',' + (i.sellingPrice||0) + ',' + i.currentStock + ')">' + t('inv_btn_sell_s') + '</button>')
                 + '<button class="btn btn-outline" style="padding:4px 8px;font-size:11px;" onclick="openEdit(' + i.id + ',\'' + esc(i.name) + '\',\'' + (i.category||'') + '\',' + (i.sellingPrice||0) + ',' + (i.purchasePrice||0) + ',' + (i.lowStockThreshold||10) + ',\'' + esc(i.description||'') + '\')">✏️</button>'
                 + '<button class="btn btn-outline" style="padding:4px 8px;font-size:11px;" onclick="openDetail(' + i.id + ')">📋</button>'
                 + '<button class="btn" style="padding:4px 8px;font-size:11px;background:var(--rose-50);color:var(--rose-600);border:1px solid var(--rose-200);" onclick="deleteItem(' + i.id + ',\'' + esc(i.name) + '\')">🗑</button>'
@@ -517,9 +521,14 @@
         }).join('');
         document.getElementById('invTable').innerHTML =
             '<div class="table-wrap"><table><thead><tr>'
-            + '<th>المنتج / الدواء</th><th>الفئة</th><th>الانتهاء</th>'
-            + '<th style="text-align:center;">سعر البيع</th><th style="text-align:center;">المخزون</th>'
-            + '<th>التنبيهات</th><th>الإجراءات</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+            + '<th>' + t('inv_th_product')    + '</th>'
+            + '<th>' + t('inv_th_category')   + '</th>'
+            + '<th>' + t('inv_th_expiry')     + '</th>'
+            + '<th style="text-align:center;">' + t('inv_th_sell_price') + '</th>'
+            + '<th style="text-align:center;">' + t('inv_th_stock')      + '</th>'
+            + '<th>' + t('inv_th_alerts')     + '</th>'
+            + '<th>' + t('inv_th_actions')    + '</th>'
+            + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
     }
 
     function esc(s) { return (s||'').replace(/'/g, "\\'").replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -540,12 +549,12 @@
         var expiry  = document.getElementById('add-expiry').value;
         var selling = parseFloat(document.getElementById('add-selling').value);
         var err     = document.getElementById('addError');
-        if (!name)              { err.textContent = 'اسم المنتج مطلوب'; err.style.display='block'; return; }
-        if (!expiry)            { err.textContent = 'تاريخ الانتهاء مطلوب'; err.style.display='block'; return; }
-        if (new Date(expiry) <= now)  { err.textContent = 'تاريخ الانتهاء يجب أن يكون مستقبلياً'; err.style.display='block'; return; }
+        if (!name)              { err.textContent = t('inv_err_name');    err.style.display='block'; return; }
+        if (!expiry)            { err.textContent = t('inv_err_exp_req'); err.style.display='block'; return; }
+        if (new Date(expiry) <= now) { err.textContent = t('inv_err_exp_fut'); err.style.display='block'; return; }
         err.style.display = 'none';
         var btn = document.getElementById('addBtn');
-        btn.textContent = '⏳ جاري الإضافة...'; btn.disabled = true;
+        btn.textContent = t('inv_adding'); btn.disabled = true;
         xhr('POST', '/api/inventory', {
             name: name,
             description:       document.getElementById('add-desc').value.trim(),
@@ -557,10 +566,10 @@
             initialStock:      parseInt(document.getElementById('add-stock').value) || 0,
             lowStockThreshold: parseInt(document.getElementById('add-threshold').value) || 10
         }, function(status, data) {
-            btn.textContent = '+ إضافة الصنف'; btn.disabled = false;
+            btn.textContent = t('inv_btn_add_s'); btn.disabled = false;
             if (status === 200) {
                 closeModal('addModal');
-                toast('✅ تم إضافة الصنف بنجاح');
+                toast(t('inv_toast_added'));
                 loadItems();
             } else {
                 err.textContent = (data.message || 'فشل الإضافة'); err.style.display = 'block';
@@ -580,15 +589,15 @@
     function submitRestock() {
         var id  = document.getElementById('restock-id').value;
         var qty = parseInt(document.getElementById('restock-qty').value);
-        if (!qty || qty <= 0) { toast('أدخل كمية صحيحة', false); return; }
+        if (!qty || qty <= 0) { toast(t('inv_err_qty'), false); return; }
         xhr('POST', '/api/inventory/' + id + '/restock', {
             quantity: qty, notes: document.getElementById('restock-notes').value
         }, function(status, data) {
             if (status === 200) {
                 closeModal('restockModal');
-                toast('✅ تم تحديث المخزون — الرصيد الجديد: ' + data.newStock);
+                toast(t('inv_toast_rst') + ' ' + data.newStock);
                 loadItems();
-            } else { toast((data.message || 'فشل التحديث'), false); }
+            } else { toast((data.message || t('inv_fail_sync')), false); }
         });
     }
 
@@ -596,8 +605,8 @@
     function openSell(id, name, price, stock) {
         document.getElementById('sell-id').value            = id;
         document.getElementById('sell-default-price').value = price;
-        document.getElementById('sell-item-name').textContent = '🛒 ' + name;
-        document.getElementById('sell-stock-info').textContent  = 'المخزون المتاح: ' + stock + ' وحدة';
+        document.getElementById('sell-item-name').textContent  = '🛒 ' + name;
+        document.getElementById('sell-stock-info').textContent = t('inv_stock_avail') + ' ' + stock + ' ' + t('inv_unit');
         document.getElementById('sell-qty').value   = '';
         document.getElementById('sell-price').value = price;
         document.getElementById('sell-notes').value = '';
@@ -621,16 +630,16 @@
         var id    = document.getElementById('sell-id').value;
         var qty   = parseInt(document.getElementById('sell-qty').value);
         var price = parseFloat(document.getElementById('sell-price').value) || parseFloat(document.getElementById('sell-default-price').value);
-        if (!qty || qty <= 0) { toast('أدخل كمية صحيحة', false); return; }
+        if (!qty || qty <= 0) { toast(t('inv_err_qty'), false); return; }
         xhr('POST', '/api/inventory/sales', {
             inventoryItemId: parseInt(id), quantity: qty, unitPrice: price,
             notes: document.getElementById('sell-notes').value
         }, function(status, data) {
             if (status === 200) {
                 closeModal('sellModal');
-                toast('✅ تم تسجيل البيع — الرصيد الجديد: ' + data.newStock);
+                toast(t('inv_toast_sold') + ' ' + data.newStock);
                 loadItems();
-            } else { toast((data.message || 'فشل البيع'), false); }
+            } else { toast((data.message || t('inv_err_qty')), false); }
         });
     }
 
@@ -645,6 +654,7 @@
             var ss   = data.salesStats || {};
             var expiry = new Date(item.expiryDate);
             document.getElementById('detail-title').textContent = '📦 ' + item.name;
+            var locale = PharmaLang.get() === 'ar' ? 'ar-SA' : 'en-GB';
             var mvHtml = mvs.length ? mvs.slice(0,15).map(function(m) {
                 var sign = m.quantityChanged > 0 ? '+' : '';
                 var cls  = m.quantityChanged > 0 ? 'mv-qty-pos' : 'mv-qty-neg';
@@ -652,19 +662,19 @@
                     + '<div class="movement-dot mv-' + m.actionType + '"></div>'
                     + '<div style="flex:1"><span style="font-size:12px;font-weight:700;color:var(--gray-700);">' + (m.actionType||'') + '</span>'
                     + ' <span class="' + cls + '" style="font-size:13px;">' + sign + m.quantityChanged + '</span>'
-                    + '<div style="font-size:10px;color:var(--gray-400);">' + m.stockBefore + ' → ' + m.stockAfter + ' · ' + (m.performedByUsername||'') + ' · ' + new Date(m.timestamp).toLocaleDateString('ar-SA') + '</div>'
+                    + '<div style="font-size:10px;color:var(--gray-400);">' + m.stockBefore + ' → ' + m.stockAfter + ' · ' + (m.performedByUsername||'') + ' · ' + new Date(m.timestamp).toLocaleDateString(locale) + '</div>'
                     + (m.notes ? '<div style="font-size:10px;color:var(--gray-500);font-style:italic;">' + esc(m.notes) + '</div>' : '')
                     + '</div></div>';
-            }).join('') : '<div style="color:var(--gray-400);font-size:12px;padding:8px 0;">لا توجد حركات بعد</div>';
+            }).join('') : '<div style="color:var(--gray-400);font-size:12px;padding:8px 0;">' + t('inv_no_movements') + '</div>';
 
             document.getElementById('detail-body').innerHTML =
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">'
-                + '<div class="inv-stat" style="cursor:default"><div class="inv-stat-val" style="color:var(--teal-600);">' + (item.currentStock||0) + '</div><div class="inv-stat-lbl">المخزون الحالي</div></div>'
-                + '<div class="inv-stat" style="cursor:default"><div class="inv-stat-val" style="color:var(--emerald-600);">' + (item.sellingPrice||0).toFixed(2) + ' JD</div><div class="inv-stat-lbl">سعر البيع</div></div>'
-                + '<div class="inv-stat" style="cursor:default"><div class="inv-stat-val">' + (ss.salesCount||0) + '</div><div class="inv-stat-lbl">عمليات البيع</div></div>'
-                + '<div class="inv-stat" style="cursor:default"><div class="inv-stat-val" style="color:var(--purple-600);">' + (ss.totalRevenue||0).toFixed(2) + ' JD</div><div class="inv-stat-lbl">إجمالي الإيرادات</div></div>'
+                + '<div class="inv-stat" style="cursor:default"><div class="inv-stat-val" style="color:var(--teal-600);">'    + (item.currentStock||0)           + '</div><div class="inv-stat-lbl">' + t('inv_detail_stock')   + '</div></div>'
+                + '<div class="inv-stat" style="cursor:default"><div class="inv-stat-val" style="color:var(--emerald-600);">' + (item.sellingPrice||0).toFixed(2) + ' JD</div><div class="inv-stat-lbl">' + t('inv_detail_price')   + '</div></div>'
+                + '<div class="inv-stat" style="cursor:default"><div class="inv-stat-val">'                                  + (ss.salesCount||0)               + '</div><div class="inv-stat-lbl">' + t('inv_detail_sales')   + '</div></div>'
+                + '<div class="inv-stat" style="cursor:default"><div class="inv-stat-val" style="color:var(--purple-600);">' + (ss.totalRevenue||0).toFixed(2)   + ' JD</div><div class="inv-stat-lbl">' + t('inv_detail_revenue') + '</div></div>'
                 + '</div>'
-                + '<div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:8px;">📋 سجل الحركة</div>'
+                + '<div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:8px;">' + t('inv_detail_hist') + '</div>'
                 + '<div class="movements-list">' + mvHtml + '</div>';
         });
     }
@@ -684,7 +694,7 @@
     function submitEdit() {
         var id  = document.getElementById('edit-id').value;
         var btn = document.getElementById('editBtn');
-        btn.textContent = '⏳ جاري الحفظ...'; btn.disabled = true;
+        btn.textContent = t('inv_saving'); btn.disabled = true;
         xhr('PUT', '/api/inventory/' + id, {
             category:          document.getElementById('edit-cat').value,
             sellingPrice:      parseFloat(document.getElementById('edit-selling').value)  || 0,
@@ -692,10 +702,10 @@
             lowStockThreshold: parseInt(document.getElementById('edit-threshold').value)  || 10,
             description:       document.getElementById('edit-desc').value.trim()
         }, function(status, data) {
-            btn.textContent = '💾 حفظ التعديلات'; btn.disabled = false;
+            btn.textContent = t('inv_btn_save'); btn.disabled = false;
             if (status === 200) {
                 closeModal('editModal');
-                toast('✅ تم حفظ التعديلات بنجاح');
+                toast(t('inv_toast_saved'));
                 loadItems();
             } else {
                 document.getElementById('editError').textContent = data.message || 'فشل الحفظ';
@@ -706,14 +716,23 @@
 
     // ── Delete ────────────────────────────────────────────────────
     function deleteItem(id, name) {
-        if (!confirm('هل تريد حذف "' + name + '" من المخزون؟')) return;
+        if (!confirm('"' + name + '" — ' + t('inv_confirm_del'))) return;
         xhr('DELETE', '/api/inventory/' + id, null, function(status, data) {
             if (status === 200) {
-                toast('🗑 تم حذف الصنف');
+                toast(t('inv_toast_del'));
                 loadItems();
-            } else { toast((data.message || 'فشل الحذف'), false); }
+            } else { toast((data.message || t('inv_fail_load')), false); }
         });
     }
+
+    // ── Re-render on language change ─────────────────────────────
+    window.addEventListener('pharmaLangChanged', function() {
+        buildCategoryFilter((document.getElementById('catFilter').options.length > 1)
+            ? Array.from(document.getElementById('catFilter').options).slice(1).map(function(o){return o.value;})
+            : []);
+        renderTable(allItems.filter(function(i) { return true; }));
+        applyFilters();
+    });
 
     // ── Init ──────────────────────────────────────────────────────
     loadItems();

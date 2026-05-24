@@ -138,22 +138,22 @@
             <div class="rep-stat">
                 <div class="rep-stat-icon">📦</div>
                 <div class="rep-stat-val" id="ov-total" style="color:var(--teal-600)">—</div>
-                <div class="rep-stat-lbl">إجمالي المنتجات</div>
+                <div class="rep-stat-lbl" data-i18n="inv_rep_ov_total">إجمالي المنتجات</div>
             </div>
             <div class="rep-stat">
                 <div class="rep-stat-icon">⚠️</div>
                 <div class="rep-stat-val" id="ov-low" style="color:#f59e0b">—</div>
-                <div class="rep-stat-lbl">مخزون منخفض</div>
+                <div class="rep-stat-lbl" data-i18n="inv_rep_ov_low">مخزون منخفض</div>
             </div>
             <div class="rep-stat">
                 <div class="rep-stat-icon">🚫</div>
                 <div class="rep-stat-val" id="ov-out" style="color:#dc2626">—</div>
-                <div class="rep-stat-lbl">نفد المخزون</div>
+                <div class="rep-stat-lbl" data-i18n="inv_rep_ov_out">نفد المخزون</div>
             </div>
             <div class="rep-stat">
                 <div class="rep-stat-icon">⏰</div>
                 <div class="rep-stat-val" id="ov-expiry" style="color:#7c3aed">—</div>
-                <div class="rep-stat-lbl">قرب انتهاء الصلاحية</div>
+                <div class="rep-stat-lbl" data-i18n="inv_rep_ov_expiry">قرب انتهاء الصلاحية</div>
             </div>
         </div>
 
@@ -190,7 +190,7 @@
                         <div class="card-icon" style="background:#f0fdfa;color:#0d9488;">🏆</div>
                         <div>
                             <div class="card-title" data-i18n="inv_rep_top_selling">الأكثر مبيعاً</div>
-                            <div class="card-subtitle">أعلى 10 منتجات من حيث المبيعات</div>
+                            <div class="card-subtitle" data-i18n="inv_rep_top_sub">أعلى 10 منتجات من حيث المبيعات</div>
                         </div>
                     </div>
                 </div>
@@ -204,7 +204,7 @@
                         <div class="card-icon" style="background:#eff6ff;color:#2563eb;">📂</div>
                         <div>
                             <div class="card-title" data-i18n="inv_rep_category">تقرير الفئات</div>
-                            <div class="card-subtitle">توزيع المبيعات حسب الفئة</div>
+                            <div class="card-subtitle" data-i18n="inv_rep_cat_sub">توزيع المبيعات حسب الفئة</div>
                         </div>
                     </div>
                 </div>
@@ -219,7 +219,7 @@
                     <div class="card-icon" style="background:#fdf4ff;color:#9333ea;">🛒</div>
                     <div>
                         <div class="card-title" data-i18n="inv_rep_recent_sales">المبيعات الأخيرة</div>
-                        <div class="card-subtitle">آخر 50 عملية بيع</div>
+                        <div class="card-subtitle" data-i18n="inv_rep_sales_sub">آخر 50 عملية بيع</div>
                     </div>
                 </div>
             </div>
@@ -265,6 +265,7 @@
     function goTo(p)  { window.location.replace(API + '/' + p); }
     function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
     function fmt(n)   { return parseFloat(n || 0).toFixed(2); }
+    var t = function(k) { return PharmaLang.t(k); };
 
     function toast(msg, ok) {
         var el = document.getElementById('toast');
@@ -330,10 +331,9 @@
     function renderCategories(cats) {
         var list = document.getElementById('categoryList');
         if (!cats.length) {
-            list.innerHTML = '<div class="rep-empty">لا توجد فئات في المخزون</div>';
+            list.innerHTML = '<div class="rep-empty">' + t('inv_rep_no_cats') + '</div>';
             return;
         }
-        /* Bar width based on stock units (meaningful even with zero sales) */
         var maxStock = Math.max.apply(null, cats.map(function(c){ return c.totalStock || 0; })) || 1;
         var html = '';
         cats.forEach(function(cat) {
@@ -342,8 +342,8 @@
             html += '<div class="cat-row">';
             html += '<div class="cat-label">' + (cat.category || '—') + '</div>';
             html += '<div class="cat-bar-wrap"><div class="cat-bar" style="width:' + pct + '%"></div></div>';
-            html += '<div class="cat-count" title="وحدة في المخزون">' + (cat.totalStock || 0) + '</div>';
-            html += '<div style="font-size:11px;color:var(--gray-400);width:50px;text-align:left;" title="وحدة مباعة">🛒' + sold + '</div>';
+            html += '<div class="cat-count" title="' + t('inv_rep_unit_stock') + '">' + (cat.totalStock || 0) + '</div>';
+            html += '<div style="font-size:11px;color:var(--gray-400);width:50px;text-align:left;" title="' + t('inv_rep_unit_sold') + '">🛒' + sold + '</div>';
             html += '</div>';
         });
         list.innerHTML = html;
@@ -356,7 +356,7 @@
             var list  = document.getElementById('topSellingList');
             var items = data.topSelling || [];
             if (!items.length) {
-                list.innerHTML = '<div class="rep-empty">لا توجد مبيعات مسجلة بعد</div>';
+                list.innerHTML = '<div class="rep-empty">' + t('inv_rep_no_sales') + '</div>';
                 return;
             }
             var html = '';
@@ -367,7 +367,7 @@
                 html += '<div style="flex:1"><div class="rank-name">' + (item.name || '—') + '</div>';
                 html += '<div class="rank-rev">' + (item.category || '') + '</div></div>';
                 html += '<div style="text-align:right;">';
-                html += '<div class="rank-qty">' + (item.totalSold || 0) + ' وحدة</div>';
+                html += '<div class="rank-qty">' + (item.totalSold || 0) + ' ' + t('inv_unit') + '</div>';
                 html += '<div class="rank-rev">' + fmt(item.totalRevenue || 0) + ' JD</div></div>';
                 html += '</div>';
             });
@@ -383,17 +383,18 @@
             var list  = document.getElementById('recentSalesList');
             var sales = data.sales || [];
             if (!sales.length) {
-                list.innerHTML = '<div class="rep-empty">لا توجد مبيعات مسجلة بعد</div>';
+                list.innerHTML = '<div class="rep-empty">' + t('inv_rep_no_sales') + '</div>';
                 return;
             }
+            var locale = PharmaLang.get() === 'ar' ? 'ar-SA' : 'en-GB';
             var html = '';
             sales.forEach(function(s) {
                 var d = s.transactionDate
-                    ? new Date(s.transactionDate).toLocaleDateString('ar-JO')
+                    ? new Date(s.transactionDate).toLocaleDateString(locale)
                     : '—';
                 html += '<div class="sale-row">';
                 html += '<div class="sale-name">' + (s.productName || '—') + '</div>';
-                html += '<div class="sale-qty">' + (s.quantitySold || 0) + ' وحدة</div>';
+                html += '<div class="sale-qty">' + (s.quantitySold || 0) + ' ' + t('inv_unit') + '</div>';
                 html += '<div class="sale-amt">' + fmt(s.totalPrice || 0) + ' JD</div>';
                 html += '<div class="sale-date">' + d + '</div>';
                 html += '<div style="font-size:11px;color:var(--gray-400);">👤 ' + (s.soldByUsername || '—') + '</div>';
@@ -409,7 +410,7 @@
         loadRecentSales();
     }
 
-    window.addEventListener('pharmaLangChanged', function() { /* static labels auto-update via i18n */ });
+    window.addEventListener('pharmaLangChanged', loadAll);
 
     loadAll();
 </script>
