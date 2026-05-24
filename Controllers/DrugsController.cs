@@ -154,6 +154,43 @@ namespace PharmaChain.Controllers
                 _context.SaveChanges();
                 _blockchain.SaveChainToJson();
 
+                // ── Auto-register in Inventory ──
+                var invItem = new InventoryItem
+                {
+                    Name              = drug.Name,
+                    Description       = drug.Manufacturer,
+                    Category          = "Medication",
+                    BatchNumber       = drug.BatchNumber,
+                    ExpiryDate        = drug.ExpiryDate,
+                    PurchasePrice     = 0m,
+                    SellingPrice      = 0m,
+                    CurrentStock      = drug.Quantity,
+                    LowStockThreshold = 10,
+                    DrugId            = drug.Id,
+                    AddedByUsername   = username,
+                    IsActive          = true,
+                    CreatedAt         = DateTime.UtcNow,
+                    UpdatedAt         = DateTime.UtcNow
+                };
+                _context.InventoryItems.Add(invItem);
+                await _context.SaveChangesAsync();
+
+                if (drug.Quantity > 0)
+                {
+                    _context.InventoryMovements.Add(new InventoryMovement
+                    {
+                        InventoryItemId     = invItem.Id,
+                        ActionType          = "INITIAL",
+                        QuantityChanged     = drug.Quantity,
+                        StockBefore         = 0,
+                        StockAfter          = drug.Quantity,
+                        PerformedByUsername = username,
+                        Notes               = "أُضيف تلقائياً عند تسجيل الدواء في النظام",
+                        Timestamp           = DateTime.UtcNow
+                    });
+                    await _context.SaveChangesAsync();
+                }
+
                 // ── Build QR URL to return ──
                 var prodDate  = drug.CreatedAt.ToString("yyyy-MM-dd");
                 var ts        = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
