@@ -528,17 +528,26 @@ namespace PharmaChain.Controllers
 
             var categoryBreakdown = items
                 .GroupBy(i => string.IsNullOrEmpty(i.Category) ? "Other" : i.Category)
-                .Select(g => new
+                .Select(g =>
                 {
-                    category   = g.Key,
-                    count      = g.Count(),
-                    totalStock = g.Sum(i => i.CurrentStock),
-                    revenue    = sales
-                        .Where(s => g.Select(i => i.Id).Contains(s.InventoryItemId))
-                        .Sum(s => s.TotalPrice)
+                    var ids      = g.Select(i => i.Id).ToList();
+                    var catSales = sales.Where(s => ids.Contains(s.InventoryItemId)).ToList();
+                    return new
+                    {
+                        category   = g.Key,
+                        count      = g.Count(),
+                        totalStock = g.Sum(i => i.CurrentStock),
+                        totalSold  = catSales.Sum(s => s.QuantitySold),
+                        revenue    = catSales.Sum(s => s.TotalPrice)
+                    };
                 })
                 .OrderByDescending(g => g.totalStock)
                 .ToList<object>();
+
+            // Estimated profit = revenue − purchase cost of units sold
+            var estimatedCost   = items.Join(sales, i => i.Id, s => s.InventoryItemId,
+                                      (i, s) => i.PurchasePrice * s.QuantitySold).Sum();
+            var estimatedProfit = (double)(sales.Sum(s => s.TotalPrice) - estimatedCost);
 
             return Ok(new
             {
@@ -552,7 +561,8 @@ namespace PharmaChain.Controllers
                     totalStockValue  = items.Sum(i => (double)i.CurrentStock * (double)i.PurchasePrice),
                     totalSalesValue  = (double)sales.Sum(s => s.TotalPrice),
                     totalUnitsSold   = sales.Sum(s => s.QuantitySold),
-                    totalTransactions= sales.Count
+                    totalTransactions= sales.Count,
+                    estimatedProfit
                 },
                 topSelling,
                 leastSelling,

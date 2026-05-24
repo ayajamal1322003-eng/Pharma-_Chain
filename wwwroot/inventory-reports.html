@@ -133,21 +133,45 @@
             </div>
         </div>
 
-        <!-- Overview stats -->
+        <!-- Inventory overview stats -->
+        <div class="rep-stats" style="margin-bottom:10px;">
+            <div class="rep-stat">
+                <div class="rep-stat-icon">📦</div>
+                <div class="rep-stat-val" id="ov-total" style="color:var(--teal-600)">—</div>
+                <div class="rep-stat-lbl">إجمالي المنتجات</div>
+            </div>
+            <div class="rep-stat">
+                <div class="rep-stat-icon">⚠️</div>
+                <div class="rep-stat-val" id="ov-low" style="color:#f59e0b">—</div>
+                <div class="rep-stat-lbl">مخزون منخفض</div>
+            </div>
+            <div class="rep-stat">
+                <div class="rep-stat-icon">🚫</div>
+                <div class="rep-stat-val" id="ov-out" style="color:#dc2626">—</div>
+                <div class="rep-stat-lbl">نفد المخزون</div>
+            </div>
+            <div class="rep-stat">
+                <div class="rep-stat-icon">⏰</div>
+                <div class="rep-stat-val" id="ov-expiry" style="color:#7c3aed">—</div>
+                <div class="rep-stat-lbl">قرب انتهاء الصلاحية</div>
+            </div>
+        </div>
+
+        <!-- Financial stats -->
         <div class="rep-stats" id="repStats">
             <div class="rep-stat">
                 <div class="rep-stat-icon">💰</div>
                 <div class="rep-stat-val" id="stat-val" style="color:var(--teal-600)">—</div>
-                <div class="rep-stat-lbl" data-i18n="inv_rep_total_val">إجمالي قيمة المخزون</div>
+                <div class="rep-stat-lbl" data-i18n="inv_rep_total_val">إجمالي قيمة المخزون (JD)</div>
             </div>
             <div class="rep-stat">
-                <div class="rep-stat-icon">📦</div>
+                <div class="rep-stat-icon">🛒</div>
                 <div class="rep-stat-val" id="stat-sold" style="color:var(--blue-600)">—</div>
                 <div class="rep-stat-lbl" data-i18n="inv_rep_total_sold">إجمالي الوحدات المباعة</div>
             </div>
             <div class="rep-stat">
                 <div class="rep-stat-icon">💵</div>
-                <div class="rep-stat-val" id="stat-rev" style="color:var(--emerald-600)">—</div>
+                <div class="rep-stat-val" id="stat-rev" style="color:#059669">—</div>
                 <div class="rep-stat-lbl" data-i18n="inv_rep_revenue">الإيرادات (JD)</div>
             </div>
             <div class="rep-stat">
@@ -240,6 +264,7 @@
 
     function goTo(p)  { window.location.replace(API + '/' + p); }
     function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+    function fmt(n)   { return parseFloat(n || 0).toFixed(2); }
 
     function toast(msg, ok) {
         var el = document.getElementById('toast');
@@ -262,12 +287,13 @@
         r.send(null);
     }
 
+    /* Date params — must match backend [FromQuery] parameter names */
     function getDateParams() {
         var from = document.getElementById('dateFrom').value;
         var to   = document.getElementById('dateTo').value;
         var p    = [];
-        if (from) p.push('from=' + from);
-        if (to)   p.push('to='   + to);
+        if (from) p.push('fromDate=' + from);
+        if (to)   p.push('toDate='   + to);
         return p.length ? '?' + p.join('&') : '';
     }
 
@@ -277,75 +303,98 @@
         loadAll();
     }
 
+    /* ── Summary + Overview + Category breakdown (single request) ── */
     function loadSummary() {
         var qs = getDateParams();
         xhr('GET', '/api/inventory/reports/summary' + qs, function(status, data) {
             if (status !== 200) { return; }
-            document.getElementById('stat-val').textContent    = (data.totalInventoryValue    || 0).toFixed(2) + ' JD';
-            document.getElementById('stat-sold').textContent   = (data.totalUnitsSold         || 0);
-            document.getElementById('stat-rev').textContent    = (data.totalRevenue           || 0).toFixed(2) + ' JD';
-            document.getElementById('stat-profit').textContent = (data.estimatedProfit        || 0).toFixed(2) + ' JD';
+            var ov = data.overview || {};
+
+            /* Inventory overview cards */
+            document.getElementById('ov-total').textContent  = ov.totalItems  || 0;
+            document.getElementById('ov-low').textContent    = ov.lowStock    || 0;
+            document.getElementById('ov-out').textContent    = ov.outOfStock  || 0;
+            document.getElementById('ov-expiry').textContent = ov.nearExpiry  || 0;
+
+            /* Financial cards */
+            document.getElementById('stat-val').textContent    = fmt(ov.totalStockValue)  + ' JD';
+            document.getElementById('stat-sold').textContent   = ov.totalUnitsSold  || 0;
+            document.getElementById('stat-rev').textContent    = fmt(ov.totalSalesValue)  + ' JD';
+            document.getElementById('stat-profit').textContent = fmt(ov.estimatedProfit)  + ' JD';
+
+            /* Category breakdown */
+            renderCategories(data.categoryBreakdown || []);
         });
     }
 
+    function renderCategories(cats) {
+        var list = document.getElementById('categoryList');
+        if (!cats.length) {
+            list.innerHTML = '<div class="rep-empty">لا توجد فئات في المخزون</div>';
+            return;
+        }
+        /* Bar width based on stock units (meaningful even with zero sales) */
+        var maxStock = Math.max.apply(null, cats.map(function(c){ return c.totalStock || 0; })) || 1;
+        var html = '';
+        cats.forEach(function(cat) {
+            var pct  = Math.round(((cat.totalStock || 0) / maxStock) * 100);
+            var sold = cat.totalSold || 0;
+            html += '<div class="cat-row">';
+            html += '<div class="cat-label">' + (cat.category || '—') + '</div>';
+            html += '<div class="cat-bar-wrap"><div class="cat-bar" style="width:' + pct + '%"></div></div>';
+            html += '<div class="cat-count" title="وحدة في المخزون">' + (cat.totalStock || 0) + '</div>';
+            html += '<div style="font-size:11px;color:var(--gray-400);width:50px;text-align:left;" title="وحدة مباعة">🛒' + sold + '</div>';
+            html += '</div>';
+        });
+        list.innerHTML = html;
+    }
+
+    /* ── Top Selling ── */
     function loadTopSelling() {
         var qs = getDateParams();
         xhr('GET', '/api/inventory/reports/top-selling' + qs, function(status, data) {
-            var list = document.getElementById('topSellingList');
-            var items = (data.items || data || []);
-            if (!Array.isArray(items) || items.length === 0) {
-                list.innerHTML = '<div class="rep-empty">لا توجد مبيعات مسجلة</div>'; return;
+            var list  = document.getElementById('topSellingList');
+            var items = data.topSelling || [];
+            if (!items.length) {
+                list.innerHTML = '<div class="rep-empty">لا توجد مبيعات مسجلة بعد</div>';
+                return;
             }
             var html = '';
             items.slice(0, 10).forEach(function(item, idx) {
                 var rankClass = idx === 0 ? 'gold' : idx === 1 ? 'silver' : idx === 2 ? 'bronze' : '';
                 html += '<div class="top-rank">';
-                html += '<div class="rank-num ' + rankClass + '">' + (idx+1) + '</div>';
-                html += '<div><div class="rank-name">' + (item.productName || item.name || '—') + '</div>';
+                html += '<div class="rank-num ' + rankClass + '">' + (idx + 1) + '</div>';
+                html += '<div style="flex:1"><div class="rank-name">' + (item.name || '—') + '</div>';
                 html += '<div class="rank-rev">' + (item.category || '') + '</div></div>';
-                html += '<div style="text-align:right;"><div class="rank-qty">' + (item.totalQuantitySold || item.qty || 0) + ' وحدة</div>';
-                html += '<div class="rank-rev">' + ((item.totalRevenue || item.revenue || 0)).toFixed(2) + ' JD</div></div>';
+                html += '<div style="text-align:right;">';
+                html += '<div class="rank-qty">' + (item.totalSold || 0) + ' وحدة</div>';
+                html += '<div class="rank-rev">' + fmt(item.totalRevenue || 0) + ' JD</div></div>';
                 html += '</div>';
             });
             list.innerHTML = html;
         });
     }
 
-    function loadCategories() {
-        var qs = getDateParams();
-        xhr('GET', '/api/inventory/reports/summary' + qs, function(status, data) {
-            var list = document.getElementById('categoryList');
-            var cats = data.categoryBreakdown || [];
-            if (!cats.length) { list.innerHTML = '<div class="rep-empty">لا توجد بيانات</div>'; return; }
-            var max = Math.max.apply(null, cats.map(function(c){ return c.totalSold || 0; })) || 1;
-            var html = '';
-            cats.forEach(function(cat) {
-                var pct = Math.round(((cat.totalSold || 0) / max) * 100);
-                html += '<div class="cat-row">';
-                html += '<div class="cat-label">' + (cat.category || '—') + '</div>';
-                html += '<div class="cat-bar-wrap"><div class="cat-bar" style="width:' + pct + '%"></div></div>';
-                html += '<div class="cat-count">' + (cat.totalSold || 0) + '</div>';
-                html += '</div>';
-            });
-            list.innerHTML = html;
-        });
-    }
-
+    /* ── Recent Sales ── */
     function loadRecentSales() {
         var qs = getDateParams();
-        xhr('GET', '/api/inventory/sales' + qs + (qs ? '&limit=50' : '?limit=50'), function(status, data) {
+        var sep = qs ? '&' : '?';
+        xhr('GET', '/api/inventory/sales' + qs + sep + 'limit=50', function(status, data) {
             var list  = document.getElementById('recentSalesList');
-            var sales = (data.sales || data || []);
-            if (!Array.isArray(sales) || sales.length === 0) {
-                list.innerHTML = '<div class="rep-empty">لا توجد مبيعات مسجلة</div>'; return;
+            var sales = data.sales || [];
+            if (!sales.length) {
+                list.innerHTML = '<div class="rep-empty">لا توجد مبيعات مسجلة بعد</div>';
+                return;
             }
             var html = '';
             sales.forEach(function(s) {
-                var d = s.transactionDate ? new Date(s.transactionDate).toLocaleDateString('ar') : '—';
+                var d = s.transactionDate
+                    ? new Date(s.transactionDate).toLocaleDateString('ar-JO')
+                    : '—';
                 html += '<div class="sale-row">';
                 html += '<div class="sale-name">' + (s.productName || '—') + '</div>';
-                html += '<div class="sale-qty" style="color:var(--gray-500);">' + (s.quantitySold || 0) + ' وحدة</div>';
-                html += '<div class="sale-amt">' + ((s.totalPrice || 0)).toFixed(2) + ' JD</div>';
+                html += '<div class="sale-qty">' + (s.quantitySold || 0) + ' وحدة</div>';
+                html += '<div class="sale-amt">' + fmt(s.totalPrice || 0) + ' JD</div>';
                 html += '<div class="sale-date">' + d + '</div>';
                 html += '<div style="font-size:11px;color:var(--gray-400);">👤 ' + (s.soldByUsername || '—') + '</div>';
                 html += '</div>';
@@ -355,13 +404,12 @@
     }
 
     function loadAll() {
-        loadSummary();
+        loadSummary();      /* also renders category breakdown */
         loadTopSelling();
-        loadCategories();
         loadRecentSales();
     }
 
-    window.addEventListener('pharmaLangChanged', function() { /* static labels update via i18n */ });
+    window.addEventListener('pharmaLangChanged', function() { /* static labels auto-update via i18n */ });
 
     loadAll();
 </script>
