@@ -128,8 +128,8 @@
                 <input type="date" id="dateFrom">
                 <label data-i18n="inv_rep_date_to">إلى تاريخ</label>
                 <input type="date" id="dateTo">
-                <button class="btn btn-primary" onclick="loadAll()" style="padding:6px 16px;font-size:13px;">🔍 تطبيق</button>
-                <button class="btn btn-outline" onclick="clearDates()" style="padding:6px 12px;font-size:13px;">✕ مسح</button>
+                <button class="btn btn-primary" onclick="loadAll()" style="padding:6px 16px;font-size:13px;" data-i18n="btn_apply">🔍 تطبيق</button>
+                <button class="btn btn-outline" onclick="clearDates()" style="padding:6px 12px;font-size:13px;" data-i18n="btn_clear">✕ مسح</button>
             </div>
         </div>
 
@@ -194,7 +194,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="topSellingList"><div class="rep-empty">جاري التحميل...</div></div>
+                <div id="topSellingList"><div class="rep-empty" data-i18n="inv_loading">جاري التحميل...</div></div>
             </div>
 
             <!-- Category Breakdown -->
@@ -208,7 +208,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="categoryList"><div class="rep-empty">جاري التحميل...</div></div>
+                <div id="categoryList"><div class="rep-empty" data-i18n="inv_loading">جاري التحميل...</div></div>
             </div>
         </div>
 
@@ -223,7 +223,7 @@
                     </div>
                 </div>
             </div>
-            <div id="recentSalesList"><div class="rep-empty">جاري التحميل...</div></div>
+            <div id="recentSalesList"><div class="rep-empty" data-i18n="inv_loading">جاري التحميل...</div></div>
         </div>
     </div>
 </div>

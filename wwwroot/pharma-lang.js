@@ -1000,6 +1000,9 @@
       inv_rep_top_sub:      'أعلى 10 منتجات من حيث المبيعات',
       inv_rep_cat_sub:      'توزيع المبيعات حسب الفئة',
       inv_rep_sales_sub:    'آخر 50 عملية بيع',
+      btn_apply:            '🔍 تطبيق',
+      btn_clear:            '✕ مسح',
+      inv_sync_btn:         '🔗 مزامنة الكميات',
     },
 
     /* ────────────────────── ENGLISH ────────────────────── */
@@ -1849,6 +1852,9 @@
       inv_rep_top_sub:      'Top 10 products by sales',
       inv_rep_cat_sub:      'Sales distribution by category',
       inv_rep_sales_sub:    'Last 50 sale transactions',
+      btn_apply:            '🔍 Apply',
+      btn_clear:            '✕ Clear',
+      inv_sync_btn:         '🔗 Sync Quantities',
     }
   };
 

@@ -109,11 +109,11 @@
         <div class="page-header">
             <div>
                 <div class="page-title" data-i18n="nav_inventory">📦 إدارة المخزون</div>
-                <div class="page-subtitle" id="pageSubtitle">تتبع الأدوية والمنتجات — كميات ومبيعات وتنبيهات فورية</div>
+                <div class="page-subtitle" data-i18n="inv_subtitle">تتبع الأدوية والمنتجات — كميات ومبيعات وتنبيهات فورية</div>
             </div>
             <div class="header-actions">
                 <button class="btn btn-outline" onclick="loadItems()" style="font-size:13px;" data-i18n="btn_refresh">🔄 تحديث</button>
-                <button class="btn btn-outline" onclick="syncQuantities()" style="font-size:13px;color:#0d9488;" title="مزامنة كميات المخزون مع لوحة التحكم">🔗 مزامنة الكميات</button>
+                <button class="btn btn-outline" onclick="syncQuantities()" style="font-size:13px;color:#0d9488;" data-i18n="inv_sync_btn">🔗 مزامنة الكميات</button>
                 <button class="btn btn-primary" onclick="openAddModal()">+ <span data-i18n="add_inv_btn">إضافة صنف</span></button>
             </div>
         </div>
@@ -179,7 +179,7 @@
                     </div>
                 </div>
             </div>
-            <div id="invTable"><div class="loading-state"><div class="spinner"></div><span>جاري التحميل...</span></div></div>
+            <div id="invTable"><div class="loading-state"><div class="spinner"></div><span data-i18n="inv_loading">جاري التحميل...</span></div></div>
         </div>
     </div>
 </div>
