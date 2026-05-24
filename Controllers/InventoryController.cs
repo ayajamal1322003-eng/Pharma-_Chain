@@ -209,6 +209,35 @@ namespace PharmaChain.Controllers
             return Ok(new { message = $"Successfully imported {newItems.Count} drug(s) into inventory", imported = newItems.Count });
         }
 
+        // ── POST /api/inventory/sync-quantities ───────────────────────────────
+        // Backfill: copy CurrentStock → Drug.Quantity for all linked items
+        [HttpPost("sync-quantities")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SyncQuantitiesToDrugs()
+        {
+            var linked = await _db.InventoryItems
+                .Where(i => i.DrugId.HasValue && i.IsActive)
+                .ToListAsync();
+
+            int updated = 0;
+            foreach (var inv in linked)
+            {
+                var drug = await _db.Drugs.FindAsync(inv.DrugId!.Value);
+                if (drug != null && drug.Quantity != inv.CurrentStock)
+                {
+                    drug.Quantity = inv.CurrentStock;
+                    updated++;
+                }
+            }
+            await _db.SaveChangesAsync();
+
+            AddAuditLog("SyncQuantitiesToDrugs",
+                $"Synced CurrentStock → Drug.Quantity for {updated} drug(s)");
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = $"Updated {updated} drug quantity/ies to match inventory stock", updated });
+        }
+
         // ── POST /api/inventory ───────────────────────────────────────────────
         [HttpPost]
         [Authorize(Roles = "Admin")]
@@ -363,6 +392,13 @@ namespace PharmaChain.Controllers
             item.CurrentStock += req.Quantity;
             item.UpdatedAt    = DateTime.UtcNow;
 
+            // ── Keep Drug.Quantity in sync ──
+            if (item.DrugId.HasValue)
+            {
+                var drug = await _db.Drugs.FindAsync(item.DrugId.Value);
+                if (drug != null) drug.Quantity = item.CurrentStock;
+            }
+
             _db.InventoryMovements.Add(new InventoryMovement
             {
                 InventoryItemId     = item.Id,
@@ -422,6 +458,13 @@ namespace PharmaChain.Controllers
             var stockBefore   = item.CurrentStock;
             item.CurrentStock -= req.Quantity;
             item.UpdatedAt    = DateTime.UtcNow;
+
+            // ── Keep Drug.Quantity in sync ──
+            if (item.DrugId.HasValue)
+            {
+                var drug = await _db.Drugs.FindAsync(item.DrugId.Value);
+                if (drug != null) drug.Quantity = item.CurrentStock;
+            }
 
             _db.InventoryMovements.Add(new InventoryMovement
             {

@@ -113,6 +113,7 @@
             </div>
             <div class="header-actions">
                 <button class="btn btn-outline" onclick="loadItems()" style="font-size:13px;" data-i18n="btn_refresh">🔄 تحديث</button>
+                <button class="btn btn-outline" onclick="syncQuantities()" style="font-size:13px;color:#0d9488;" title="مزامنة كميات المخزون مع لوحة التحكم">🔗 مزامنة الكميات</button>
                 <button class="btn btn-primary" onclick="openAddModal()">+ <span data-i18n="add_inv_btn">إضافة صنف</span></button>
             </div>
         </div>
@@ -401,6 +402,18 @@
 
     var allItems = [], currentFilter = 'all', now = new Date(), soon = new Date();
     soon.setDate(now.getDate() + 30);
+
+    /* مزامنة CurrentStock → Drug.Quantity لكل الأدوية المرتبطة */
+    function syncQuantities() {
+        xhr('POST', '/api/inventory/sync-quantities', {}, function(status, data) {
+            if (status === 200) {
+                toast('✅ ' + (data.message || 'تمت المزامنة'));
+                loadItems();
+            } else {
+                toast('❌ فشل في المزامنة', false);
+            }
+        });
+    }
 
     function loadItems() {
         document.getElementById('invTable').innerHTML = '<div class="loading-state"><div class="spinner"></div><span>جاري التحميل...</span></div>';
