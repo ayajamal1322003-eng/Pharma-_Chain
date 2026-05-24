@@ -123,63 +123,79 @@
 
         .input-wrap { position: relative; }
 
-        .input-icon {
-            position: absolute;
-            right: 13px; top: 50%;
-            transform: translateY(-50%);
-            color: #b0bec5;
+        /* ── Icon + Input in one pill-shaped row ── */
+        .input-group {
             display: flex;
             align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            transition: color 0.2s;
-        }
-
-        [dir="ltr"] .input-icon { right: auto; left: 13px; }
-
-        .input-wrap:focus-within .input-icon { color: #0d9488; }
-
-        .input-field {
-            width: 100%;
-            padding: 12px 42px 12px 16px;
             border: 1.5px solid #e5e7eb;
             border-radius: 12px;
-            font-size: 14px;
-            color: #1f2937;
             background: #f9fafb;
-            outline: none;
             transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-            font-family: inherit;
+            overflow: hidden;
         }
-
-        [dir="ltr"] .input-field { padding: 12px 16px 12px 42px; }
-
-        .input-field::placeholder { color: #b0bec5; }
-
-        .input-field:focus {
+        .input-group:focus-within {
             border-color: #14b8a6;
             background: #fff;
             box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.14);
         }
 
-        /* Password field needs extra left padding for the eye button */
-        #password { padding-left: 40px; }
-        [dir="ltr"] #password { padding-left: 16px; padding-right: 40px; }
-
-        .eye-btn {
-            position: absolute;
-            left: 10px; top: 50%;
-            transform: translateY(-50%);
-            background: none; border: none;
-            cursor: pointer;
-            color: #b0bec5;
-            padding: 5px;
-            line-height: 0;
-            border-radius: 6px;
-            transition: color 0.15s, background 0.15s;
+        /* The coloured emoji icon - sits in its own padded cell */
+        .field-icon {
+            font-size: 18px;
+            line-height: 1;
+            padding: 0 4px 0 14px;   /* RTL: space on right (start) side */
+            flex-shrink: 0;
+            user-select: none;
+            opacity: 0.85;
+            transition: opacity 0.2s;
         }
-        .eye-btn:hover { color: #0d9488; background: #f0fdfa; }
-        [dir="ltr"] .eye-btn { left: auto; right: 10px; }
+        [dir="ltr"] .field-icon { padding: 0 14px 0 4px; }
+        .input-group:focus-within .field-icon { opacity: 1; }
+
+        /* Thin divider between icon and input text */
+        .field-icon::after {
+            content: '';
+            display: inline-block;
+            width: 1px;
+            height: 18px;
+            background: #e5e7eb;
+            vertical-align: middle;
+            margin-right: -3px;      /* pull it close in RTL */
+            margin-left: 10px;
+        }
+        [dir="ltr"] .field-icon::after {
+            margin-left: -3px;
+            margin-right: 10px;
+        }
+
+        /* Input itself: no border (parent has it) */
+        .input-field {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            padding: 12px 10px;
+            font-size: 14px;
+            color: #1f2937;
+            font-family: inherit;
+            min-width: 0;
+        }
+        .input-field::placeholder { color: #b8c4cc; }
+
+        /* Eye toggle - sits at the end of the row */
+        .eye-btn {
+            padding: 0 12px 0 6px;   /* RTL: space on left (end) side */
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #b8c4cc;
+            flex-shrink: 0;
+            line-height: 1;
+            transition: color 0.15s;
+        }
+        [dir="ltr"] .eye-btn { padding: 0 6px 0 12px; }
+        .eye-btn:hover { color: #0d9488; }
 
         .pwd-hint { font-size: 11px; color: #9ca3af; margin-top: 5px; }
 
@@ -519,47 +535,27 @@
             <div class="form-group">
                 <label data-i18n="login_username">اسم المستخدم</label>
                 <div class="input-wrap">
-                    <!-- User icon -->
-                    <span class="input-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                             fill="none" stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                    </span>
-                    <input class="input-field" type="text" id="username"
-                           placeholder="أدخل اسم المستخدم"
-                           data-i18n-ph="login_username_ph"
-                           autocomplete="username">
+                    <div class="input-group">
+                        <span class="field-icon">👤</span>
+                        <input class="input-field" type="text" id="username"
+                               placeholder="أدخل اسم المستخدم"
+                               data-i18n-ph="login_username_ph"
+                               autocomplete="username">
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label data-i18n="login_password">كلمة المرور</label>
                 <div class="input-wrap">
-                    <!-- Lock icon -->
-                    <span class="input-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                             fill="none" stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
-                    </span>
-                    <input class="input-field" type="password" id="password"
-                           placeholder="أدخل كلمة المرور"
-                           data-i18n-ph="login_password_ph"
-                           autocomplete="current-password">
-                    <!-- Eye toggle button -->
-                    <button class="eye-btn" type="button" onclick="togglePwd()" id="eyeBtn" title="إظهار/إخفاء">
-                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                            <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                    </button>
+                    <div class="input-group">
+                        <span class="field-icon">🔒</span>
+                        <input class="input-field" type="password" id="password"
+                               placeholder="أدخل كلمة المرور"
+                               data-i18n-ph="login_password_ph"
+                               autocomplete="current-password">
+                        <button class="eye-btn" type="button" onclick="togglePwd()" id="eyeBtn" title="إظهار/إخفاء">👁</button>
+                    </div>
                 </div>
                 <div class="pwd-hint" data-i18n="login_pwd_hint">يجب أن تحتوي على 8 أحرف + رقم + حرف كبير</div>
             </div>
@@ -589,19 +585,11 @@
         var failedAttempts = 0;
         var loginSucceeded = false;
 
-        var EYE_OPEN   = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-        var EYE_CLOSED = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-
         function togglePwd() {
-            var pw   = document.getElementById('password');
-            var icon = document.getElementById('eyeIcon');
-            if (pw.type === 'password') {
-                pw.type          = 'text';
-                icon.innerHTML   = EYE_CLOSED;
-            } else {
-                pw.type          = 'password';
-                icon.innerHTML   = EYE_OPEN;
-            }
+            var pw  = document.getElementById('password');
+            var btn = document.getElementById('eyeBtn');
+            if (pw.type === 'password') { pw.type = 'text';     btn.textContent = '🙈'; }
+            else                        { pw.type = 'password'; btn.textContent = '👁'; }
         }
 
         function ar(a, en) { return PharmaLang.get() === 'ar' ? a : en; }
