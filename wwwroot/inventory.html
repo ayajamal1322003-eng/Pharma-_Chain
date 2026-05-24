@@ -155,9 +155,6 @@
                 </div>
                 <select id="catFilter" class="form-select" style="min-width:140px;" onchange="applyFilters()">
                     <option value="">كل الفئات</option>
-                    <option>Antibiotic</option><option>Painkiller</option><option>Supplement</option>
-                    <option>Vitamin</option><option>Antifungal</option><option>Analgesic</option>
-                    <option>Other</option>
                 </select>
             </div>
             <div class="filter-chips">
@@ -311,6 +308,54 @@
     </div>
 </div>
 
+<!-- ══ EDIT MODAL ══ -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-box" style="max-width:480px;">
+        <div class="modal-title">✏️ تعديل بيانات الصنف</div>
+        <input type="hidden" id="edit-id">
+        <div class="form-group">
+            <label class="form-label">الفئة / التصنيف</label>
+            <select id="edit-cat" class="form-select">
+                <option value="Medication">Medication (دواء)</option>
+                <option value="Antibiotic">Antibiotic (مضاد حيوي)</option>
+                <option value="Painkiller">Painkiller (مسكن)</option>
+                <option value="Supplement">Supplement (مكمل)</option>
+                <option value="Vitamin">Vitamin (فيتامين)</option>
+                <option value="Antifungal">Antifungal (مضاد فطريات)</option>
+                <option value="Analgesic">Analgesic (مسكن ألم)</option>
+                <option value="Chronic">Chronic Disease (أمراض مزمنة)</option>
+                <option value="Cardiac">Cardiac (قلب)</option>
+                <option value="Other">Other (أخرى)</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">سعر الشراء (JD)</label>
+                <input type="number" id="edit-purchase" class="form-input" placeholder="0.00" min="0" step="0.01">
+            </div>
+            <div class="form-group">
+                <label class="form-label">سعر البيع (JD)</label>
+                <input type="number" id="edit-selling" class="form-input" placeholder="0.00" min="0" step="0.01">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">حد التنبيه (أدنى مخزون)</label>
+                <input type="number" id="edit-threshold" class="form-input" placeholder="10" min="1">
+            </div>
+            <div class="form-group">
+                <label class="form-label">الوصف / الشركة</label>
+                <input type="text" id="edit-desc" class="form-input" placeholder="الشركة المصنعة...">
+            </div>
+        </div>
+        <div id="editError" style="color:var(--rose-600);font-size:12px;margin:6px 0;display:none;"></div>
+        <div style="display:flex;gap:10px;margin-top:12px;">
+            <button class="btn btn-outline" onclick="closeModal('editModal')" style="flex:1">إلغاء</button>
+            <button class="btn btn-primary" onclick="submitEdit()" id="editBtn" style="flex:2">💾 حفظ التعديلات</button>
+        </div>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -360,15 +405,33 @@
     function loadItems() {
         document.getElementById('invTable').innerHTML = '<div class="loading-state"><div class="spinner"></div><span>جاري التحميل...</span></div>';
         xhr('GET', '/api/inventory', null, function(status, data) {
-            if (status !== 200) { document.getElementById('invTable').innerHTML = '<div class="loading-state">⚠️ فشل تحميل البيانات</div>'; return; }
+            if (status !== 200) {
+                document.getElementById('invTable').innerHTML = '<div class="loading-state">⚠️ فشل تحميل البيانات — تأكد من تشغيل السيرفر</div>';
+                return;
+            }
             allItems = data.items || [];
             var s = data.stats || {};
-            document.getElementById('stat-total').textContent   = s.total    || 0;
-            document.getElementById('stat-low').textContent     = s.lowStock || 0;
+            document.getElementById('stat-total').textContent   = s.total     || 0;
+            document.getElementById('stat-low').textContent     = s.lowStock  || 0;
             document.getElementById('stat-out').textContent     = s.outOfStock|| 0;
-            document.getElementById('stat-expired').textContent = s.expired  || 0;
+            document.getElementById('stat-expired').textContent = s.expired   || 0;
             document.getElementById('stat-near').textContent    = s.nearExpiry|| 0;
+            // Build dynamic category filter from actual data
+            buildCategoryFilter(data.categories || []);
             applyFilters();
+        });
+    }
+
+    function buildCategoryFilter(categories) {
+        var sel = document.getElementById('catFilter');
+        var cur = sel.value; // preserve current selection
+        sel.innerHTML = '<option value="">كل الفئات</option>';
+        categories.forEach(function(cat) {
+            var opt = document.createElement('option');
+            opt.value = cat;
+            opt.textContent = cat;
+            if (cat === cur) opt.selected = true;
+            sel.appendChild(opt);
         });
     }
 
@@ -428,11 +491,14 @@
                 + '<td style="text-align:center; color:var(--teal-600); font-weight:700;">' + (i.sellingPrice||0).toFixed(2) + '</td>'
                 + '<td style="text-align:center;"><span class="' + stockCls + '">' + stockTxt + '</span></td>'
                 + '<td>' + (alerts || '<span style="color:var(--gray-400);font-size:11px;">—</span>') + '</td>'
-                + '<td><div style="display:flex;gap:6px;flex-wrap:wrap;">'
-                + '<button class="btn btn-outline" style="padding:4px 10px;font-size:11px;" onclick="openRestock(' + i.id + ',\'' + esc(i.name) + '\')">📥 رفع مخزون</button>'
-                + '<button class="btn btn-primary" style="padding:4px 10px;font-size:11px;' + (isOut ? 'opacity:.5;cursor:not-allowed;' : '') + '" onclick="' + (isOut ? '' : 'openSell(' + i.id + ',\'' + esc(i.name) + '\',' + (i.sellingPrice||0) + ',' + i.currentStock + ')') + '">🛒 بيع</button>'
-                + '<button class="btn btn-outline" style="padding:4px 10px;font-size:11px;" onclick="openDetail(' + i.id + ')">📋</button>'
-                + '<button class="btn" style="padding:4px 10px;font-size:11px;background:var(--rose-50);color:var(--rose-600);border:1px solid var(--rose-200);" onclick="deleteItem(' + i.id + ',\'' + esc(i.name) + '\')">🗑</button>'
+                + '<td><div style="display:flex;gap:4px;flex-wrap:wrap;">'
+                + '<button class="btn btn-outline" style="padding:4px 8px;font-size:11px;" onclick="openRestock(' + i.id + ',\'' + esc(i.name) + '\')">📥 رفع</button>'
+                + (isOut
+                    ? '<button class="btn btn-outline" style="padding:4px 8px;font-size:11px;opacity:.4;" disabled>🛒 بيع</button>'
+                    : '<button class="btn btn-primary" style="padding:4px 8px;font-size:11px;" onclick="openSell(' + i.id + ',\'' + esc(i.name) + '\',' + (i.sellingPrice||0) + ',' + i.currentStock + ')">🛒 بيع</button>')
+                + '<button class="btn btn-outline" style="padding:4px 8px;font-size:11px;" onclick="openEdit(' + i.id + ',\'' + esc(i.name) + '\',\'' + (i.category||'') + '\',' + (i.sellingPrice||0) + ',' + (i.purchasePrice||0) + ',' + (i.lowStockThreshold||10) + ',\'' + esc(i.description||'') + '\')">✏️</button>'
+                + '<button class="btn btn-outline" style="padding:4px 8px;font-size:11px;" onclick="openDetail(' + i.id + ')">📋</button>'
+                + '<button class="btn" style="padding:4px 8px;font-size:11px;background:var(--rose-50);color:var(--rose-600);border:1px solid var(--rose-200);" onclick="deleteItem(' + i.id + ',\'' + esc(i.name) + '\')">🗑</button>'
                 + '</div></td>'
                 + '</tr>';
         }).join('');
@@ -463,7 +529,6 @@
         var err     = document.getElementById('addError');
         if (!name)              { err.textContent = 'اسم المنتج مطلوب'; err.style.display='block'; return; }
         if (!expiry)            { err.textContent = 'تاريخ الانتهاء مطلوب'; err.style.display='block'; return; }
-        if (!selling || selling <= 0) { err.textContent = 'سعر البيع يجب أن يكون أكبر من صفر'; err.style.display='block'; return; }
         if (new Date(expiry) <= now)  { err.textContent = 'تاريخ الانتهاء يجب أن يكون مستقبلياً'; err.style.display='block'; return; }
         err.style.display = 'none';
         var btn = document.getElementById('addBtn');
@@ -591,6 +656,41 @@
         });
     }
 
+    // ── Edit Modal ────────────────────────────────────────────────
+    function openEdit(id, name, cat, selling, purchase, threshold, desc) {
+        document.getElementById('edit-id').value        = id;
+        document.getElementById('edit-cat').value       = cat || 'Medication';
+        document.getElementById('edit-selling').value   = selling  || '';
+        document.getElementById('edit-purchase').value  = purchase || '';
+        document.getElementById('edit-threshold').value = threshold || 10;
+        document.getElementById('edit-desc').value      = desc || '';
+        document.getElementById('editError').style.display = 'none';
+        document.getElementById('editModal').classList.add('open');
+    }
+
+    function submitEdit() {
+        var id  = document.getElementById('edit-id').value;
+        var btn = document.getElementById('editBtn');
+        btn.textContent = '⏳ جاري الحفظ...'; btn.disabled = true;
+        xhr('PUT', '/api/inventory/' + id, {
+            category:          document.getElementById('edit-cat').value,
+            sellingPrice:      parseFloat(document.getElementById('edit-selling').value)  || 0,
+            purchasePrice:     parseFloat(document.getElementById('edit-purchase').value) || 0,
+            lowStockThreshold: parseInt(document.getElementById('edit-threshold').value)  || 10,
+            description:       document.getElementById('edit-desc').value.trim()
+        }, function(status, data) {
+            btn.textContent = '💾 حفظ التعديلات'; btn.disabled = false;
+            if (status === 200) {
+                closeModal('editModal');
+                toast('✅ تم حفظ التعديلات بنجاح');
+                loadItems();
+            } else {
+                document.getElementById('editError').textContent = data.message || 'فشل الحفظ';
+                document.getElementById('editError').style.display = 'block';
+            }
+        });
+    }
+
     // ── Delete ────────────────────────────────────────────────────
     function deleteItem(id, name) {
         if (!confirm('هل تريد حذف "' + name + '" من المخزون؟')) return;
@@ -603,7 +703,6 @@
     }
 
     // ── Init ──────────────────────────────────────────────────────
-    PharmaLang.apply();
     loadItems();
 </script>
 </body>

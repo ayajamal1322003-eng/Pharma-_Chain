@@ -41,6 +41,62 @@ namespace PharmaChain.Controllers
             [FromQuery] bool?    expiredOnly,
             [FromQuery] bool?    nearExpiryOnly)
         {
+            // ── AUTO-SEED: import drugs that don't have an inventory entry yet ──
+            var linkedDrugIds = await _db.InventoryItems
+                .Where(i => i.DrugId.HasValue && i.IsActive)
+                .Select(i => i.DrugId!.Value)
+                .Distinct()
+                .ToListAsync();
+
+            var unlinkedDrugs = await _db.Drugs
+                .Where(d => !linkedDrugIds.Contains(d.Id))
+                .ToListAsync();
+
+            if (unlinkedDrugs.Any())
+            {
+                var newItems = new List<InventoryItem>();
+                foreach (var drug in unlinkedDrugs)
+                {
+                    var inv = new InventoryItem
+                    {
+                        Name              = drug.Name,
+                        Description       = drug.Manufacturer,
+                        Category          = "Medication",
+                        BatchNumber       = drug.BatchNumber,
+                        ExpiryDate        = drug.ExpiryDate,
+                        PurchasePrice     = 0m,
+                        SellingPrice      = 0m,
+                        CurrentStock      = drug.Quantity,
+                        LowStockThreshold = 10,
+                        DrugId            = drug.Id,
+                        AddedByUsername   = "system",
+                        IsActive          = true,
+                        CreatedAt         = drug.CreatedAt,
+                        UpdatedAt         = DateTime.UtcNow
+                    };
+                    _db.InventoryItems.Add(inv);
+                    newItems.Add(inv);
+                }
+                await _db.SaveChangesAsync();
+
+                // Add INITIAL movement for each auto-seeded item with stock
+                foreach (var inv in newItems.Where(i => i.CurrentStock > 0))
+                {
+                    _db.InventoryMovements.Add(new InventoryMovement
+                    {
+                        InventoryItemId     = inv.Id,
+                        ActionType          = "INITIAL",
+                        QuantityChanged     = inv.CurrentStock,
+                        StockBefore         = 0,
+                        StockAfter          = inv.CurrentStock,
+                        PerformedByUsername = "system",
+                        Notes               = "مستورد تلقائياً من سجل الأدوية",
+                        Timestamp           = DateTime.UtcNow
+                    });
+                }
+                await _db.SaveChangesAsync();
+            }
+
             var query = _db.InventoryItems.Where(i => i.IsActive);
 
             if (!string.IsNullOrWhiteSpace(search))
@@ -65,6 +121,13 @@ namespace PharmaChain.Controllers
                     .Where(i => i.ExpiryDate >= now && i.ExpiryDate <= now.AddDays(30))
                     .ToList();
 
+            // Return distinct categories so the frontend can build a dynamic filter
+            var categories = items.Select(i => i.Category)
+                .Where(c => !string.IsNullOrWhiteSpace(c))
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+
             return Ok(new
             {
                 stats = new
@@ -75,8 +138,75 @@ namespace PharmaChain.Controllers
                     expired     = items.Count(i => i.ExpiryDate < now),
                     nearExpiry  = items.Count(i => i.ExpiryDate >= now && i.ExpiryDate <= now.AddDays(30))
                 },
+                categories,
                 items
             });
+        }
+
+        // ── POST /api/inventory/sync-drugs ────────────────────────────────────
+        [HttpPost("sync-drugs")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SyncFromDrugs()
+        {
+            var linkedDrugIds = await _db.InventoryItems
+                .Where(i => i.DrugId.HasValue && i.IsActive)
+                .Select(i => i.DrugId!.Value)
+                .Distinct()
+                .ToListAsync();
+
+            var unlinkedDrugs = await _db.Drugs
+                .Where(d => !linkedDrugIds.Contains(d.Id))
+                .ToListAsync();
+
+            if (!unlinkedDrugs.Any())
+                return Ok(new { message = "All drugs are already synced", imported = 0 });
+
+            var newItems = new List<InventoryItem>();
+            foreach (var drug in unlinkedDrugs)
+            {
+                var inv = new InventoryItem
+                {
+                    Name              = drug.Name,
+                    Description       = drug.Manufacturer,
+                    Category          = "Medication",
+                    BatchNumber       = drug.BatchNumber,
+                    ExpiryDate        = drug.ExpiryDate,
+                    PurchasePrice     = 0m,
+                    SellingPrice      = 0m,
+                    CurrentStock      = drug.Quantity,
+                    LowStockThreshold = 10,
+                    DrugId            = drug.Id,
+                    AddedByUsername   = "system",
+                    IsActive          = true,
+                    CreatedAt         = drug.CreatedAt,
+                    UpdatedAt         = DateTime.UtcNow
+                };
+                _db.InventoryItems.Add(inv);
+                newItems.Add(inv);
+            }
+            await _db.SaveChangesAsync();
+
+            foreach (var inv in newItems.Where(i => i.CurrentStock > 0))
+            {
+                _db.InventoryMovements.Add(new InventoryMovement
+                {
+                    InventoryItemId     = inv.Id,
+                    ActionType          = "INITIAL",
+                    QuantityChanged     = inv.CurrentStock,
+                    StockBefore         = 0,
+                    StockAfter          = inv.CurrentStock,
+                    PerformedByUsername = GetUsername(),
+                    Notes               = "مستورد يدوياً من سجل الأدوية",
+                    Timestamp           = DateTime.UtcNow
+                });
+            }
+            await _db.SaveChangesAsync();
+
+            AddAuditLog("SyncInventoryFromDrugs",
+                $"Imported {newItems.Count} drugs into inventory automatically");
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = $"Successfully imported {newItems.Count} drug(s) into inventory", imported = newItems.Count });
         }
 
         // ── POST /api/inventory ───────────────────────────────────────────────
@@ -86,8 +216,8 @@ namespace PharmaChain.Controllers
         {
             if (string.IsNullOrWhiteSpace(req.Name))
                 return BadRequest(new { message = "Product name is required" });
-            if (req.SellingPrice <= 0)
-                return BadRequest(new { message = "Selling price must be greater than zero" });
+            if (req.SellingPrice < 0)
+                return BadRequest(new { message = "Selling price cannot be negative" });
             if (req.InitialStock < 0)
                 return BadRequest(new { message = "Initial stock cannot be negative" });
             if (req.ExpiryDate <= DateTime.UtcNow)
