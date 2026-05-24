@@ -1,14 +1,12 @@
-const CACHE = 'pharmachain-v3';
+const CACHE = 'pharmachain-v4';
 
-// Static assets that rarely change — CSS, JS, icons only
+// Static assets to pre-cache on install
 const STATIC_ASSETS = [
-  '/pharma-styles.css',
-  '/pharma-lang.js',
   '/manifest.json',
   '/icon.svg'
 ];
 
-// ── Install: cache only static assets (NOT HTML pages) ──
+// ── Install: cache only icons & manifest (NOT JS/CSS — fetched fresh each time) ──
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE)
@@ -17,7 +15,7 @@ self.addEventListener('install', e => {
   );
 });
 
-// ── Activate: delete all old caches ──
+// ── Activate: delete ALL old caches ──
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys()
@@ -38,13 +36,14 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // 2. HTML pages → Network-First
-  //    Always fetch fresh from server; fall back to cache only if offline
-  if (url.pathname.endsWith('.html') || url.pathname === '/') {
+  // 2. HTML + JS + CSS → Network-First
+  //    Always get latest from server; only fall back to cache when offline
+  const ext = url.pathname.split('.').pop().toLowerCase();
+  if (url.pathname.endsWith('.html') || url.pathname === '/' ||
+      ext === 'js' || ext === 'css') {
     e.respondWith(
       fetch(e.request)
         .then(res => {
-          // Update cache with latest version
           const clone = res.clone();
           caches.open(CACHE).then(c => c.put(e.request, clone));
           return res;
@@ -54,7 +53,7 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // 3. CSS / JS / icons → Cache-First (these change only on version bump)
+  // 3. Everything else (icons, fonts, images) → Cache-First
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
       const clone = res.clone();
