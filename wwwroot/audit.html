@@ -102,6 +102,8 @@
         <a class="nav-item" id="navTransfer" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> <span data-i18n="nav_transfer">نقل دواء</span></a>
         <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> <span data-i18n="nav_blockchain">Blockchain</span></a>
         <a class="nav-item" id="navLedger" style="display:none" onclick="goTo('ledger.html')"><span class="nav-icon">📒</span> Ledger</a>
+        <a class="nav-item" id="navInventory" style="display:none" onclick="goTo('inventory.html')"><span class="nav-icon">📦</span> <span data-i18n="nav_inventory">إدارة المخزون</span></a>
+        <a class="nav-item" id="navInvReports" style="display:none" onclick="goTo('inventory-reports.html')"><span class="nav-icon">📊</span> <span data-i18n="nav_inv_reports">تقارير المخزون</span></a>
         <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> <span data-i18n="nav_verify">التحقق من دواء</span></a>
         <a class="nav-item active"><span class="nav-icon">📋</span> <span data-i18n="nav_audit">سجل العمليات</span></a>
         <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span data-i18n="nav_qr_control">إدارة QR Code</span></a>
@@ -220,6 +222,12 @@
     if (role === 'LedgerAdmin') {
         document.getElementById('navLedger').style.display = 'flex';
         document.getElementById('navTransfer').style.display = 'none';
+    }
+    if (role === 'Admin') {
+        document.getElementById('navInventory').style.display = 'flex';
+    }
+    if (role === 'Admin' || role === 'LedgerAdmin') {
+        document.getElementById('navInvReports').style.display = 'flex';
     }
 
     function goTo(p)  { window.location.replace(API + '/' + p); }

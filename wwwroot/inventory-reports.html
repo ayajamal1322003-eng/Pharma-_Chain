@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaChain — تقارير المخزون</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0d9488">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PharmaChain">
+    <link rel="apple-touch-icon" href="/icon.svg">
+    <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');</script>
+    <link rel="stylesheet" href="/pharma-styles.css">
+    <script src="/pharma-lang.js"></script>
+    <style>
+        .rep-stats { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+        .rep-stat  { background:#fff; border:1px solid var(--gray-100); border-radius:12px;
+                     padding:16px 18px; flex:1; min-width:140px; box-shadow:var(--shadow-sm); text-align:center; }
+        .rep-stat-val  { font-size:24px; font-weight:900; }
+        .rep-stat-lbl  { font-size:11px; color:var(--gray-500); margin-top:3px; }
+        .rep-stat-icon { font-size:20px; margin-bottom:5px; }
+
+        .top-rank  { display:flex; align-items:center; gap:12px; padding:10px 0;
+                     border-bottom:1px solid var(--gray-100); }
+        .top-rank:last-child { border-bottom:none; }
+        .rank-num  { width:26px; height:26px; border-radius:50%; background:var(--teal-600);
+                     color:#fff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .rank-num.gold   { background:#f59e0b; }
+        .rank-num.silver { background:#94a3b8; }
+        .rank-num.bronze { background:#b45309; }
+        .rank-name { flex:1; font-weight:600; font-size:13px; color:var(--gray-800); }
+        .rank-qty  { font-size:13px; font-weight:700; color:var(--teal-600); }
+        .rank-rev  { font-size:11px; color:var(--gray-500); }
+
+        .cat-row   { display:flex; align-items:center; gap:10px; padding:8px 0;
+                     border-bottom:1px solid var(--gray-50); }
+        .cat-row:last-child { border-bottom:none; }
+        .cat-bar-wrap { flex:1; background:var(--gray-100); border-radius:4px; height:8px; overflow:hidden; }
+        .cat-bar   { height:100%; border-radius:4px; background:var(--teal-500); transition:.3s; }
+        .cat-label { width:100px; font-size:12px; font-weight:600; color:var(--gray-700); }
+        .cat-count { font-size:12px; font-weight:700; color:var(--teal-600); width:40px; text-align:left; }
+
+        .sale-row  { display:flex; align-items:center; gap:10px; padding:8px 0;
+                     border-bottom:1px solid var(--gray-100); font-size:12.5px; }
+        .sale-row:last-child { border-bottom:none; }
+        .sale-name { flex:1; font-weight:600; color:var(--gray-800); }
+        .sale-qty  { color:var(--gray-500); }
+        .sale-amt  { font-weight:700; color:var(--teal-600); }
+        .sale-date { font-size:11px; color:var(--gray-400); }
+
+        .badge-ledger { display:inline-flex; align-items:center; gap:6px; padding:5px 14px;
+                        background:var(--amber-50); border:1px solid var(--amber-200); border-radius:20px;
+                        font-size:12px; font-weight:600; color:#92400e; margin-bottom:14px; }
+
+        .date-range { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+        .date-range label { font-size:12px; color:var(--gray-600); }
+        .date-range input[type=date] { padding:6px 10px; border:1px solid var(--gray-200);
+                                        border-radius:8px; font-size:12px; }
+
+        .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        @media(max-width:700px){ .two-col { grid-template-columns:1fr; } }
+
+        .rep-empty { text-align:center; padding:40px; color:var(--gray-400); font-size:13px; }
+    </style>
+</head>
+<body>
+<div class="layout">
+
+    <!-- ══ SIDEBAR ══ -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h2>PharmaChain</h2>
+            <p data-i18n="sidebar_sub">نظام تتبع الأدوية</p>
+        </div>
+        <button class="lang-toggle-btn" onclick="PharmaLang.toggle()">🇬🇧 EN</button>
+        <div class="role-badge-sidebar" id="roleBadge"></div>
+
+        <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> <span data-i18n="nav_dashboard">لوحة التحكم</span></a>
+        <a class="nav-item" id="navAddDrug" style="display:none" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> <span data-i18n="nav_add_drug">إضافة دواء</span></a>
+        <a class="nav-item" id="navTransfer" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> <span data-i18n="nav_transfer">نقل دواء</span></a>
+        <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> <span data-i18n="nav_blockchain">Blockchain</span></a>
+        <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> <span data-i18n="nav_verify">التحقق من دواء</span></a>
+        <a class="nav-item" id="navAttack" style="display:none" onclick="goTo('attack-demo.html')"><span class="nav-icon">🛡️</span> <span data-i18n="nav_tamper">كشف التلاعب</span></a>
+        <a class="nav-item" id="navAudit" style="display:none" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> <span data-i18n="nav_audit">سجل العمليات</span></a>
+        <a class="nav-item" id="navLedger" style="display:none" onclick="goTo('ledger.html')"><span class="nav-icon">📒</span> Ledger</a>
+        <div class="nav-section-hdr" id="navAISection" style="display:none" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
+        <a class="nav-item" id="navRisk" style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
+        <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
+        <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span data-i18n="nav_qr_control">إدارة QR Code</span></a>
+        <a class="nav-item" id="navInventory" style="display:none" onclick="goTo('inventory.html')"><span class="nav-icon">📦</span> <span data-i18n="nav_inventory">إدارة المخزون</span></a>
+        <a class="nav-item active"><span class="nav-icon">📊</span> <span data-i18n="nav_inv_reports">تقارير المخزون</span></a>
+
+        <div class="user-info-bar">
+            <div class="user-row">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div class="user-name" id="sidebarUsername">...</div>
+                    <div class="user-role" id="sidebarRole">...</div>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()" data-i18n="btn_logout">🚪 تسجيل خروج</button>
+        </div>
+    </div>
+
+    <!-- ══ MAIN ══ -->
+    <div class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title" data-i18n="inv_rep_title">📊 تقارير المخزون</div>
+                <div class="page-subtitle" data-i18n="inv_rep_subtitle">تقارير مالية وإحصائية تفصيلية</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline" onclick="loadAll()" style="font-size:13px;" data-i18n="btn_refresh">🔄 تحديث</button>
+            </div>
+        </div>
+
+        <!-- LedgerAdmin badge -->
+        <div id="ledgerBadge" style="display:none;">
+            <div class="badge-ledger">⚖️ <span data-i18n="inv_rep_ledger_badge">وضع قراءة فقط — LedgerAdmin</span></div>
+        </div>
+
+        <!-- Date range filter -->
+        <div class="card" style="padding:14px 18px; margin-bottom:14px;">
+            <div class="date-range">
+                <label data-i18n="inv_rep_date_from">من تاريخ</label>
+                <input type="date" id="dateFrom">
+                <label data-i18n="inv_rep_date_to">إلى تاريخ</label>
+                <input type="date" id="dateTo">
+                <button class="btn btn-primary" onclick="loadAll()" style="padding:6px 16px;font-size:13px;">🔍 تطبيق</button>
+                <button class="btn btn-outline" onclick="clearDates()" style="padding:6px 12px;font-size:13px;">✕ مسح</button>
+            </div>
+        </div>
+
+        <!-- Overview stats -->
+        <div class="rep-stats" id="repStats">
+            <div class="rep-stat">
+                <div class="rep-stat-icon">💰</div>
+                <div class="rep-stat-val" id="stat-val" style="color:var(--teal-600)">—</div>
+                <div class="rep-stat-lbl" data-i18n="inv_rep_total_val">إجمالي قيمة المخزون</div>
+            </div>
+            <div class="rep-stat">
+                <div class="rep-stat-icon">📦</div>
+                <div class="rep-stat-val" id="stat-sold" style="color:var(--blue-600)">—</div>
+                <div class="rep-stat-lbl" data-i18n="inv_rep_total_sold">إجمالي الوحدات المباعة</div>
+            </div>
+            <div class="rep-stat">
+                <div class="rep-stat-icon">💵</div>
+                <div class="rep-stat-val" id="stat-rev" style="color:var(--emerald-600)">—</div>
+                <div class="rep-stat-lbl" data-i18n="inv_rep_revenue">الإيرادات (JD)</div>
+            </div>
+            <div class="rep-stat">
+                <div class="rep-stat-icon">📈</div>
+                <div class="rep-stat-val" id="stat-profit" style="color:var(--purple-600)">—</div>
+                <div class="rep-stat-lbl" data-i18n="inv_rep_profit">الربح التقديري (JD)</div>
+            </div>
+        </div>
+
+        <!-- Two-column: Top Selling + Category Breakdown -->
+        <div class="two-col" style="margin-bottom:16px;">
+            <!-- Top Selling -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-icon" style="background:#f0fdfa;color:#0d9488;">🏆</div>
+                        <div>
+                            <div class="card-title" data-i18n="inv_rep_top_selling">الأكثر مبيعاً</div>
+                            <div class="card-subtitle">أعلى 10 منتجات من حيث المبيعات</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="topSellingList"><div class="rep-empty">جاري التحميل...</div></div>
+            </div>
+
+            <!-- Category Breakdown -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-icon" style="background:#eff6ff;color:#2563eb;">📂</div>
+                        <div>
+                            <div class="card-title" data-i18n="inv_rep_category">تقرير الفئات</div>
+                            <div class="card-subtitle">توزيع المبيعات حسب الفئة</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="categoryList"><div class="rep-empty">جاري التحميل...</div></div>
+            </div>
+        </div>
+
+        <!-- Recent Sales -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <div class="card-icon" style="background:#fdf4ff;color:#9333ea;">🛒</div>
+                    <div>
+                        <div class="card-title" data-i18n="inv_rep_recent_sales">المبيعات الأخيرة</div>
+                        <div class="card-subtitle">آخر 50 عملية بيع</div>
+                    </div>
+                </div>
+            </div>
+            <div id="recentSalesList"><div class="rep-empty">جاري التحميل...</div></div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    var API      = 'http://localhost:7036';
+    var token    = localStorage.getItem('token');
+    var username = localStorage.getItem('username');
+    var role     = localStorage.getItem('role');
+
+    if (!token) { window.location.replace(API + '/login.html'); }
+    if (role !== 'Admin' && role !== 'LedgerAdmin') { window.location.replace(API + '/dashboard.html'); }
+
+    document.getElementById('sidebarUsername').textContent = username || '';
+    document.getElementById('sidebarRole').textContent     = role || '';
+    document.getElementById('roleBadge').textContent       = role;
+    document.getElementById('roleBadge').className         = 'role-badge-sidebar role-' + role;
+
+    var isAdmin  = role === 'Admin';
+    var isLedger = role === 'LedgerAdmin';
+
+    if (isLedger) {
+        document.getElementById('ledgerBadge').style.display = 'block';
+        document.getElementById('navLedger').style.display   = 'flex';
+        document.getElementById('navAudit').style.display    = 'flex';
+    }
+    if (isAdmin) {
+        document.getElementById('navAddDrug').style.display  = 'flex';
+        document.getElementById('navAttack').style.display   = 'flex';
+        document.getElementById('navAudit').style.display    = 'flex';
+        document.getElementById('navRisk').style.display     = 'flex';
+        document.getElementById('navAdvisor').style.display  = 'flex';
+        document.getElementById('navAISection').style.display= 'block';
+        document.getElementById('navInventory').style.display= 'flex';
+    }
+
+    function goTo(p)  { window.location.replace(API + '/' + p); }
+    function logout() { localStorage.clear(); window.location.replace(API + '/login.html'); }
+
+    function toast(msg, ok) {
+        var el = document.getElementById('toast');
+        el.textContent = msg;
+        el.style.background = ok === false ? '#be123c' : '#0d9488';
+        el.classList.add('show');
+        setTimeout(function(){ el.classList.remove('show'); }, 3000);
+    }
+
+    function xhr(method, url, cb) {
+        var r = new XMLHttpRequest();
+        r.open(method, API + url, true);
+        r.setRequestHeader('Authorization', 'Bearer ' + token);
+        r.onload = function() {
+            if (r.status === 401) { window.location.replace(API + '/login.html'); return; }
+            var data = {}; try { data = JSON.parse(r.responseText); } catch(e) {}
+            cb(r.status, data);
+        };
+        r.onerror = function() { cb(0, {}); };
+        r.send(null);
+    }
+
+    function getDateParams() {
+        var from = document.getElementById('dateFrom').value;
+        var to   = document.getElementById('dateTo').value;
+        var p    = [];
+        if (from) p.push('from=' + from);
+        if (to)   p.push('to='   + to);
+        return p.length ? '?' + p.join('&') : '';
+    }
+
+    function clearDates() {
+        document.getElementById('dateFrom').value = '';
+        document.getElementById('dateTo').value   = '';
+        loadAll();
+    }
+
+    function loadSummary() {
+        var qs = getDateParams();
+        xhr('GET', '/api/inventory/reports/summary' + qs, function(status, data) {
+            if (status !== 200) { return; }
+            document.getElementById('stat-val').textContent    = (data.totalInventoryValue    || 0).toFixed(2) + ' JD';
+            document.getElementById('stat-sold').textContent   = (data.totalUnitsSold         || 0);
+            document.getElementById('stat-rev').textContent    = (data.totalRevenue           || 0).toFixed(2) + ' JD';
+            document.getElementById('stat-profit').textContent = (data.estimatedProfit        || 0).toFixed(2) + ' JD';
+        });
+    }
+
+    function loadTopSelling() {
+        var qs = getDateParams();
+        xhr('GET', '/api/inventory/reports/top-selling' + qs, function(status, data) {
+            var list = document.getElementById('topSellingList');
+            var items = (data.items || data || []);
+            if (!Array.isArray(items) || items.length === 0) {
+                list.innerHTML = '<div class="rep-empty">لا توجد مبيعات مسجلة</div>'; return;
+            }
+            var html = '';
+            items.slice(0, 10).forEach(function(item, idx) {
+                var rankClass = idx === 0 ? 'gold' : idx === 1 ? 'silver' : idx === 2 ? 'bronze' : '';
+                html += '<div class="top-rank">';
+                html += '<div class="rank-num ' + rankClass + '">' + (idx+1) + '</div>';
+                html += '<div><div class="rank-name">' + (item.productName || item.name || '—') + '</div>';
+                html += '<div class="rank-rev">' + (item.category || '') + '</div></div>';
+                html += '<div style="text-align:right;"><div class="rank-qty">' + (item.totalQuantitySold || item.qty || 0) + ' وحدة</div>';
+                html += '<div class="rank-rev">' + ((item.totalRevenue || item.revenue || 0)).toFixed(2) + ' JD</div></div>';
+                html += '</div>';
+            });
+            list.innerHTML = html;
+        });
+    }
+
+    function loadCategories() {
+        var qs = getDateParams();
+        xhr('GET', '/api/inventory/reports/summary' + qs, function(status, data) {
+            var list = document.getElementById('categoryList');
+            var cats = data.categoryBreakdown || [];
+            if (!cats.length) { list.innerHTML = '<div class="rep-empty">لا توجد بيانات</div>'; return; }
+            var max = Math.max.apply(null, cats.map(function(c){ return c.totalSold || 0; })) || 1;
+            var html = '';
+            cats.forEach(function(cat) {
+                var pct = Math.round(((cat.totalSold || 0) / max) * 100);
+                html += '<div class="cat-row">';
+                html += '<div class="cat-label">' + (cat.category || '—') + '</div>';
+                html += '<div class="cat-bar-wrap"><div class="cat-bar" style="width:' + pct + '%"></div></div>';
+                html += '<div class="cat-count">' + (cat.totalSold || 0) + '</div>';
+                html += '</div>';
+            });
+            list.innerHTML = html;
+        });
+    }
+
+    function loadRecentSales() {
+        var qs = getDateParams();
+        xhr('GET', '/api/inventory/sales' + qs + (qs ? '&limit=50' : '?limit=50'), function(status, data) {
+            var list  = document.getElementById('recentSalesList');
+            var sales = (data.sales || data || []);
+            if (!Array.isArray(sales) || sales.length === 0) {
+                list.innerHTML = '<div class="rep-empty">لا توجد مبيعات مسجلة</div>'; return;
+            }
+            var html = '';
+            sales.forEach(function(s) {
+                var d = s.transactionDate ? new Date(s.transactionDate).toLocaleDateString('ar') : '—';
+                html += '<div class="sale-row">';
+                html += '<div class="sale-name">' + (s.productName || '—') + '</div>';
+                html += '<div class="sale-qty" style="color:var(--gray-500);">' + (s.quantitySold || 0) + ' وحدة</div>';
+                html += '<div class="sale-amt">' + ((s.totalPrice || 0)).toFixed(2) + ' JD</div>';
+                html += '<div class="sale-date">' + d + '</div>';
+                html += '<div style="font-size:11px;color:var(--gray-400);">👤 ' + (s.soldByUsername || '—') + '</div>';
+                html += '</div>';
+            });
+            list.innerHTML = html;
+        });
+    }
+
+    function loadAll() {
+        loadSummary();
+        loadTopSelling();
+        loadCategories();
+        loadRecentSales();
+    }
+
+    window.addEventListener('pharmaLangChanged', function() { /* static labels update via i18n */ });
+
+    loadAll();
+</script>
+</body>
+</html>

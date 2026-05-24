@@ -134,6 +134,8 @@
         <a class="nav-item" id="navRisk"    style="display:none" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
         <a class="nav-item" id="navAdvisor" style="display:none" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
         <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span data-i18n="nav_qr_control">إدارة QR Code</span></a>
+        <a class="nav-item" id="navInventory" style="display:none" onclick="goTo('inventory.html')"><span class="nav-icon">📦</span> <span data-i18n="nav_inventory">إدارة المخزون</span></a>
+        <a class="nav-item" id="navInvReports" style="display:none" onclick="goTo('inventory-reports.html')"><span class="nav-icon">📊</span> <span data-i18n="nav_inv_reports">تقارير المخزون</span></a>
         <div class="user-info-bar">
             <div class="user-row">
                 <div class="user-avatar">👤</div>
@@ -352,6 +354,8 @@
         document.getElementById('navRisk').style.display = 'flex';
         document.getElementById('navAdvisor').style.display = 'flex';
         document.getElementById('navAISection').style.display = 'block';
+        document.getElementById('navInventory').style.display = 'flex';
+        document.getElementById('navInvReports').style.display = 'flex';
     }
 
     var allowedTransfers = { Factory: 'Distributor', Distributor: 'Pharmacy', Pharmacy: 'Customer' };

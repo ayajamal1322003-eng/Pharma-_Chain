@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaChain — إدارة المخزون</title>
+    <link rel="stylesheet" href="/pharma-styles.css">
+    <script src="/pharma-lang.js"></script>
+    <style>
+        .inv-stats { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+        .inv-stat  { background:#fff; border:1px solid var(--gray-100); border-radius:12px; padding:14px 18px;
+                     flex:1; min-width:130px; box-shadow:var(--shadow-sm); text-align:center; cursor:pointer; transition:.15s; }
+        .inv-stat:hover { box-shadow:var(--shadow-md); transform:translateY(-1px); }
+        .inv-stat-val { font-size:26px; font-weight:900; }
+        .inv-stat-lbl { font-size:11px; color:var(--gray-500); margin-top:2px; }
+        .inv-stat-icon{ font-size:20px; margin-bottom:4px; }
+
+        .cat-badge  { display:inline-block; padding:2px 9px; border-radius:10px; font-size:10px;
+                      font-weight:700; color:#fff; white-space:nowrap; }
+        .cat-Antibiotic { background:#0891b2; }
+        .cat-Painkiller  { background:#f43f5e; }
+        .cat-Supplement  { background:#10b981; }
+        .cat-Vitamin     { background:#f59e0b; }
+        .cat-Antifungal  { background:#8b5cf6; }
+        .cat-Analgesic   { background:#6366f1; }
+        .cat-Other       { background:#6b7280; }
+
+        .stock-low  { color:#9f1239; font-weight:700; }
+        .stock-ok   { color:#065f46; font-weight:700; }
+        .stock-out  { color:#dc2626; font-weight:800; }
+
+        .alert-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px;
+                       border-radius:10px; font-size:11px; font-weight:600; }
+        .alert-low    { background:#fef3c7; color:#92400e; }
+        .alert-out    { background:#fee2e2; color:#991b1b; }
+        .alert-exp    { background:#ffe4e6; color:#9f1239; }
+        .alert-near   { background:#fef9c3; color:#854d0e; }
+
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45);
+                         z-index:1000; align-items:center; justify-content:center; }
+        .modal-overlay.open { display:flex; }
+        .modal-box  { background:#fff; border-radius:16px; padding:28px; width:94%; max-width:520px;
+                      max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.25); }
+        .modal-title{ font-size:18px; font-weight:800; color:var(--gray-800); margin-bottom:18px; }
+
+        .form-row   { display:flex; gap:12px; }
+        .form-row .form-group { flex:1; }
+        .total-preview { background:var(--teal-50); border:1px solid var(--teal-200);
+                         border-radius:8px; padding:10px 14px; margin:8px 0; display:none; }
+        .total-preview.show { display:flex; justify-content:space-between; align-items:center; }
+        .total-amount { font-size:20px; font-weight:900; color:var(--teal-600); }
+
+        .movements-list { margin-top:8px; }
+        .movement-row   { display:flex; gap:10px; align-items:flex-start; padding:8px 0;
+                          border-bottom:1px solid var(--gray-100); }
+        .movement-dot   { width:10px; height:10px; border-radius:50%; margin-top:4px; flex-shrink:0; }
+        .mv-RESTOCK { background:#059669; } .mv-SALE { background:#f43f5e; }
+        .mv-INITIAL { background:#0d9488; } .mv-CORRECTION { background:#d97706; }
+        .mv-qty-pos { color:#059669; font-weight:700; }
+        .mv-qty-neg { color:#f43f5e; font-weight:700; }
+
+        .filter-chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+        .fchip        { padding:5px 14px; border-radius:20px; border:1px solid var(--gray-200);
+                        font-size:12px; cursor:pointer; background:#fff; color:var(--gray-600); }
+        .fchip.active { background:var(--teal-600); color:#fff; border-color:var(--teal-600); font-weight:700; }
+        .fchip:hover  { border-color:var(--teal-400); }
+    </style>
+</head>
+<body>
+<div class="layout">
+
+    <!-- ══ SIDEBAR ══ -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h2>PharmaChain</h2>
+            <p data-i18n="sidebar_sub">نظام تتبع الأدوية</p>
+        </div>
+        <button class="lang-toggle-btn" onclick="PharmaLang.toggle()">🇬🇧 EN</button>
+        <div class="role-badge-sidebar" id="roleBadge"></div>
+
+        <a class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">📊</span> <span data-i18n="nav_dashboard">لوحة التحكم</span></a>
+        <a class="nav-item" id="navAddDrug" style="display:none" onclick="goTo('add-drug.html')"><span class="nav-icon">💊</span> <span data-i18n="nav_add_drug">إضافة دواء</span></a>
+        <a class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">🔄</span> <span data-i18n="nav_transfer">نقل دواء</span></a>
+        <a class="nav-item" onclick="goTo('blockchain.html')"><span class="nav-icon">⛓️</span> <span data-i18n="nav_blockchain">Blockchain</span></a>
+        <a class="nav-item" onclick="goTo('verify.html')"><span class="nav-icon">✅</span> <span data-i18n="nav_verify">التحقق من دواء</span></a>
+        <a class="nav-item" onclick="goTo('attack-demo.html')"><span class="nav-icon">🛡️</span> <span data-i18n="nav_tamper">كشف التلاعب</span></a>
+        <a class="nav-item" onclick="goTo('audit.html')"><span class="nav-icon">📋</span> <span data-i18n="nav_audit">سجل العمليات</span></a>
+        <div class="nav-section-hdr" data-i18n="nav_ai_section">الذكاء الاصطناعي</div>
+        <a class="nav-item" onclick="goTo('risk-analyst.html')"><span class="nav-icon">🤖</span> <span data-i18n="nav_risk">محلل المخاطر AI</span></a>
+        <a class="nav-item" onclick="goTo('supply-advisor.html')"><span class="nav-icon">📈</span> <span data-i18n="nav_advisor">تحليلات الأداء AI</span></a>
+        <a class="nav-item" onclick="goTo('qr-control.html')"><span class="nav-icon">🔐</span> <span data-i18n="nav_qr_control">إدارة QR Code</span></a>
+        <a class="nav-item active"><span class="nav-icon">📦</span> <span data-i18n="nav_inventory">إدارة المخزون</span></a>
+        <a class="nav-item" onclick="goTo('inventory-reports.html')"><span class="nav-icon">📊</span> <span data-i18n="nav_inv_reports">تقارير المخزون</span></a>
+
+        <div class="user-info-bar">
+            <div class="user-row">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div class="user-name" id="sidebarUsername">...</div>
+                    <div class="user-role" id="sidebarRole">...</div>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()" data-i18n="btn_logout">🚪 تسجيل خروج</button>
+        </div>
+    </div>
+
+    <!-- ══ MAIN ══ -->
+    <div class="main">
+        <div class="page-header">
+            <div>
+                <div class="page-title" data-i18n="nav_inventory">📦 إدارة المخزون</div>
+                <div class="page-subtitle" id="pageSubtitle">تتبع الأدوية والمنتجات — كميات ومبيعات وتنبيهات فورية</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline" onclick="loadItems()" style="font-size:13px;" data-i18n="btn_refresh">🔄 تحديث</button>
+                <button class="btn btn-primary" onclick="openAddModal()">+ <span data-i18n="add_inv_btn">إضافة صنف</span></button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="inv-stats" id="invStats">
+            <div class="inv-stat" onclick="setFilter('all')">
+                <div class="inv-stat-icon">📦</div>
+                <div class="inv-stat-val" id="stat-total" style="color:var(--teal-600)">—</div>
+                <div class="inv-stat-lbl" data-i18n="inv_total">إجمالي الأصناف</div>
+            </div>
+            <div class="inv-stat" onclick="setFilter('low')">
+                <div class="inv-stat-icon">⚠️</div>
+                <div class="inv-stat-val" id="stat-low" style="color:var(--amber-600)">—</div>
+                <div class="inv-stat-lbl" data-i18n="inv_low_stock">مخزون منخفض</div>
+            </div>
+            <div class="inv-stat" onclick="setFilter('out')">
+                <div class="inv-stat-icon">🚫</div>
+                <div class="inv-stat-val" id="stat-out" style="color:var(--rose-600)">—</div>
+                <div class="inv-stat-lbl" data-i18n="inv_out_of_stock">نفد المخزون</div>
+            </div>
+            <div class="inv-stat" onclick="setFilter('expired')">
+                <div class="inv-stat-icon">❌</div>
+                <div class="inv-stat-val" id="stat-expired" style="color:var(--rose-500)">—</div>
+                <div class="inv-stat-lbl" data-i18n="inv_expired">منتهي الصلاحية</div>
+            </div>
+            <div class="inv-stat" onclick="setFilter('near')">
+                <div class="inv-stat-icon">🕐</div>
+                <div class="inv-stat-val" id="stat-near" style="color:var(--amber-500)">—</div>
+                <div class="inv-stat-lbl" data-i18n="inv_near_expiry">ينتهي خلال 30 يوم</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card" style="padding:14px 18px; margin-bottom:14px;">
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">
+                <div class="search-wrap" style="flex:1; min-width:220px;">
+                    <input type="text" id="searchInput" class="search-box"
+                        placeholder="🔍 ابحث بالاسم أو رقم الدفعة..." oninput="applyFilters()">
+                </div>
+                <select id="catFilter" class="form-select" style="min-width:140px;" onchange="applyFilters()">
+                    <option value="">كل الفئات</option>
+                    <option>Antibiotic</option><option>Painkiller</option><option>Supplement</option>
+                    <option>Vitamin</option><option>Antifungal</option><option>Analgesic</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="filter-chips">
+                <span class="fchip active" id="chip-all"     onclick="setFilter('all')">الكل</span>
+                <span class="fchip"        id="chip-low"     onclick="setFilter('low')">⚠️ مخزون منخفض</span>
+                <span class="fchip"        id="chip-out"     onclick="setFilter('out')">🚫 نفد المخزون</span>
+                <span class="fchip"        id="chip-expired" onclick="setFilter('expired')">❌ منتهي</span>
+                <span class="fchip"        id="chip-near"    onclick="setFilter('near')">🕐 ينتهي قريباً</span>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <div class="card-icon" style="background:#f0fdfa; color:#0d9488;">📦</div>
+                    <div>
+                        <div class="card-title">المنتجات والأدوية المخزنة <span class="count-badge" id="tableCount">0</span></div>
+                        <div class="card-subtitle">سجل المخزون الكامل</div>
+                    </div>
+                </div>
+            </div>
+            <div id="invTable"><div class="loading-state"><div class="spinner"></div><span>جاري التحميل...</span></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ ADD ITEM MODAL ══ -->
+<div class="modal-overlay" id="addModal">
+    <div class="modal-box">
+        <div class="modal-title">📦 إضافة صنف جديد للمخزون</div>
+        <div class="form-row">
+            <div class="form-group" style="flex:2">
+                <label class="form-label">اسم المنتج / الدواء *</label>
+                <input type="text" id="add-name" class="form-input" placeholder="مثال: Paracetamol 500mg">
+            </div>
+            <div class="form-group" style="flex:1">
+                <label class="form-label">الفئة</label>
+                <select id="add-cat" class="form-select">
+                    <option value="">— اختر —</option>
+                    <option>Antibiotic</option><option>Painkiller</option><option>Supplement</option>
+                    <option>Vitamin</option><option>Antifungal</option><option>Analgesic</option>
+                    <option>Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">الوصف</label>
+            <textarea id="add-desc" class="form-input" rows="2" placeholder="وصف مختصر (اختياري)"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">رقم الدفعة</label>
+                <input type="text" id="add-batch" class="form-input" placeholder="BATCH-2024-001">
+            </div>
+            <div class="form-group">
+                <label class="form-label">تاريخ الانتهاء *</label>
+                <input type="date" id="add-expiry" class="form-input">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">سعر الشراء (JD)</label>
+                <input type="number" id="add-purchase" class="form-input" placeholder="0.00" min="0" step="0.01">
+            </div>
+            <div class="form-group">
+                <label class="form-label">سعر البيع (JD) *</label>
+                <input type="number" id="add-selling" class="form-input" placeholder="0.00" min="0.01" step="0.01">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">الكمية الأولية</label>
+                <input type="number" id="add-stock" class="form-input" placeholder="0" min="0" value="0">
+            </div>
+            <div class="form-group">
+                <label class="form-label">حد التنبيه (أقل كمية)</label>
+                <input type="number" id="add-threshold" class="form-input" placeholder="10" min="1" value="10">
+            </div>
+        </div>
+        <div id="addError" style="color:var(--rose-600);font-size:12px;margin:6px 0;display:none;"></div>
+        <div style="display:flex;gap:10px;margin-top:10px;">
+            <button class="btn btn-outline" onclick="closeModal('addModal')" style="flex:1">إلغاء</button>
+            <button class="btn btn-primary" onclick="submitAdd()" id="addBtn" style="flex:2">+ إضافة الصنف</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ RESTOCK MODAL ══ -->
+<div class="modal-overlay" id="restockModal">
+    <div class="modal-box" style="max-width:400px;">
+        <div class="modal-title">📥 إضافة مخزون</div>
+        <div id="restock-item-name" style="font-size:14px;color:var(--gray-500);margin-bottom:16px;"></div>
+        <input type="hidden" id="restock-id">
+        <div class="form-group">
+            <label class="form-label">الكمية المضافة *</label>
+            <input type="number" id="restock-qty" class="form-input" placeholder="0" min="1">
+        </div>
+        <div class="form-group">
+            <label class="form-label">ملاحظات</label>
+            <input type="text" id="restock-notes" class="form-input" placeholder="اختياري">
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px;">
+            <button class="btn btn-outline" onclick="closeModal('restockModal')" style="flex:1">إلغاء</button>
+            <button class="btn btn-primary" onclick="submitRestock()" style="flex:2;background:var(--emerald-600);">✅ تأكيد الإضافة</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ SELL MODAL ══ -->
+<div class="modal-overlay" id="sellModal">
+    <div class="modal-box" style="max-width:400px;">
+        <div class="modal-title">🛒 بيع / صرف دواء</div>
+        <div id="sell-item-name" style="font-size:14px;color:var(--gray-500);margin-bottom:4px;"></div>
+        <div id="sell-stock-info" style="font-size:12px;color:var(--amber-600);margin-bottom:16px;"></div>
+        <input type="hidden" id="sell-id">
+        <input type="hidden" id="sell-default-price">
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">الكمية *</label>
+                <input type="number" id="sell-qty" class="form-input" placeholder="0" min="1" oninput="updateSellTotal()">
+            </div>
+            <div class="form-group">
+                <label class="form-label">سعر الوحدة (JD)</label>
+                <input type="number" id="sell-price" class="form-input" placeholder="0.00" step="0.01" oninput="updateSellTotal()">
+            </div>
+        </div>
+        <div class="total-preview" id="sellTotal">
+            <span style="color:var(--gray-600);font-size:13px;">الإجمالي</span>
+            <span class="total-amount" id="sellTotalVal">0.00 JD</span>
+        </div>
+        <div class="form-group">
+            <label class="form-label">ملاحظات</label>
+            <input type="text" id="sell-notes" class="form-input" placeholder="اختياري">
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px;">
+            <button class="btn btn-outline" onclick="closeModal('sellModal')" style="flex:1">إلغاء</button>
+            <button class="btn btn-primary" onclick="submitSell()" style="flex:2;">✅ تأكيد البيع</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ DETAIL MODAL ══ -->
+<div class="modal-overlay" id="detailModal">
+    <div class="modal-box">
+        <div class="modal-title" id="detail-title">تفاصيل الصنف</div>
+        <div id="detail-body"></div>
+        <div style="margin-top:16px; text-align:left;">
+            <button class="btn btn-outline" onclick="closeModal('detailModal')">إغلاق</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    var API      = 'http://localhost:7036';
+    var token    = localStorage.getItem('token');
+    var username = localStorage.getItem('username');
+    var role     = localStorage.getItem('role');
+
+    if (!token) { window.location.replace(API + '/login.html'); }
+    if (role !== 'Admin') { window.location.replace(API + '/dashboard.html'); }
+
+    document.getElementById('sidebarUsername').textContent = username || '';
+    document.getElementById('sidebarRole').textContent     = role || '';
+    document.getElementById('roleBadge').textContent       = role;
+    document.getElementById('roleBadge').className         = 'role-badge-sidebar role-' + role;
+    document.getElementById('navAddDrug').style.display    = 'flex';
+
+    function goTo(p)   { window.location.replace(API + '/' + p); }
+    function logout()  { localStorage.clear(); window.location.replace(API + '/login.html'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function toast(msg, ok) {
+        var el = document.getElementById('toast');
+        el.textContent  = msg;
+        el.style.background = ok === false ? '#be123c' : '#0d9488';
+        el.classList.add('show');
+        setTimeout(function() { el.classList.remove('show'); }, 3000);
+    }
+
+    function xhr(method, url, body, cb) {
+        var r = new XMLHttpRequest();
+        r.open(method, API + url, true);
+        r.setRequestHeader('Authorization', 'Bearer ' + token);
+        if (body) r.setRequestHeader('Content-Type', 'application/json');
+        r.onload = function() {
+            if (r.status === 401) { window.location.replace(API + '/login.html'); return; }
+            var data = {}; try { data = JSON.parse(r.responseText); } catch(e) {}
+            cb(r.status, data);
+        };
+        r.onerror = function() { cb(0, {}); };
+        r.send(body ? JSON.stringify(body) : null);
+    }
+
+    var allItems = [], currentFilter = 'all', now = new Date(), soon = new Date();
+    soon.setDate(now.getDate() + 30);
+
+    function loadItems() {
+        document.getElementById('invTable').innerHTML = '<div class="loading-state"><div class="spinner"></div><span>جاري التحميل...</span></div>';
+        xhr('GET', '/api/inventory', null, function(status, data) {
+            if (status !== 200) { document.getElementById('invTable').innerHTML = '<div class="loading-state">⚠️ فشل تحميل البيانات</div>'; return; }
+            allItems = data.items || [];
+            var s = data.stats || {};
+            document.getElementById('stat-total').textContent   = s.total    || 0;
+            document.getElementById('stat-low').textContent     = s.lowStock || 0;
+            document.getElementById('stat-out').textContent     = s.outOfStock|| 0;
+            document.getElementById('stat-expired').textContent = s.expired  || 0;
+            document.getElementById('stat-near').textContent    = s.nearExpiry|| 0;
+            applyFilters();
+        });
+    }
+
+    function applyFilters() {
+        var search = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+        var cat    = document.getElementById('catFilter').value;
+        var filtered = allItems.filter(function(i) {
+            var expiry   = new Date(i.expiryDate);
+            var isExp    = expiry < now;
+            var isNear   = expiry >= now && expiry <= soon;
+            var isLow    = i.currentStock > 0 && i.currentStock <= i.lowStockThreshold;
+            var isOut    = i.currentStock === 0;
+            if (search && !(i.name.toLowerCase().includes(search) || (i.batchNumber||'').toLowerCase().includes(search))) return false;
+            if (cat && i.category !== cat) return false;
+            if (currentFilter === 'low'     && !isLow)  return false;
+            if (currentFilter === 'out'     && !isOut)  return false;
+            if (currentFilter === 'expired' && !isExp)  return false;
+            if (currentFilter === 'near'    && !isNear) return false;
+            return true;
+        });
+        document.getElementById('tableCount').textContent = filtered.length;
+        renderTable(filtered);
+    }
+
+    function setFilter(f) {
+        currentFilter = f;
+        ['all','low','out','expired','near'].forEach(function(k) {
+            document.getElementById('chip-' + k).classList.toggle('active', k === f);
+        });
+        applyFilters();
+    }
+
+    function renderTable(items) {
+        if (!items.length) {
+            document.getElementById('invTable').innerHTML = '<div class="loading-state">📭 لا توجد أصناف</div>';
+            return;
+        }
+        var rows = items.map(function(i) {
+            var expiry   = new Date(i.expiryDate);
+            var isExp    = expiry < now;
+            var isNear   = expiry >= now && expiry <= soon;
+            var isLow    = i.currentStock > 0 && i.currentStock <= i.lowStockThreshold;
+            var isOut    = i.currentStock === 0;
+            var expStr   = expiry.toLocaleDateString('ar-SA', { year:'numeric', month:'short', day:'numeric' });
+            var stockCls = isOut ? 'stock-out' : isLow ? 'stock-low' : 'stock-ok';
+            var stockTxt = isOut ? '⛔ نفد' : i.currentStock;
+            var catBadge = i.category ? '<span class="cat-badge cat-' + i.category + '">' + i.category + '</span>' : '—';
+            var alerts   = '';
+            if (isOut)  alerts += '<span class="alert-badge alert-out">⛔ نفد</span> ';
+            if (isLow && !isOut) alerts += '<span class="alert-badge alert-low">⚠️ منخفض</span> ';
+            if (isExp)  alerts += '<span class="alert-badge alert-exp">❌ منتهي</span> ';
+            if (isNear && !isExp) alerts += '<span class="alert-badge alert-near">🕐 قريباً</span>';
+            return '<tr>'
+                + '<td><strong>' + esc(i.name) + '</strong>' + (i.batchNumber ? '<br><span style="font-size:10px;color:var(--gray-400);">#' + esc(i.batchNumber) + '</span>' : '') + '</td>'
+                + '<td>' + catBadge + '</td>'
+                + '<td class="' + (isExp ? 'qty-low' : isNear ? '' : '') + '" style="' + (isExp ? 'color:#9f1239' : isNear ? 'color:#d97706' : '') + '">' + expStr + '</td>'
+                + '<td style="text-align:center; color:var(--teal-600); font-weight:700;">' + (i.sellingPrice||0).toFixed(2) + '</td>'
+                + '<td style="text-align:center;"><span class="' + stockCls + '">' + stockTxt + '</span></td>'
+                + '<td>' + (alerts || '<span style="color:var(--gray-400);font-size:11px;">—</span>') + '</td>'
+                + '<td><div style="display:flex;gap:6px;flex-wrap:wrap;">'
+                + '<button class="btn btn-outline" style="padding:4px 10px;font-size:11px;" onclick="openRestock(' + i.id + ',\'' + esc(i.name) + '\')">📥 رفع مخزون</button>'
+                + '<button class="btn btn-primary" style="padding:4px 10px;font-size:11px;' + (isOut ? 'opacity:.5;cursor:not-allowed;' : '') + '" onclick="' + (isOut ? '' : 'openSell(' + i.id + ',\'' + esc(i.name) + '\',' + (i.sellingPrice||0) + ',' + i.currentStock + ')') + '">🛒 بيع</button>'
+                + '<button class="btn btn-outline" style="padding:4px 10px;font-size:11px;" onclick="openDetail(' + i.id + ')">📋</button>'
+                + '<button class="btn" style="padding:4px 10px;font-size:11px;background:var(--rose-50);color:var(--rose-600);border:1px solid var(--rose-200);" onclick="deleteItem(' + i.id + ',\'' + esc(i.name) + '\')">🗑</button>'
+                + '</div></td>'
+                + '</tr>';
+        }).join('');
+        document.getElementById('invTable').innerHTML =
+            '<div class="table-wrap"><table><thead><tr>'
+            + '<th>المنتج / الدواء</th><th>الفئة</th><th>الانتهاء</th>'
+            + '<th style="text-align:center;">سعر البيع</th><th style="text-align:center;">المخزون</th>'
+            + '<th>التنبيهات</th><th>الإجراءات</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    }
+
+    function esc(s) { return (s||'').replace(/'/g, "\\'").replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // ── Add Modal ────────────────────────────────────────────────
+    function openAddModal() {
+        ['add-name','add-desc','add-batch','add-purchase','add-selling','add-stock','add-threshold'].forEach(function(id){
+            document.getElementById(id).value = id === 'add-stock' ? '0' : id === 'add-threshold' ? '10' : '';
+        });
+        document.getElementById('add-cat').value     = '';
+        document.getElementById('add-expiry').value  = '';
+        document.getElementById('addError').style.display = 'none';
+        document.getElementById('addModal').classList.add('open');
+    }
+
+    function submitAdd() {
+        var name    = document.getElementById('add-name').value.trim();
+        var expiry  = document.getElementById('add-expiry').value;
+        var selling = parseFloat(document.getElementById('add-selling').value);
+        var err     = document.getElementById('addError');
+        if (!name)              { err.textContent = 'اسم المنتج مطلوب'; err.style.display='block'; return; }
+        if (!expiry)            { err.textContent = 'تاريخ الانتهاء مطلوب'; err.style.display='block'; return; }
+        if (!selling || selling <= 0) { err.textContent = 'سعر البيع يجب أن يكون أكبر من صفر'; err.style.display='block'; return; }
+        if (new Date(expiry) <= now)  { err.textContent = 'تاريخ الانتهاء يجب أن يكون مستقبلياً'; err.style.display='block'; return; }
+        err.style.display = 'none';
+        var btn = document.getElementById('addBtn');
+        btn.textContent = '⏳ جاري الإضافة...'; btn.disabled = true;
+        xhr('POST', '/api/inventory', {
+            name: name,
+            description:       document.getElementById('add-desc').value.trim(),
+            category:          document.getElementById('add-cat').value,
+            batchNumber:       document.getElementById('add-batch').value.trim(),
+            expiryDate:        new Date(expiry).toISOString(),
+            purchasePrice:     parseFloat(document.getElementById('add-purchase').value) || 0,
+            sellingPrice:      selling,
+            initialStock:      parseInt(document.getElementById('add-stock').value) || 0,
+            lowStockThreshold: parseInt(document.getElementById('add-threshold').value) || 10
+        }, function(status, data) {
+            btn.textContent = '+ إضافة الصنف'; btn.disabled = false;
+            if (status === 200) {
+                closeModal('addModal');
+                toast('✅ تم إضافة الصنف بنجاح');
+                loadItems();
+            } else {
+                err.textContent = (data.message || 'فشل الإضافة'); err.style.display = 'block';
+            }
+        });
+    }
+
+    // ── Restock Modal ─────────────────────────────────────────────
+    function openRestock(id, name) {
+        document.getElementById('restock-id').value           = id;
+        document.getElementById('restock-item-name').textContent = '📦 ' + name;
+        document.getElementById('restock-qty').value          = '';
+        document.getElementById('restock-notes').value        = '';
+        document.getElementById('restockModal').classList.add('open');
+    }
+
+    function submitRestock() {
+        var id  = document.getElementById('restock-id').value;
+        var qty = parseInt(document.getElementById('restock-qty').value);
+        if (!qty || qty <= 0) { toast('أدخل كمية صحيحة', false); return; }
+        xhr('POST', '/api/inventory/' + id + '/restock', {
+            quantity: qty, notes: document.getElementById('restock-notes').value
+        }, function(status, data) {
+            if (status === 200) {
+                closeModal('restockModal');
+                toast('✅ تم تحديث المخزون — الرصيد الجديد: ' + data.newStock);
+                loadItems();
+            } else { toast((data.message || 'فشل التحديث'), false); }
+        });
+    }
+
+    // ── Sell Modal ────────────────────────────────────────────────
+    function openSell(id, name, price, stock) {
+        document.getElementById('sell-id').value            = id;
+        document.getElementById('sell-default-price').value = price;
+        document.getElementById('sell-item-name').textContent = '🛒 ' + name;
+        document.getElementById('sell-stock-info').textContent  = 'المخزون المتاح: ' + stock + ' وحدة';
+        document.getElementById('sell-qty').value   = '';
+        document.getElementById('sell-price').value = price;
+        document.getElementById('sell-notes').value = '';
+        document.getElementById('sellTotal').classList.remove('show');
+        document.getElementById('sellModal').classList.add('open');
+    }
+
+    function updateSellTotal() {
+        var qty   = parseInt(document.getElementById('sell-qty').value) || 0;
+        var price = parseFloat(document.getElementById('sell-price').value) || parseFloat(document.getElementById('sell-default-price').value) || 0;
+        var total = qty * price;
+        if (qty > 0 && price > 0) {
+            document.getElementById('sellTotalVal').textContent = total.toFixed(2) + ' JD';
+            document.getElementById('sellTotal').classList.add('show');
+        } else {
+            document.getElementById('sellTotal').classList.remove('show');
+        }
+    }
+
+    function submitSell() {
+        var id    = document.getElementById('sell-id').value;
+        var qty   = parseInt(document.getElementById('sell-qty').value);
+        var price = parseFloat(document.getElementById('sell-price').value) || parseFloat(document.getElementById('sell-default-price').value);
+        if (!qty || qty <= 0) { toast('أدخل كمية صحيحة', false); return; }
+        xhr('POST', '/api/inventory/sales', {
+            inventoryItemId: parseInt(id), quantity: qty, unitPrice: price,
+            notes: document.getElementById('sell-notes').value
+        }, function(status, data) {
+            if (status === 200) {
+                closeModal('sellModal');
+                toast('✅ تم تسجيل البيع — الرصيد الجديد: ' + data.newStock);
+                loadItems();
+            } else { toast((data.message || 'فشل البيع'), false); }
+        });
+    }
+
+    // ── Detail Modal ──────────────────────────────────────────────
+    function openDetail(id) {
+        document.getElementById('detail-body').innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
+        document.getElementById('detailModal').classList.add('open');
+        xhr('GET', '/api/inventory/' + id, null, function(status, data) {
+            if (status !== 200) { document.getElementById('detail-body').innerHTML = '⚠️ فشل التحميل'; return; }
+            var item = data.item || {};
+            var mvs  = data.movements || [];
+            var ss   = data.salesStats || {};
+            var expiry = new Date(item.expiryDate);
+            document.getElementById('detail-title').textContent = '📦 ' + item.name;
+            var mvHtml = mvs.length ? mvs.slice(0,15).map(function(m) {
+                var sign = m.quantityChanged > 0 ? '+' : '';
+                var cls  = m.quantityChanged > 0 ? 'mv-qty-pos' : 'mv-qty-neg';
+                return '<div class="movement-row">'
+                    + '<div class="movement-dot mv-' + m.actionType + '"></div>'
+                    + '<div style="flex:1"><span style="font-size:12px;font-weight:700;color:var(--gray-700);">' + (m.actionType||'') + '</span>'
+                    + ' <span class="' + cls + '" style="font-size:13px;">' + sign + m.quantityChanged + '</span>'
+                    + '<div style="font-size:10px;color:var(--gray-400);">' + m.stockBefore + ' → ' + m.stockAfter + ' · ' + (m.performedByUsername||'') + ' · ' + new Date(m.timestamp).toLocaleDateString('ar-SA') + '</div>'
+                    + (m.notes ? '<div style="font-size:10px;color:var(--gray-500);font-style:italic;">' + esc(m.notes) + '</div>' : '')
+                    + '</div></div>';
+            }).join('') : '<div style="color:var(--gray-400);font-size:12px;padding:8px 0;">لا توجد حركات بعد</div>';
+
+            document.getElementById('detail-body').innerHTML =
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">'
+                + '<div class="inv-stat" style="cursor:default"><div class="inv-stat-val" style="color:var(--teal-600);">' + (item.currentStock||0) + '</div><div class="inv-stat-lbl">المخزون الحالي</div></div>'
+                + '<div class="inv-stat" style="cursor:default"><div class="inv-stat-val" style="color:var(--emerald-600);">' + (item.sellingPrice||0).toFixed(2) + ' JD</div><div class="inv-stat-lbl">سعر البيع</div></div>'
+                + '<div class="inv-stat" style="cursor:default"><div class="inv-stat-val">' + (ss.salesCount||0) + '</div><div class="inv-stat-lbl">عمليات البيع</div></div>'
+                + '<div class="inv-stat" style="cursor:default"><div class="inv-stat-val" style="color:var(--purple-600);">' + (ss.totalRevenue||0).toFixed(2) + ' JD</div><div class="inv-stat-lbl">إجمالي الإيرادات</div></div>'
+                + '</div>'
+                + '<div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:8px;">📋 سجل الحركة</div>'
+                + '<div class="movements-list">' + mvHtml + '</div>';
+        });
+    }
+
+    // ── Delete ────────────────────────────────────────────────────
+    function deleteItem(id, name) {
+        if (!confirm('هل تريد حذف "' + name + '" من المخزون؟')) return;
+        xhr('DELETE', '/api/inventory/' + id, null, function(status, data) {
+            if (status === 200) {
+                toast('🗑 تم حذف الصنف');
+                loadItems();
+            } else { toast((data.message || 'فشل الحذف'), false); }
+        });
+    }
+
+    // ── Init ──────────────────────────────────────────────────────
+    PharmaLang.apply();
+    loadItems();
+</script>
+</body>
+</html>
