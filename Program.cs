@@ -128,6 +128,58 @@ using (var scope = app.Services.CreateScope())
             "IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'DrugTransactions') AND name = N'QrIssuanceId') " +
             "ALTER TABLE DrugTransactions ADD QrIssuanceId INT NULL"); }
         catch { }
+
+        // ── Inventory Management tables ────────────────────────────────────
+        db.Database.ExecuteSqlRaw(
+            "IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = N'InventoryItems') " +
+            "CREATE TABLE InventoryItems (" +
+            "  Id INT IDENTITY(1,1) PRIMARY KEY," +
+            "  Name NVARCHAR(200) NOT NULL DEFAULT ''," +
+            "  Description NVARCHAR(500) NOT NULL DEFAULT ''," +
+            "  Category NVARCHAR(100) NOT NULL DEFAULT ''," +
+            "  BatchNumber NVARCHAR(100) NOT NULL DEFAULT ''," +
+            "  ExpiryDate DATETIME2 NOT NULL DEFAULT GETUTCDATE()," +
+            "  PurchasePrice DECIMAL(18,2) NOT NULL DEFAULT 0," +
+            "  SellingPrice DECIMAL(18,2) NOT NULL DEFAULT 0," +
+            "  CurrentStock INT NOT NULL DEFAULT 0," +
+            "  LowStockThreshold INT NOT NULL DEFAULT 10," +
+            "  QrCode NVARCHAR(500) NULL," +
+            "  DrugId INT NULL," +
+            "  AddedByUsername NVARCHAR(100) NOT NULL DEFAULT ''," +
+            "  IsActive BIT NOT NULL DEFAULT 1," +
+            "  CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE()," +
+            "  UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE()" +
+            ")");
+
+        db.Database.ExecuteSqlRaw(
+            "IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = N'InventoryMovements') " +
+            "CREATE TABLE InventoryMovements (" +
+            "  Id INT IDENTITY(1,1) PRIMARY KEY," +
+            "  InventoryItemId INT NOT NULL DEFAULT 0," +
+            "  ActionType NVARCHAR(30) NOT NULL DEFAULT ''," +
+            "  QuantityChanged INT NOT NULL DEFAULT 0," +
+            "  StockBefore INT NOT NULL DEFAULT 0," +
+            "  StockAfter INT NOT NULL DEFAULT 0," +
+            "  PerformedByUsername NVARCHAR(100) NOT NULL DEFAULT ''," +
+            "  Notes NVARCHAR(500) NOT NULL DEFAULT ''," +
+            "  SaleTransactionId INT NULL," +
+            "  Timestamp DATETIME2 NOT NULL DEFAULT GETUTCDATE()" +
+            ")");
+
+        db.Database.ExecuteSqlRaw(
+            "IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = N'SaleTransactions') " +
+            "CREATE TABLE SaleTransactions (" +
+            "  Id INT IDENTITY(1,1) PRIMARY KEY," +
+            "  InventoryItemId INT NOT NULL DEFAULT 0," +
+            "  ProductName NVARCHAR(200) NOT NULL DEFAULT ''," +
+            "  Category NVARCHAR(100) NOT NULL DEFAULT ''," +
+            "  QuantitySold INT NOT NULL DEFAULT 0," +
+            "  UnitPrice DECIMAL(18,2) NOT NULL DEFAULT 0," +
+            "  TotalPrice DECIMAL(18,2) NOT NULL DEFAULT 0," +
+            "  SoldByUsername NVARCHAR(100) NOT NULL DEFAULT ''," +
+            "  Notes NVARCHAR(500) NOT NULL DEFAULT ''," +
+            "  TransactionDate DATETIME2 NOT NULL DEFAULT GETUTCDATE()" +
+            ")");
     }
     else
     {
@@ -143,6 +195,55 @@ using (var scope = app.Services.CreateScope())
         try { db.Database.ExecuteSqlRaw(
             "ALTER TABLE DrugTransactions ADD COLUMN QrIssuanceId INTEGER NULL"); }
         catch { }
+
+        // ── Inventory Management tables (SQLite) ───────────────────────────
+        try { db.Database.ExecuteSqlRaw(
+            "CREATE TABLE IF NOT EXISTS InventoryItems (" +
+            "  Id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "  Name TEXT NOT NULL DEFAULT ''," +
+            "  Description TEXT NOT NULL DEFAULT ''," +
+            "  Category TEXT NOT NULL DEFAULT ''," +
+            "  BatchNumber TEXT NOT NULL DEFAULT ''," +
+            "  ExpiryDate TEXT NOT NULL DEFAULT (datetime('now'))," +
+            "  PurchasePrice REAL NOT NULL DEFAULT 0," +
+            "  SellingPrice REAL NOT NULL DEFAULT 0," +
+            "  CurrentStock INTEGER NOT NULL DEFAULT 0," +
+            "  LowStockThreshold INTEGER NOT NULL DEFAULT 10," +
+            "  QrCode TEXT NULL," +
+            "  DrugId INTEGER NULL," +
+            "  AddedByUsername TEXT NOT NULL DEFAULT ''," +
+            "  IsActive INTEGER NOT NULL DEFAULT 1," +
+            "  CreatedAt TEXT NOT NULL DEFAULT (datetime('now'))," +
+            "  UpdatedAt TEXT NOT NULL DEFAULT (datetime('now'))" +
+            ")"); } catch { }
+
+        try { db.Database.ExecuteSqlRaw(
+            "CREATE TABLE IF NOT EXISTS InventoryMovements (" +
+            "  Id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "  InventoryItemId INTEGER NOT NULL DEFAULT 0," +
+            "  ActionType TEXT NOT NULL DEFAULT ''," +
+            "  QuantityChanged INTEGER NOT NULL DEFAULT 0," +
+            "  StockBefore INTEGER NOT NULL DEFAULT 0," +
+            "  StockAfter INTEGER NOT NULL DEFAULT 0," +
+            "  PerformedByUsername TEXT NOT NULL DEFAULT ''," +
+            "  Notes TEXT NOT NULL DEFAULT ''," +
+            "  SaleTransactionId INTEGER NULL," +
+            "  Timestamp TEXT NOT NULL DEFAULT (datetime('now'))" +
+            ")"); } catch { }
+
+        try { db.Database.ExecuteSqlRaw(
+            "CREATE TABLE IF NOT EXISTS SaleTransactions (" +
+            "  Id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "  InventoryItemId INTEGER NOT NULL DEFAULT 0," +
+            "  ProductName TEXT NOT NULL DEFAULT ''," +
+            "  Category TEXT NOT NULL DEFAULT ''," +
+            "  QuantitySold INTEGER NOT NULL DEFAULT 0," +
+            "  UnitPrice REAL NOT NULL DEFAULT 0," +
+            "  TotalPrice REAL NOT NULL DEFAULT 0," +
+            "  SoldByUsername TEXT NOT NULL DEFAULT ''," +
+            "  Notes TEXT NOT NULL DEFAULT ''," +
+            "  TransactionDate TEXT NOT NULL DEFAULT (datetime('now'))" +
+            ")"); } catch { }
     }
 }
 // ─────────────────────────────────────────────────────────────────────────

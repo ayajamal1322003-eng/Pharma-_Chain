@@ -72,3 +72,17 @@ export const getDrugInfo = (name, level) =>
 // ── Patient Chat (AI) ─────────────────────────────────────────
 export const sendChat = (message, drugId) =>
   request('/api/chat', { method: 'POST', body: JSON.stringify({ message, drugId }) });
+
+// ── Inventory Management ──────────────────────────────────────
+export const getInventoryItems     = (p = {}) => request(`/api/inventory?${new URLSearchParams(p)}`);
+export const addInventoryItem      = (body)   => request('/api/inventory', { method: 'POST', body: JSON.stringify(body) });
+export const getInventoryItem      = (id)     => request(`/api/inventory/${id}`);
+export const updateInventoryItem   = (id, b)  => request(`/api/inventory/${id}`, { method: 'PUT',  body: JSON.stringify(b) });
+export const deleteInventoryItem   = (id)     => request(`/api/inventory/${id}`, { method: 'DELETE' });
+export const restockInventoryItem  = (id, b)  => request(`/api/inventory/${id}/restock`, { method: 'POST', body: JSON.stringify(b) });
+export const processInventorySale  = (body)   => request('/api/inventory/sales', { method: 'POST', body: JSON.stringify(body) });
+export const getInventorySales     = (p = {}) => request(`/api/inventory/sales?${new URLSearchParams(p)}`);
+export const getInventoryMovements = (itemId) => request(`/api/inventory/movements/${itemId}`);
+export const getInventorySummaryReport = (p = {}) => request(`/api/inventory/reports/summary?${new URLSearchParams(p)}`);
+export const getInventoryTopSelling    = (p = {}) => request(`/api/inventory/reports/top-selling?${new URLSearchParams(p)}`);
+export const getInventoryAlerts        = ()        => request('/api/inventory/alerts');

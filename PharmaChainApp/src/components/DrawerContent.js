@@ -7,13 +7,15 @@ import { useLang } from '../context/LangContext';
 import { t } from '../utils/i18n';
 
 const NAV_ITEMS = [
-  { key: 'Dashboard',     icon: '📊', i18nKey: 'nav_dashboard',  roles: ['all'] },
-  { key: 'AddDrug',       icon: '💊', i18nKey: 'nav_add_drug',   roles: ['Factory', 'Admin'] },
-  { key: 'Transfer',      icon: '🔄', i18nKey: 'nav_transfer',   roles: ['Factory', 'Distributor', 'Pharmacy', 'Admin'] },
-  { key: 'Blockchain',    icon: '⛓️',  i18nKey: 'nav_blockchain', roles: ['all'] },
-  { key: 'Verify',        icon: '✅', i18nKey: 'nav_verify',     roles: ['all'] },
-  { key: 'AttackDemo',    icon: '🛡️',  i18nKey: 'nav_tamper',    roles: ['Admin'] },
-  { key: 'Audit',         icon: '📋', i18nKey: 'nav_audit',      roles: ['Admin', 'LedgerAdmin'] },
+  { key: 'Dashboard',        icon: '📊', i18nKey: 'nav_dashboard',   roles: ['all'] },
+  { key: 'AddDrug',          icon: '💊', i18nKey: 'nav_add_drug',    roles: ['Factory', 'Admin'] },
+  { key: 'Transfer',         icon: '🔄', i18nKey: 'nav_transfer',    roles: ['Factory', 'Distributor', 'Pharmacy', 'Admin'] },
+  { key: 'Blockchain',       icon: '⛓️',  i18nKey: 'nav_blockchain',  roles: ['all'] },
+  { key: 'Verify',           icon: '✅', i18nKey: 'nav_verify',      roles: ['all'] },
+  { key: 'AttackDemo',       icon: '🛡️',  i18nKey: 'nav_tamper',     roles: ['Admin'] },
+  { key: 'Audit',            icon: '📋', i18nKey: 'nav_audit',       roles: ['Admin', 'LedgerAdmin'] },
+  { key: 'Inventory',        icon: '📦', i18nKey: 'nav_inventory',   roles: ['Admin'] },
+  { key: 'InventoryReports', icon: '📊', i18nKey: 'nav_inv_reports', roles: ['Admin', 'LedgerAdmin'] },
 ];
 
 const AI_ITEMS = [

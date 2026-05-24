@@ -21,8 +21,12 @@ import SupplyAdvisorScreen from './src/screens/SupplyAdvisorScreen';
 import QRControlScreen     from './src/screens/QRControlScreen';
 import DrugInfoScreen      from './src/screens/DrugInfoScreen';
 import PatientChatScreen   from './src/screens/PatientChatScreen';
-import SettingsScreen      from './src/screens/SettingsScreen';
-import MenuModal           from './src/components/MenuModal';
+import SettingsScreen          from './src/screens/SettingsScreen';
+import InventoryScreen         from './src/screens/InventoryScreen';
+import AddInventoryItemScreen  from './src/screens/AddInventoryItemScreen';
+import InventoryDetailScreen   from './src/screens/InventoryDetailScreen';
+import InventoryReportsScreen  from './src/screens/InventoryReportsScreen';
+import MenuModal               from './src/components/MenuModal';
 
 import { C } from './src/theme/colors';
 
@@ -43,7 +47,11 @@ function AppStack() {
       <Stack.Screen name="QRControl"     component={QRControlScreen} />
       <Stack.Screen name="DrugInfo"      component={DrugInfoScreen} />
       <Stack.Screen name="PatientChat"   component={PatientChatScreen} />
-      <Stack.Screen name="Settings"      component={SettingsScreen} />
+      <Stack.Screen name="Settings"          component={SettingsScreen} />
+      <Stack.Screen name="Inventory"         component={InventoryScreen} />
+      <Stack.Screen name="AddInventoryItem"  component={AddInventoryItemScreen} />
+      <Stack.Screen name="InventoryDetail"   component={InventoryDetailScreen} />
+      <Stack.Screen name="InventoryReports"  component={InventoryReportsScreen} />
       <Stack.Screen
         name="MenuModal"
         component={MenuModal}

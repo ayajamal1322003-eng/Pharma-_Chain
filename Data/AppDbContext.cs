@@ -19,5 +19,10 @@ namespace PharmaChain.Data
         // ── QR Issuance Control ──
         public DbSet<QrQuota>    QrQuotas    { get; set; }
         public DbSet<QrIssuance> QrIssuances { get; set; }
+
+        // ── Inventory Management ──
+        public DbSet<InventoryItem>     InventoryItems     { get; set; }
+        public DbSet<InventoryMovement> InventoryMovements { get; set; }
+        public DbSet<SaleTransaction>   SaleTransactions   { get; set; }
     }
 }
