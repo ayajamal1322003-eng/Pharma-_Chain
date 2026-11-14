@@ -1,7 +1,9 @@
 # PharmaChain — Pharmaceutical QR Tracking System
 
 A full-stack pharmaceutical supply-chain tracking platform where **every QR Code lifecycle event is permanently recorded as an immutable block on a real blockchain ledger**.  Every action — from drug registration to a patient's final scan — is mined with Proof-of-Work, Merkle-root-validated, and stored in the database.
+## Live Demo
 
+[Launch PharmaChain](https://pharma-chain-oy0s.onrender.com/login.html)
 
 ## Application Screenshots
 
