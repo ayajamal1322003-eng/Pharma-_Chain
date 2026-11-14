@@ -264,11 +264,8 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 // Enable Swagger in Development and in Colab
-if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Colab"))
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("AllowAll");
 app.UseAuthentication();
