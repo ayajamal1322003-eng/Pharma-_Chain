@@ -2,7 +2,18 @@
 
 A full-stack pharmaceutical supply-chain tracking platform where **every QR Code lifecycle event is permanently recorded as an immutable block on a real blockchain ledger**.  Every action — from drug registration to a patient's final scan — is mined with Proof-of-Work, Merkle-root-validated, and stored in the database.
 
----
+
+## Application Screenshots
+
+### Login Page
+![PharmaChain Login](Screenshot%202026-10-19%20112703.png)
+
+### Admin Dashboard
+![PharmaChain Dashboard](Screenshot%202026-10-19%20112751.png)
+
+### Blockchain Ledger
+![PharmaChain Blockchain](Screenshot%202026-10-19%20112811.png)
+
 
 ## Table of Contents
 
